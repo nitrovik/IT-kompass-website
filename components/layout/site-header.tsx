@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { navItems, site } from "@/config/site";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -38,10 +38,15 @@ export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [reduceMotion, setReduceMotion] = useState(false);
+  const [lastPathname, setLastPathname] = useState(pathname);
+  const reduceMotion = useReducedMotion();
+
+  if (pathname !== lastPathname) {
+    setLastPathname(pathname);
+    setOpen(false);
+  }
 
   useEffect(() => {
-    setReduceMotion(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
     const update = () => {
       const y = window.scrollY;
       const doc = document.documentElement.scrollHeight - window.innerHeight;
@@ -53,8 +58,6 @@ export function SiteHeader() {
     return () => window.removeEventListener("scroll", update);
   }, []);
 
-  useEffect(() => setOpen(false), [pathname]);
-
   return (
     <header className={cn("fixed inset-x-0 top-0 z-50 transition-all duration-300", scrolled ? "py-3" : "py-5")}>
       <div className={cn("container-shell rounded-2xl px-3", scrolled && "glass")}> 
@@ -62,7 +65,7 @@ export function SiteHeader() {
           <Brand />
           <nav className="hidden items-center gap-1 lg:flex" aria-label="Hovednavigasjon">
             {navItems.map((item) => {
-              const active = pathname === item.href || (item.href !== "/" && pathname.startsWith(`${item.href}/`));
+              const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
                 <Link key={item.href} href={item.href} className={cn("rounded-lg px-3 py-2 text-sm font-medium transition", active ? "text-white" : "text-slate-400 hover:bg-white/[.04] hover:text-white")}>
                   {item.label}

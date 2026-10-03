@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useReducedMotion } from "motion/react";
 
 export function CompassScrollIndicator() {
   const [progress, setProgress] = useState(0);
-  const [reduceMotion, setReduceMotion] = useState(false);
+  const reduceMotion = useReducedMotion();
   useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    setReduceMotion(reduce);
-    if (reduce) return;
+    if (reduceMotion) return;
     const onScroll = () => {
       const max = document.documentElement.scrollHeight - window.innerHeight;
       setProgress(max > 0 ? Math.min(window.scrollY / max, 1) : 0);
@@ -16,7 +15,7 @@ export function CompassScrollIndicator() {
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [reduceMotion]);
   return (
     <div className="pointer-events-none fixed right-3 top-1/2 z-30 hidden -translate-y-1/2 xl:block" aria-hidden="true">
       <div className="relative flex h-44 w-10 items-center justify-center rounded-full border border-white/8 bg-[#07111f]/30 backdrop-blur">

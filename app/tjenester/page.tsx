@@ -12,7 +12,7 @@ export default function ServicesPage() {
   return (
     <main id="main">
       <PageHero eyebrow="Tjenester" title="IT og telecom, samlet på ett sted." body="Vi kan ta ansvar for én del av IT-miljøet ditt eller koordinere flere tjenester gjennom én kontaktflate." />
-      <section className="section-pad"><div className="container-shell grid gap-4 md:grid-cols-2">{services.map((service, index) => <ServiceCard key={service.slug} service={{ ...service, kicker: service.kicker }} index={index} />)}</div></section>
+      <section className="section-pad"><div className="container-shell grid gap-4 md:grid-cols-2">{services.map((service, index) => <ServiceCard key={service.slug} service={{ ...service, href: `/tjenester/${service.slug}` }} index={index} />)}</div></section>
     </main>
   );
 }
