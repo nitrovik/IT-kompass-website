@@ -1,13 +1,56 @@
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-export function Field({ label, name, type = "text", required = false, placeholder, defaultValue }: { label: string; name: string; type?: string; required?: boolean; placeholder?: string; defaultValue?: string }) {
-  return <label className="grid gap-2 text-sm font-medium text-slate-200"><span>{label}{required ? <span className="text-[#6EC5FF]"> *</span> : null}</span><input className="h-12 rounded-xl border border-white/10 bg-white/[.03] px-4 text-white placeholder:text-slate-600" type={type} name={name} required={required} placeholder={placeholder} defaultValue={defaultValue} /></label>;
+const labelClass = "grid gap-1.5 text-[13px] font-bold text-[#38536f]";
+
+function LabelText({ label, required }: { label: string; required?: boolean }) {
+  return (
+    <span>
+      {label}
+      {required ? <span className="text-brand" aria-hidden="true"> *</span> : <span className="font-medium text-muted"> (valgfritt)</span>}
+    </span>
+  );
 }
 
-export function TextareaField({ label, name, required = false, placeholder, rows = 6 }: { label: string; name: string; required?: boolean; placeholder?: string; rows?: number }) {
-  return <label className="grid gap-2 text-sm font-medium text-slate-200"><span>{label}{required ? <span className="text-[#6EC5FF]"> *</span> : null}</span><textarea className="min-h-[140px] rounded-xl border border-white/10 bg-white/[.03] px-4 py-3 text-white placeholder:text-slate-600" name={name} required={required} placeholder={placeholder} rows={rows} /></label>;
+export function Field({ label, name, type = "text", required = false, placeholder, defaultValue, autoComplete, className }: { label: string; name: string; type?: string; required?: boolean; placeholder?: string; defaultValue?: string; autoComplete?: string; className?: string }) {
+  return (
+    <label className={cn(labelClass, className)}>
+      <LabelText label={label} required={required} />
+      <input className="form-control h-12" type={type} name={name} required={required} placeholder={placeholder} defaultValue={defaultValue} autoComplete={autoComplete} />
+    </label>
+  );
 }
 
-export function SelectField({ label, name, options, required = false }: { label: string; name: string; options: string[]; required?: boolean }) {
-  return <label className="grid gap-2 text-sm font-medium text-slate-200"><span>{label}{required ? <span className="text-[#6EC5FF]"> *</span> : null}</span><select className={cn("h-12 rounded-xl border border-white/10 bg-[#0b192a] px-4 text-white")} name={name} required={required} defaultValue=""><option value="" disabled>Velg</option>{options.map((option) => <option key={option} value={option}>{option}</option>)}</select></label>;
+export function TextareaField({ label, name, required = false, placeholder, rows = 5 }: { label: string; name: string; required?: boolean; placeholder?: string; rows?: number }) {
+  return (
+    <label className={labelClass}>
+      <LabelText label={label} required={required} />
+      <textarea className="form-control min-h-[130px] resize-y" name={name} required={required} placeholder={placeholder} rows={rows} />
+    </label>
+  );
+}
+
+export function SelectField({ label, name, options, required = false, placeholder = "Velg" }: { label: string; name: string; options: readonly string[]; required?: boolean; placeholder?: string }) {
+  return (
+    <label className={labelClass}>
+      <LabelText label={label} required={required} />
+      <select className="form-control h-12" name={name} required={required} defaultValue="">
+        <option value="" disabled>{placeholder}</option>
+        {options.map((option) => <option key={option} value={option}>{option}</option>)}
+      </select>
+    </label>
+  );
+}
+
+/* Usynlig felt som fanger opp roboter. Skjult for skjermlesere og tastatur. */
+export function Honeypot() {
+  return (
+    <div className="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true">
+      <label>Nettsted<input name="website" tabIndex={-1} autoComplete="off" /></label>
+    </div>
+  );
+}
+
+export function FormMessage({ ok, children }: { ok: boolean; children: ReactNode }) {
+  return <p role="status" className={cn("rounded-xl px-4 py-3 text-sm font-medium", ok ? "bg-[#e7f6ee] text-success" : "bg-[#fdeceb] text-danger")}>{children}</p>;
 }

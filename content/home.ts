@@ -1,103 +1,103 @@
 import type { LucideIcon } from "lucide-react";
-import { Blocks, Globe2, Headphones, Network, ShieldCheck, Wifi } from "lucide-react";
+import { Award, Building2, Globe2, Headphones, MapPin, Network, Scale, Wifi } from "lucide-react";
 
 export type HomeService = {
   title: string;
-  kicker: string;
   href: string;
   description: string;
   icon: LucideIcon;
-  bullets: string[];
+  bullets?: string[];
 };
 
 export const homeHero = {
   eyebrow: "IT Kompass AS",
   title: ["IT og telecom.", "Én partner."],
   body:
-    "Vi finner løsningen som passer virksomheten din, uavhengig av leverandør. Du får én kontakt for IT og telecom.",
+    "Vi finner den beste løsningen for din bedrift, uavhengig av leverandør. Du får én kontaktperson for alt innen IT, telecom, fiber og nettverk.",
   primaryCta: { label: "Finn riktig løsning", href: "/finn-riktig-losning" },
-  secondaryCta: { label: "Snakk med oss", href: "/kontakt" },
+  secondaryCta: { label: "Ta kontakt", href: "/kontakt" },
+  panel: {
+    title: "Derfor IT Kompass",
+    status: "Klar for drift",
+    rows: [
+      { icon: Scale, title: "Nøytral leverandørformidling", text: "Vi starter med behovet ditt, ikke med én bestemt leverandør." },
+      { icon: Building2, title: "Bedriftsfokus", text: "Skreddersydde løsninger for små og mellomstore bedrifter." },
+      { icon: MapPin, title: "Lokalt til stede", text: "Rask oppfølging og personlig service." },
+      { icon: Award, title: "Lang erfaring", text: "Trygghet i alle ledd fra behov til drift." },
+    ],
+  },
+};
+
+export const homeServicesIntro = {
+  eyebrow: "Våre tjenester",
+  title: "Komplett IT og telecom, samlet hos oss",
+  body: "Vi leverer løsninger som fungerer i praksis. Fra trådløse nett og fiber til drift, sikkerhet og moderne nettsider.",
 };
 
 export const homeServices: HomeService[] = [
   {
     title: "WiFi",
-    kicker: "01 / Nettverk",
     href: "/tjenester/wifi",
-    description:
-      "Prosjektering, installasjon og full drift av trådløse nett for bedrifter, hoteller, skoler og offentlige bygg.",
+    description: "Prosjektering, installasjon og full drift av trådløse nett for bedrifter, hoteller, skoler og offentlige bygg.",
     icon: Wifi,
-    bullets: ["Kartlegging", "Installasjon", "Drift og overvåking"],
   },
   {
     title: "Fiber og telecom",
-    kicker: "02 / Forbindelse",
     href: "/tjenester/fiber-og-telecom",
-    description:
-      "Fiber, bredbånd, mobil, fasttelefoni og sentralbord samlet gjennom én partner.",
+    description: "Fiber, bredbånd, mobil, fasttelefoni og sentralbord, samlet hos én partner.",
     icon: Network,
-    bullets: ["Fiber og bredbånd", "Mobil", "Telefoni og sentralbord"],
   },
   {
     title: "IT support",
-    kicker: "03 / Drift",
     href: "/tjenester/it-support",
-    description:
-      "Brukerstøtte, drift og overvåking, sikkerhet, backup, utstyr og installasjoner.",
+    description: "Brukerstøtte, drift og overvåking, sikkerhet, backup, utstyr og installasjoner.",
     icon: Headphones,
-    bullets: ["Brukerstøtte", "Sikkerhet og backup", "Utstyr og installasjoner"],
   },
   {
     title: "Nettsider og drift",
-    kicker: "04 / Digitalt",
     href: "/tjenester/nettsider",
-    description:
-      "Design, utvikling, hosting, SEO og innhold for virksomheter som vil ha en nettside som faktisk gjør jobben sin.",
+    description: "Design, utvikling, hosting, SEO og innhold for en sterkere digital tilstedeværelse.",
     icon: Globe2,
-    bullets: ["Design og utvikling", "Hosting", "SEO og innhold"],
   },
 ];
 
 export const homePositioning = {
   eyebrow: "Leverandøruavhengig",
-  title: "Riktig løsning først. Leverandør etterpå.",
+  title: ["Riktig løsning først.", "Leverandør etterpå."],
   body:
-    "Vi starter med behovet ditt, ikke med én bestemt leverandør. Vi vurderer løsninger på tvers av IT og telecom og samler det du trenger hos én kontaktperson.",
+    "Vi starter med behovet ditt, ikke med én bestemt leverandør. Derfor kan vi vurdere løsninger på tvers av IT og telecom og samle dem hos én kontaktperson.",
   points: [
-    "Behovet styrer anbefalingen.",
-    "Løsningen bygges for virksomheten din.",
-    "Én kontakt når noe skal endres eller følges opp.",
+    { title: "Objektiv rådgivning", text: "Vi finner løsningen som passer." },
+    { title: "Én kontakt", text: "Én partner for IT og telecom." },
+    { title: "Lokal nærhet", text: "Rask oppfølging og personlig service." },
+    { title: "Langsiktig samarbeid", text: "Vi følger opp når behovene endrer seg." },
   ],
-  icon: ShieldCheck,
+  // Bytt ut med et ekte bilde av kunde, team eller installasjon, f.eks. "/media/team.jpg".
+  image: null as null | { src: string; alt: string },
+  caption: { title: "Én partner. Mange muligheter.", text: "Et glimt av hvordan vi kombinerer teknologi med personlig oppfølging." },
 };
 
-export const homeProcess = [
-  { number: "01", title: "Forstå behovet", text: "Vi begynner med virksomheten, arbeidsmåten og det som skal fungere." },
-  { number: "02", title: "Finne riktig løsning", text: "Vi vurderer alternativer og foreslår en løsning som passer behovet." },
-  { number: "03", title: "Sette det opp", text: "Vi prosjekterer, installerer og får tjenesten i drift." },
-  { number: "04", title: "Følge det opp", text: "Du har en fast partner for endringer, support og videre drift." },
-];
+export const homeProcess = {
+  eyebrow: "Vår tilnærming",
+  title: ["Fra behov", "til løsning."],
+  body: "Vi gjør IT og telecom enklere å forholde seg til. Du forteller hva du trenger. Vi tar oss av resten.",
+  steps: [
+    { number: "01", title: "Forstå behovet", text: "Vi lytter og kartlegger hva virksomheten faktisk trenger." },
+    { number: "02", title: "Finne riktig løsning", text: "Vi sammenligner alternativer og anbefaler en retning." },
+    { number: "03", title: "Sette det opp", text: "Vi leverer, konfigurerer og installerer." },
+    { number: "04", title: "Følge det opp", text: "Vi er her også når løsningen skal driftes videre." },
+  ],
+};
 
-export const homeShowcase = [
-  {
-    title: "Nettside for virksomheten",
-    category: "Nettsider",
-    description: "Plassholder for et ekte prosjektbilde. Vis en ferdig nettside i laptop- og mobilramme.",
-    motif: "Forside med tydelig tjenestehierarki, store flater og konverteringsfokus.",
-  },
-  {
-    title: "Bedriftsnett på tvers av bygg",
-    category: "WiFi",
-    description: "Plassholder for et ekte prosjektbilde. Vis før/etter, dekning eller installasjon.",
-    motif: "Kartlegging, tilgangspunkter og dokumentasjon samlet i én leveranse.",
-  },
-  {
-    title: "Telecom samlet i ett oppsett",
-    category: "Fiber og telecom",
-    description: "Plassholder for et ekte prosjektbilde. Vis løsning, installasjon eller kundemiljø.",
-    motif: "Fiber, mobil og telefoni samlet under én kontaktflate.",
-  },
-];
+export const homeWebsites = {
+  eyebrow: "Nettsider",
+  title: "En del av løsningen skal også se bra ut.",
+  body: "Nettsidene vi lager skal være raske, tydelige og gode å bruke. Her er en enkel forhåndsvisning av uttrykket vi kan bygge for kundene våre.",
+  packagesEyebrow: "Nettsidepakker",
+  packagesTitle: "Start · Pro · Premium",
+  packagesBody: "Tre nivåer for ulike behov. Prisene fylles inn når pakkene er bestemt.",
+  growth: { title: "Bygd for videre vekst", text: "Design, utvikling, hosting, SEO og innhold i samme leveranse." },
+};
 
 export const homePackages = [
   { name: "Start", summary: "En profesjonell nettside for virksomheter som trenger en tydelig tilstedeværelse på nett.", price: "Pris kommer", featured: false },
@@ -105,8 +105,19 @@ export const homePackages = [
   { name: "Premium", summary: "En komplett digital profil med høy grad av tilpasning, innhold og videreutvikling.", price: "Pris kommer", featured: false },
 ];
 
-export const homeTrust = [
-  { icon: Blocks, label: "Én kontaktflate" },
-  { icon: Network, label: "IT og telecom samlet" },
-  { icon: ShieldCheck, label: "Bygd for videre drift" },
-];
+export const homeWizardCta = {
+  eyebrow: "Klar for neste steg?",
+  title: "Finn riktig løsning.",
+  body: "Svar på noen enkle spørsmål og få en anbefaling.",
+  cta: { label: "Start veiviseren", href: "/finn-riktig-losning" },
+  steps: ["Hva trenger du?", "Hvor mange er dere?", "Når trenger du det?"],
+};
+
+export const homeContact = {
+  eyebrow: "Kontakt",
+  title: "Fortell oss hva du skal få på plass.",
+  body: "Vi hjelper deg med alt fra fiber og WiFi til IT-support, nettsider og drift.",
+  formTitle: "Send oss en henvendelse",
+  mapTitle: "Vårt dekningsområde",
+  mapFallback: "Fortell oss hvor virksomheten holder til, så avklarer vi om vi kan hjelpe.",
+};

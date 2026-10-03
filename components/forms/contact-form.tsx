@@ -2,23 +2,37 @@
 
 import { useActionState } from "react";
 import { submitContact, type ContactState } from "@/app/actions/contact";
-import { Field, SelectField, TextareaField } from "@/components/forms/field";
+import { Field, FormMessage, Honeypot, SelectField, TextareaField } from "@/components/forms/field";
+import { SubmitButton } from "@/components/forms/submit-button";
 import { TurnstileField } from "@/components/ui/turnstile";
-import { buttonVariants } from "@/components/ui/button";
-import { useFormStatus } from "react-dom";
 
 const initial: ContactState = { ok: false, message: "" };
-function SubmitButton() { const { pending } = useFormStatus(); return <button type="submit" disabled={pending} className={buttonVariants({ size: "lg" })}>{pending ? "Sender …" : "Send henvendelse"}</button>; }
+export const contactCategories = ["Fiber/WiFi", "Mobil", "IT support", "Utstyr", "Installasjoner", "Nettsider"] as const;
 
-export function ContactForm() {
+/* compact = forsidevarianten med kun de viktigste feltene. */
+export function ContactForm({ compact = false }: { compact?: boolean }) {
   const [state, action] = useActionState(submitContact, initial);
-  return <form action={action} className="grid gap-5">
-    <div className="grid gap-5 sm:grid-cols-2"><Field label="Navn" name="name" required placeholder="Navn"/><Field label="Virksomhet" name="company" required placeholder="Bedrift AS"/></div>
-    <div className="grid gap-5 sm:grid-cols-2"><Field label="E-post" name="email" type="email" required placeholder="navn@bedrift.no"/><Field label="Telefon" name="phone" type="tel" required placeholder="Telefonnummer"/></div>
-    <SelectField label="Hva gjelder det?" name="category" required options={["Fiber/WiFi", "Mobil", "IT support", "Utstyr", "Installasjoner", "Nettsider"]}/>
-    <TextareaField label="Fortell litt om behovet" name="message" required placeholder="Hva vil du ha hjelp med?"/>
-    <input className="hidden" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" />
-    <TurnstileField />
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center"><SubmitButton/>{state.message ? <p role="status" className={state.ok ? "text-sm text-[#8cf0b9]" : "text-sm text-[#ff9aa6]"}>{state.message}</p> : null}</div>
-  </form>;
+
+  if (state.ok) return <FormMessage ok>{state.message}</FormMessage>;
+
+  return (
+    <form action={action} className="relative grid gap-4">
+      <SelectField label="Hva gjelder det?" name="category" required options={contactCategories} placeholder="Velg kategori" />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Navn" name="name" required placeholder="Ditt navn" autoComplete="name" />
+        <Field label="E-post" name="email" type="email" required placeholder="din@epost.no" autoComplete="email" />
+      </div>
+      {compact ? null : (
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Virksomhet" name="company" placeholder="Bedrift AS" autoComplete="organization" />
+          <Field label="Telefon" name="phone" type="tel" placeholder="Telefonnummer" autoComplete="tel" />
+        </div>
+      )}
+      <TextareaField label="Melding" name="message" required placeholder="Skriv kort hva du trenger hjelp med …" />
+      <Honeypot />
+      <TurnstileField />
+      {state.message ? <FormMessage ok={false}>{state.message}</FormMessage> : null}
+      <SubmitButton label="Send melding" className="w-full sm:w-auto" />
+    </form>
+  );
 }

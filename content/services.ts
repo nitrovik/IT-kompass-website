@@ -5,7 +5,6 @@ export type Service = {
   slug: string;
   title: string;
   shortTitle: string;
-  kicker: string;
   description: string;
   intro: string;
   icon: LucideIcon;
@@ -21,7 +20,6 @@ export const services: Service[] = [
     slug: "wifi",
     title: "WiFi for virksomheter og bygg",
     shortTitle: "WiFi",
-    kicker: "01 / Nettverk",
     description: "Prosjektering, installasjon og full drift av trådløse nett for bedrifter, hoteller, skoler og offentlige bygg.",
     intro: "Et godt trådløst nett skal være stabilt, oversiktlig og dimensjonert for hvordan bygget faktisk brukes.",
     icon: Wifi,
@@ -40,7 +38,6 @@ export const services: Service[] = [
     slug: "fiber-og-telecom",
     title: "Fiber og telecom samlet",
     shortTitle: "Fiber og telecom",
-    kicker: "02 / Forbindelse",
     description: "Fiber, bredbånd, mobil, fasttelefoni og sentralbord samlet hos én partner.",
     intro: "Vi hjelper virksomheten med forbindelser og telefoni som er tilpasset behov, lokasjon og arbeidsform.",
     icon: Network,
@@ -59,7 +56,6 @@ export const services: Service[] = [
     slug: "it-support",
     title: "IT support som følger virksomheten",
     shortTitle: "IT support",
-    kicker: "03 / Drift",
     description: "Brukerstøtte, drift og overvåking, sikkerhet, backup, utstyr og installasjoner.",
     intro: "IT support handler om å få hverdagen til å fungere, fra én bruker med et problem til drift av et helt miljø.",
     icon: Headphones,
@@ -78,7 +74,6 @@ export const services: Service[] = [
     slug: "nettsider",
     title: "Nettsider og drift som faktisk er gjennomtenkt",
     shortTitle: "Nettsider og drift",
-    kicker: "04 / Digitalt",
     description: "Design, utvikling, hosting, SEO og innhold for virksomheter som vil ha en nettside som gjør jobben sin.",
     intro: "Vi bygger nettsider med samme prinsipp som resten av leveransene våre: forstå behovet, velg riktig løsning og gjør det enkelt å videreutvikle.",
     icon: Globe2,

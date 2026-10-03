@@ -1,51 +1,116 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Check, Compass } from "lucide-react";
-import { useActionState } from "react";
 import { submitWizard, type WizardState } from "@/app/actions/wizard";
+import { getRecommendation, wizardSteps } from "@/content/wizard";
+import { Field, FormMessage, Honeypot } from "@/components/forms/field";
+import { SubmitButton } from "@/components/forms/submit-button";
 import { TurnstileField } from "@/components/ui/turnstile";
-import { Field } from "@/components/forms/field";
 import { buttonVariants } from "@/components/ui/button";
-
-const steps = [
-  { key: "need", title: "Hva trenger du?", options: ["WiFi", "Fiber og telecom", "IT support", "Nettsider", "Vet ikke ennå"] },
-  { key: "employees", title: "Hvor mange ansatte er dere?", options: ["1–5", "6–20", "21–50", "51+"] },
-  { key: "urgency", title: "Hvor raskt trenger du hjelp?", options: ["Så snart som mulig", "Denne måneden", "Vi planlegger", "Vet ikke ennå"] },
-] as const;
+import { cn } from "@/lib/utils";
 
 export function SolutionWizard() {
   const [step, setStep] = useState(0);
   const [values, setValues] = useState<Record<string, string>>({});
   const [showForm, setShowForm] = useState(false);
   const [state, action] = useActionState<WizardState, FormData>(submitWizard, { ok: false, message: "" });
-  const current = steps[step];
-  const selected = values[current.key] ?? "";
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const total = wizardSteps.length;
 
-  if (state.ok) return <div className="rounded-[1.6rem] border border-[#269BFF]/25 bg-[#0a1828] p-8 sm:p-12"><div className="grid size-14 place-items-center rounded-full border border-[#269BFF]/25 bg-[#269BFF]/10 text-[#6EC5FF]"><Check/></div><h2 className="mt-7 text-3xl font-semibold">Forespørselen er mottatt.</h2><p className="mt-4 max-w-2xl leading-7 text-slate-400">{state.message}</p></div>;
+  // Flytt fokus til ny overskrift slik at skjermlesere og tastatur følger med.
+  const go = (next: () => void) => {
+    next();
+    requestAnimationFrame(() => headingRef.current?.focus());
+  };
 
-  if (showForm) return <form action={action} className="grid gap-5 rounded-[1.6rem] border border-white/10 bg-[#0a1828] p-6 sm:p-10">
-    <div><div className="eyebrow">Siste steg</div><h2 className="mt-3 text-3xl font-semibold">Hvor kan vi kontakte deg?</h2><p className="mt-3 text-slate-400">Anbefalt retning: <span className="text-white">{recommendation(values.need, values.employees)}</span></p></div>
-    <input type="hidden" name="need" value={values.need ?? ""}/><input type="hidden" name="employees" value={values.employees ?? ""}/><input type="hidden" name="urgency" value={values.urgency ?? ""}/><input type="hidden" name="address" value={values.address ?? ""}/>
-    <Field label="Adresse" name="address" required defaultValue={values.address} placeholder="Adresse eller sted"/>
-    <div className="grid gap-5 sm:grid-cols-2"><Field label="Navn" name="name" required placeholder="Navn"/><Field label="Virksomhet" name="company" required placeholder="Bedrift AS"/></div>
-    <Field label="E-post" name="email" type="email" required placeholder="navn@bedrift.no"/>
-    <TurnstileField />
-    <div className="flex flex-col gap-3 sm:flex-row"><button type="button" onClick={() => setShowForm(false)} className={buttonVariants({ variant: "outline", size: "lg" })}><ArrowLeft size={17}/> Tilbake</button><button type="submit" className={buttonVariants({ size: "lg" })}>Send forespørsel <ArrowRight size={17}/></button></div>
-    {state.message ? <p role="status" className="text-sm text-[#ff9aa6]">{state.message}</p> : null}
-  </form>;
+  if (state.ok) {
+    return (
+      <div className="surface-card p-8 sm:p-12">
+        <div className="grid size-14 place-items-center rounded-full bg-[#e7f6ee] text-success"><Check aria-hidden="true" /></div>
+        <h2 className="mt-6 text-3xl font-extrabold tracking-[-.03em] text-ink">Forespørselen er mottatt.</h2>
+        <p role="status" className="mt-3 max-w-2xl leading-7 text-body">{state.message}</p>
+      </div>
+    );
+  }
 
-  return <div className="rounded-[1.6rem] border border-white/10 bg-[#0a1828] p-6 sm:p-10">
-    <div className="flex items-center justify-between gap-4"><div><div className="eyebrow">Steg {step + 1} av {steps.length}</div><h2 className="mt-3 text-3xl font-semibold">{current.title}</h2></div><Compass className="text-[#269BFF]"/></div>
-    <div className="mt-8 grid gap-3 sm:grid-cols-2">{current.options.map((option) => <button key={option} type="button" onClick={() => setValues((v) => ({ ...v, [current.key]: option }))} className={`rounded-2xl border p-5 text-left text-sm font-semibold transition ${selected === option ? "border-[#269BFF]/50 bg-[#269BFF]/10 text-white" : "border-white/10 bg-white/[.02] text-slate-300 hover:border-white/20"}`}><span className="flex items-center justify-between gap-3">{option}{selected === option ? <Check size={17} className="text-[#6EC5FF]"/> : null}</span></button>)}</div>
-    <div className="mt-8 flex flex-col justify-between gap-3 border-t border-white/8 pt-6 sm:flex-row"><span className="text-sm text-slate-500">Du kan endre svarene dine.</span><button type="button" disabled={!selected} onClick={() => step < steps.length - 1 ? setStep((s) => s + 1) : setShowForm(true)} className={buttonVariants({ size: "lg" })}>{step < steps.length - 1 ? "Neste" : "Se anbefaling"} <ArrowRight size={17}/></button></div>
-  </div>;
+  const progress = showForm ? 100 : Math.round(((step + 1) / (total + 1)) * 100);
+
+  return (
+    <div className="surface-card overflow-hidden">
+      <div className="h-1.5 bg-sky" aria-hidden="true"><div className="h-full bg-[linear-gradient(90deg,var(--color-brand),var(--color-brand-bright))] transition-[width] duration-500" style={{ width: `${progress}%` }} /></div>
+      {showForm ? (
+        <form action={action} className="relative grid gap-4 p-6 sm:p-10">
+          <div>
+            <p className="eyebrow">Siste steg</p>
+            <h2 ref={headingRef} tabIndex={-1} className="mt-2 text-3xl font-extrabold tracking-[-.03em] text-ink outline-none">Hvor kan vi kontakte deg?</h2>
+            <p className="mt-4 rounded-2xl border border-brand/20 bg-tile px-4 py-3 text-sm text-body">
+              Anbefalt retning: <strong className="text-ink">{getRecommendation(values.need, values.employees)}</strong>
+            </p>
+          </div>
+          {wizardSteps.map((item) => <input key={item.key} type="hidden" name={item.key} value={values[item.key] ?? ""} />)}
+          <Field label="Adresse eller sted" name="address" required placeholder="Gateadresse eller sted" autoComplete="street-address" />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Navn" name="name" required placeholder="Ditt navn" autoComplete="name" />
+            <Field label="Virksomhet" name="company" required placeholder="Bedrift AS" autoComplete="organization" />
+          </div>
+          <Field label="E-post" name="email" type="email" required placeholder="din@epost.no" autoComplete="email" />
+          <Honeypot />
+          <TurnstileField />
+          {state.message ? <FormMessage ok={false}>{state.message}</FormMessage> : null}
+          <div className="flex flex-col-reverse gap-3 border-t border-line pt-6 sm:flex-row sm:justify-between">
+            <button type="button" onClick={() => go(() => setShowForm(false))} className={buttonVariants({ variant: "secondary", size: "lg" })}><ArrowLeft size={17} aria-hidden="true" /> Tilbake</button>
+            <SubmitButton label="Send forespørsel" />
+          </div>
+        </form>
+      ) : (
+        <WizardStep step={step} total={total} values={values} headingRef={headingRef}
+          onSelect={(key, option) => setValues((current) => ({ ...current, [key]: option }))}
+          onBack={() => go(() => setStep((current) => current - 1))}
+          onNext={() => go(() => (step < total - 1 ? setStep((current) => current + 1) : setShowForm(true)))}
+        />
+      )}
+    </div>
+  );
 }
 
-function recommendation(need?: string, employees?: string) {
-  if (need === "Nettsider") return employees === "1–5" ? "Nettsider – Start" : "Nettsider – Pro";
-  if (need === "WiFi") return "WiFi – kartlegging og prosjektering";
-  if (need === "Fiber og telecom") return "Fiber og telecom – behovskartlegging";
-  if (need === "IT support") return "IT support – drift og brukerstøtte";
-  return "Et avklaringsmøte om IT og telecom";
+function WizardStep({ step, total, values, headingRef, onSelect, onBack, onNext }: {
+  step: number; total: number; values: Record<string, string>; headingRef: React.RefObject<HTMLHeadingElement | null>;
+  onSelect: (key: string, option: string) => void; onBack: () => void; onNext: () => void;
+}) {
+  const current = wizardSteps[step];
+  const selected = values[current.key] ?? "";
+  return (
+    <div className="p-6 sm:p-10">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="eyebrow">Steg {step + 1} av {total}</p>
+          <h2 ref={headingRef} tabIndex={-1} className="mt-2 text-3xl font-extrabold tracking-[-.03em] text-ink outline-none">{current.title}</h2>
+        </div>
+        <span className="grid size-12 shrink-0 place-items-center rounded-full bg-tile text-brand" aria-hidden="true"><Compass size={22} /></span>
+      </div>
+      <fieldset className="mt-8">
+        <legend className="sr-only">{current.title}</legend>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {current.options.map((option) => {
+            const active = selected === option;
+            return (
+              <label key={option}
+                className={cn("flex min-h-[60px] cursor-pointer items-center justify-between gap-3 rounded-2xl border p-5 text-[15px] font-bold text-ink transition has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand", active ? "border-brand bg-tile shadow-[0_0_0_3px_rgba(39,167,255,.15)]" : "border-line bg-white hover:border-[#acd2ef] hover:bg-soft")}>
+                <input type="radio" className="sr-only" name={`veiviser-${current.key}`} value={option} checked={active} onChange={() => onSelect(current.key, option)} />
+                {option}
+                <span className={cn("grid size-6 shrink-0 place-items-center rounded-full border", active ? "border-brand bg-brand text-white" : "border-line-strong")} aria-hidden="true">{active ? <Check size={14} strokeWidth={3} /> : null}</span>
+              </label>
+            );
+          })}
+        </div>
+      </fieldset>
+      <div className="mt-8 flex flex-col-reverse gap-3 border-t border-line pt-6 sm:flex-row sm:items-center sm:justify-between">
+        {step > 0 ? <button type="button" onClick={onBack} className={buttonVariants({ variant: "secondary", size: "lg" })}><ArrowLeft size={17} aria-hidden="true" /> Tilbake</button> : <span className="text-sm text-muted">Du kan endre svarene underveis.</span>}
+        <button type="button" disabled={!selected} onClick={onNext} className={buttonVariants({ size: "lg" })}>
+          {step < total - 1 ? "Neste" : "Se anbefaling"} <ArrowRight size={17} aria-hidden="true" />
+        </button>
+      </div>
+    </div>
+  );
 }

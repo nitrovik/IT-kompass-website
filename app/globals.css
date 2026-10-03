@@ -1,100 +1,239 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-:root {
-  --background: #07111f;
-  --foreground: #f7fafc;
-  --muted: #aab7c5;
-  --surface: #0b192a;
-  --surface-2: #102238;
-  --line: rgba(255, 255, 255, 0.1);
-  --blue: #269bff;
-  --blue-soft: #6ec5ff;
-  --success: #5be7a5;
-  --warning: #ffd06b;
-  --danger: #ff6b7a;
-  --radius: 1.25rem;
+/*
+  Designtokens fra den godkjente forhåndsvisningen (reference-homepage-preview.html).
+  Lyst uttrykk, marineblå typografi og elektrisk blå som aksent.
+  Tekstfargene er kontrollert mot WCAG 2.1 AA på hvite og lyse flater.
+*/
+@theme {
+  --font-sans: var(--font-inter), Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --color-ink: #102a4d;
+  --color-body: #46617f;
+  --color-muted: #536a87;
+  --color-line: #dce8f4;
+  --color-line-strong: #bed3e8;
+  --color-soft: #f5f9fd;
+  --color-sky: #eaf5ff;
+  --color-tile: #edf7ff;
+  --color-brand: #0a6ed1;
+  --color-brand-deep: #0959b0;
+  --color-brand-bright: #27a7ff;
+  --color-eyebrow: #2b6da7;
+  --color-navy-950: #07182e;
+  --color-navy-900: #0b2342;
+  --color-navy-800: #12345d;
+  --color-footer: #081c34;
+  --color-on-navy: #b7ccdf;
+  --color-on-navy-muted: #8ea7c0;
+  --color-success: #067647;
+  --color-danger: #b42318;
+
+  --shadow-card: 0 22px 60px rgba(16, 42, 77, .10);
+  --shadow-lift: 0 24px 48px rgba(26, 73, 114, .13);
+  --shadow-brand: 0 12px 28px rgba(8, 124, 240, .22);
 }
 
 html { scroll-behavior: auto; }
 body {
   margin: 0;
-  background:
-    radial-gradient(circle at 80% -10%, rgba(38,155,255,.13), transparent 34%),
-    linear-gradient(180deg, #07111f 0%, #081422 100%);
-  color: var(--foreground);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #fff;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 * { box-sizing: border-box; }
-::selection { background: rgba(38,155,255,.34); color: #fff; }
-:focus-visible { outline: 2px solid var(--blue-soft); outline-offset: 3px; }
+::selection { background: rgba(39, 167, 255, .22); color: var(--color-ink); }
+:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 3px; border-radius: 6px; }
 
 .container-shell {
-  width: min(1180px, calc(100% - 2rem));
+  width: min(1180px, calc(100% - 2.5rem));
   margin-inline: auto;
 }
-
-.section-pad { padding-block: clamp(4.5rem, 8vw, 8rem); }
-
-.glass {
-  background: rgba(11, 25, 42, .66);
-  border: 1px solid rgba(255,255,255,.08);
-  box-shadow: 0 20px 70px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.04);
-  backdrop-filter: blur(18px);
+@media (max-width: 620px) {
+  .container-shell { width: calc(100% - 1.5rem); }
 }
 
+.section-pad { padding-block: clamp(4.5rem, 8vw, 6.25rem); }
+
+.eyebrow {
+  font-size: .75rem;
+  font-weight: 800;
+  letter-spacing: .21em;
+  text-transform: uppercase;
+  color: var(--color-eyebrow);
+}
+.display-text {
+  font-size: clamp(2.9rem, 6vw, 4.9rem);
+  line-height: .98;
+  letter-spacing: -.045em;
+  font-weight: 800;
+}
+.page-title {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  line-height: 1.02;
+  letter-spacing: -.04em;
+  font-weight: 800;
+}
+.section-title {
+  font-size: clamp(2.1rem, 4.4vw, 3.25rem);
+  line-height: 1.05;
+  letter-spacing: -.035em;
+  font-weight: 800;
+}
+.body-lg {
+  font-size: clamp(1.05rem, 1.4vw, 1.19rem);
+  line-height: 1.65;
+  color: var(--color-body);
+}
+
+/* Lyse flater */
+.hero-surface {
+  background:
+    radial-gradient(circle at 78% 22%, rgba(39, 167, 255, .20), transparent 24%),
+    radial-gradient(circle at 42% 48%, rgba(255, 255, 255, .95), transparent 36%),
+    linear-gradient(115deg, #f9fcff 0%, #eef7ff 46%, #dfeeff 100%);
+}
 .surface-card {
-  background: linear-gradient(180deg, rgba(16,34,56,.92), rgba(9,23,39,.94));
-  border: 1px solid var(--line);
+  background: #fff;
+  border: 1px solid var(--color-line);
+  border-radius: 22px;
+  box-shadow: var(--shadow-card);
+}
+.glass-panel {
+  background: rgba(255, 255, 255, .73);
+  border: 1px solid rgba(255, 255, 255, .75);
+  box-shadow: 0 30px 70px rgba(38, 100, 160, .14);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
-.eyebrow { font-size: .72rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: #86caff; }
-.display-text { font-size: clamp(3.5rem, 9vw, 7.6rem); line-height: .94; letter-spacing: -.065em; font-weight: 760; }
-.section-title { font-size: clamp(2.25rem, 5vw, 4.6rem); line-height: 1; letter-spacing: -.05em; font-weight: 730; }
-.body-lg { font-size: clamp(1.05rem, 1.5vw, 1.3rem); line-height: 1.65; color: var(--muted); }
-
-.grid-noise {
-  background-image:
-    linear-gradient(rgba(255,255,255,.032) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.032) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: linear-gradient(to bottom, black 30%, transparent 90%);
-}
-
-.fiber-bg {
-  background:
-    radial-gradient(circle at 20% 30%, rgba(38,155,255,.14), transparent 25%),
-    radial-gradient(circle at 70% 40%, rgba(110,197,255,.08), transparent 23%);
-}
-
-.text-gradient { background: linear-gradient(90deg, #fff 10%, #7dcdff 70%, #269bff); -webkit-background-clip: text; background-clip: text; color: transparent; }
-
-.icon-draw svg path, .icon-draw svg line, .icon-draw svg polyline, .icon-draw svg circle, .icon-draw svg rect { stroke-dasharray: 120; stroke-dashoffset: 120; }
-.icon-draw.is-visible svg path, .icon-draw.is-visible svg line, .icon-draw.is-visible svg polyline, .icon-draw.is-visible svg circle, .icon-draw.is-visible svg rect { animation: icon-draw .85s cubic-bezier(.22,1,.36,1) forwards; }
-@keyframes icon-draw { to { stroke-dashoffset: 0; } }
-
-.placeholder-frame {
+/*
+  Spotlight-kort. Pekerposisjonen settes som CSS-variabler fra JavaScript
+  (ingen React-state per bilde), og alt annet skjer med transform og opacity.
+*/
+.spotlight-card {
+  --mx: 50%;
+  --my: 50%;
+  --rx: 0deg;
+  --ry: 0deg;
   position: relative;
+  isolation: isolate;
   overflow: hidden;
-  background:
-    linear-gradient(135deg, rgba(38,155,255,.16), transparent 34%),
-    linear-gradient(180deg, #0c2137, #081421);
+  background: #fff;
+  border: 1px solid var(--color-line);
+  border-radius: 22px;
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(0);
+  transition: transform .35s cubic-bezier(.22, 1, .36, 1), box-shadow .3s ease, border-color .3s ease;
 }
-.placeholder-frame::after {
+.spotlight-card::before {
   content: "";
-  position: absolute; inset: 0;
-  background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(110,197,255,.18), transparent 28%);
-  opacity: .8;
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  background: radial-gradient(220px circle at var(--mx) var(--my), rgba(39, 167, 255, .16), transparent 45%);
+  opacity: 0;
+  transition: opacity .3s ease;
+  pointer-events: none;
+}
+.spotlight-card::after {
+  /* Svak lysende kant som følger pekeren */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(160px circle at var(--mx) var(--my), rgba(39, 167, 255, .55), transparent 60%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity .3s ease;
+  pointer-events: none;
+}
+.spotlight-card:hover,
+.spotlight-card:focus-within {
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(-6px);
+  box-shadow: var(--shadow-lift);
+  border-color: #acd2ef;
+}
+.spotlight-card:hover::before,
+.spotlight-card:hover::after { opacity: 1; }
+
+/* Fiberanimasjon: lysimpulser som vandrer gjennom kablene */
+.fiber { fill: none; stroke-linecap: round; }
+.fiber-core { stroke: #4da9ff; stroke-width: 4; filter: drop-shadow(0 0 9px rgba(39, 167, 255, .45)); stroke-dasharray: 1 34; animation: fiber-flow-1 5.5s linear infinite; }
+.fiber-shadow { stroke: #0f6fb9; stroke-width: 2.2; opacity: .55; stroke-dasharray: 2 42; animation: fiber-flow-2 7s linear infinite; }
+.fiber-light { stroke: #fff; stroke-width: 1.6; opacity: .9; stroke-dasharray: 1 50; animation: fiber-flow-3 6.5s linear infinite; }
+.fiber-cable { stroke: rgba(77, 169, 255, .22); stroke-width: 1.4; }
+.fiber-glow { fill: #fff; filter: drop-shadow(0 0 12px rgba(39, 167, 255, .95)); transform-box: fill-box; transform-origin: center; animation: fiber-pulse 3.2s ease-in-out infinite; }
+@keyframes fiber-flow-1 { to { stroke-dashoffset: -210; } }
+@keyframes fiber-flow-2 { to { stroke-dashoffset: -260; } }
+@keyframes fiber-flow-3 { to { stroke-dashoffset: -300; } }
+@keyframes fiber-pulse { 0%, 100% { opacity: .55; transform: scale(.85); } 50% { opacity: 1; transform: scale(1.15); } }
+
+/*
+  Mobil, nettbrett og svakere enheter får en statisk fiberscene: kablene og
+  lyspunktene vises, men animasjonen (som tegnes på nytt hvert bilde) er av.
+*/
+@media (max-width: 1023px), (pointer: coarse) {
+  .fiber-core, .fiber-shadow, .fiber-light, .fiber-glow, .process-pulse { animation: none; }
+  .fiber-core { filter: none; }
+}
+
+/* Pekerrespons i hero: lagene forskyves litt med CSS-variabler */
+.fiber-parallax {
+  transform: translate3d(calc(var(--px, 0) * 14px), calc(var(--py, 0) * 10px), 0);
+  transition: transform .8s cubic-bezier(.22, 1, .36, 1);
+}
+
+/* Ordvis avdekking av overskrifter – ren CSS, synlig også uten JavaScript */
+.word-reveal { display: inline-block; animation: word-in .7s cubic-bezier(.22, 1, .36, 1) both; }
+@keyframes word-in { from { opacity: 0; transform: translateY(.35em); } to { opacity: 1; transform: none; } }
+
+/* Lyspuls langs prosesslinjen */
+.process-pulse { animation: process-pulse 4.5s cubic-bezier(.45, 0, .55, 1) infinite; }
+@keyframes process-pulse { 0% { transform: translateY(-100%); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(0); opacity: 0; } }
+
+/* Ikonene tegnes opp når kortet kommer til syne. Uten JavaScript vises de som vanlig. */
+.is-inview .icon-draw svg :is(path, line, polyline, circle, rect) { stroke-dasharray: 120; animation: icon-draw .85s cubic-bezier(.22, 1, .36, 1) both; }
+@keyframes icon-draw { from { stroke-dashoffset: 120; } to { stroke-dashoffset: 0; } }
+
+/* Skjemafelt */
+.form-control {
+  width: 100%;
+  border: 1px solid #c9dbec;
+  border-radius: 12px;
+  background: #fbfdff;
+  color: var(--color-ink);
+  padding: .75rem .85rem;
+  font-size: 1rem;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+.form-control::placeholder { color: #7a8ea6; }
+.form-control:focus { outline: none; border-color: #72baff; box-shadow: 0 0 0 4px rgba(39, 167, 255, .14); }
+.form-control[aria-invalid="true"] { border-color: var(--color-danger); }
+
+/* Kartplassholder */
+.map-surface {
+  background:
+    linear-gradient(120deg, rgba(201, 226, 246, .45), rgba(228, 241, 252, .9)),
+    repeating-linear-gradient(75deg, transparent 0 28px, rgba(93, 140, 181, .13) 28px 30px),
+    repeating-linear-gradient(12deg, transparent 0 36px, rgba(93, 140, 181, .10) 36px 38px);
 }
 
 .skip-link {
   position: fixed; left: 1rem; top: .75rem; z-index: 100;
   transform: translateY(-160%); padding: .7rem 1rem; border-radius: .75rem;
-  background: white; color: #07111f; font-weight: 700;
+  background: var(--color-navy-900); color: #fff; font-weight: 700;
 }
 .skip-link:focus { transform: translateY(0); }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  .spotlight-card, .spotlight-card:hover, .spotlight-card:focus-within { transform: none; }
+  .fiber-parallax { transform: none; }
 }

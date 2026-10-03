@@ -1,42 +1,55 @@
 "use server";
 
 import { z } from "zod";
-import { validateTurnstile } from "@/lib/turnstile";
-import { sendContactEmail } from "@/lib/email";
+import { checkHuman, deliver, emailTable, type FormState } from "@/lib/forms";
+import { getRecommendation } from "@/content/wizard";
 
 const wizardSchema = z.object({
-  need: z.string().trim().min(1),
-  employees: z.string().trim().min(1),
-  address: z.string().trim().min(3),
-  urgency: z.string().trim().min(1),
-  name: z.string().trim().min(2),
-  company: z.string().trim().min(2),
-  email: z.email(),
-  turnstileToken: z.string().optional(),
+  need: z.string().trim().min(1, "Velg hva du trenger."),
+  employees: z.string().trim().min(1, "Velg hvor mange dere er."),
+  urgency: z.string().trim().min(1, "Velg når du trenger hjelp."),
+  address: z.string().trim().min(3, "Skriv inn adresse eller sted."),
+  name: z.string().trim().min(2, "Skriv inn navnet ditt."),
+  company: z.string().trim().min(2, "Skriv inn virksomheten."),
+  email: z.email("Skriv inn en gyldig e-postadresse."),
 });
 
-export type WizardState = { ok: boolean; message: string };
+export type WizardState = FormState;
 
 export async function submitWizard(_: WizardState, formData: FormData): Promise<WizardState> {
-  const parsed = wizardSchema.safeParse(Object.fromEntries(formData.entries()));
-  if (!parsed.success) return { ok: false, message: "Fyll ut alle feltene før du sender inn." };
-  const tokenValid = await validateTurnstile(parsed.data.turnstileToken);
-  if (!tokenValid) return { ok: false, message: "Bekreft at du er en ekte person og prøv igjen." };
-  const recommendation = getRecommendation(parsed.data.need, parsed.data.employees);
-  await sendContactEmail({
-    subject: `Løsningsforespørsel – ${recommendation.title}`,
-    replyTo: parsed.data.email,
-    html: `<h1>Løsningsforespørsel</h1><p><strong>Anbefaling:</strong> ${escapeHtml(recommendation.title)}</p><p><strong>Behov:</strong> ${escapeHtml(parsed.data.need)}</p><p><strong>Ansatte:</strong> ${escapeHtml(parsed.data.employees)}</p><p><strong>Adresse:</strong> ${escapeHtml(parsed.data.address)}</p><p><strong>Haster:</strong> ${escapeHtml(parsed.data.urgency)}</p><p><strong>Navn:</strong> ${escapeHtml(parsed.data.name)}</p><p><strong>Virksomhet:</strong> ${escapeHtml(parsed.data.company)}</p><p><strong>E-post:</strong> ${escapeHtml(parsed.data.email)}</p>`
+  if (String(formData.get("website") ?? "").trim()) return { ok: true, message: "Takk! Forespørselen er mottatt." };
+
+  const parsed = wizardSchema.safeParse({
+    need: formData.get("need"),
+    employees: formData.get("employees"),
+    urgency: formData.get("urgency"),
+    address: formData.get("address"),
+    name: formData.get("name"),
+    company: formData.get("company"),
+    email: formData.get("email"),
   });
-  return { ok: true, message: `Takk. Vi har sendt inn forespørselen med anbefalingen «${recommendation.title}».` };
-}
+  if (!parsed.success) return { ok: false, message: parsed.error.issues[0]?.message ?? "Fyll ut alle feltene før du sender inn." };
 
-function getRecommendation(need: string, employees: string) {
-  if (need === "Nettsider") return { title: employees === "1–5" ? "Nettsider – Start" : "Nettsider – Pro" };
-  if (need === "WiFi") return { title: "WiFi – kartlegging og prosjektering" };
-  if (need === "Fiber og telecom") return { title: "Fiber og telecom – behovskartlegging" };
-  if (need === "IT support") return { title: "IT support – drift og brukerstøtte" };
-  return { title: "IT og telecom – avklaringsmøte" };
-}
+  const blocked = await checkHuman(formData);
+  if (blocked) return blocked;
 
-function escapeHtml(value: string) { return value.replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[char] ?? char); }
+  const data = parsed.data;
+  const recommendation = getRecommendation(data.need, data.employees);
+  return deliver(
+    {
+      subject: `Løsningsforespørsel – ${recommendation}`,
+      replyTo: data.email,
+      html: emailTable("Ny forespørsel fra veiviseren", [
+        ["Anbefalt retning", recommendation],
+        ["Behov", data.need],
+        ["Antall ansatte", data.employees],
+        ["Tidsramme", data.urgency],
+        ["Adresse/sted", data.address],
+        ["Navn", data.name],
+        ["Virksomhet", data.company],
+        ["E-post", data.email],
+      ]),
+    },
+    `Takk! Vi har mottatt forespørselen med anbefalt retning «${recommendation}», og tar kontakt.`,
+  );
+}

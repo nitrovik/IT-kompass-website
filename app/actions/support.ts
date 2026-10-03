@@ -1,8 +1,10 @@
 "use server";
 
 import { z } from "zod";
-import { validateTurnstile } from "@/lib/turnstile";
-import { sendContactEmail } from "@/lib/email";
+import { checkHuman, deliver, emailTable, type FormState } from "@/lib/forms";
+import { MAX_ATTACHMENT_MB } from "@/lib/limits";
+
+const allowedTypes = new Set(["image/png", "image/jpeg", "application/pdf", "text/plain"]);
 
 const supportSchema = z.object({
   name: z.string().trim().min(2, "Skriv inn navnet ditt."),
@@ -10,37 +12,51 @@ const supportSchema = z.object({
   company: z.string().trim().min(2, "Skriv inn virksomheten."),
   category: z.string().trim().min(1, "Velg en kategori."),
   priority: z.string().trim().min(1, "Velg prioritet."),
-  description: z.string().trim().min(20, "Beskriv saken litt mer detaljert."),
-  turnstileToken: z.string().optional(),
-  website: z.string().optional(),
+  description: z.string().trim().min(10, "Beskriv saken litt mer detaljert.").max(5000),
 });
 
-export type SupportState = { ok: boolean; message: string };
+export type SupportState = FormState;
 
 export async function submitSupport(_: SupportState, formData: FormData): Promise<SupportState> {
-  const raw = Object.fromEntries(formData.entries());
-  if (String(raw.website ?? "").trim()) return { ok: true, message: "Saken er registrert." };
-  const parsed = supportSchema.safeParse(raw);
+  if (String(formData.get("website") ?? "").trim()) return { ok: true, message: "Takk! Saken er registrert." };
+
+  const parsed = supportSchema.safeParse({
+    name: formData.get("name"),
+    email: formData.get("email"),
+    company: formData.get("company"),
+    category: formData.get("category"),
+    priority: formData.get("priority"),
+    description: formData.get("description"),
+  });
   if (!parsed.success) return { ok: false, message: parsed.error.issues[0]?.message ?? "Kontroller feltene og prøv igjen." };
-  const tokenValid = await validateTurnstile(parsed.data.turnstileToken);
-  if (!tokenValid) return { ok: false, message: "Bekreft at du er en ekte person og prøv igjen." };
 
   const file = formData.get("attachment");
   let attachments: { filename: string; content: Buffer }[] | undefined;
   if (file instanceof File && file.size > 0) {
-    if (file.size > 10 * 1024 * 1024) return { ok: false, message: "Vedlegget må være mindre enn 10 MB." };
-    const allowed = new Set(["image/png", "image/jpeg", "application/pdf", "text/plain"]);
-    if (!allowed.has(file.type)) return { ok: false, message: "Tillatte vedlegg er PNG, JPG, PDF og TXT." };
+    if (file.size > MAX_ATTACHMENT_MB * 1024 * 1024) return { ok: false, message: `Vedlegget må være mindre enn ${MAX_ATTACHMENT_MB} MB.` };
+    if (!allowedTypes.has(file.type)) return { ok: false, message: "Tillatte vedlegg er PNG, JPG, PDF og TXT." };
     attachments = [{ filename: file.name.replace(/[^a-zA-Z0-9._-]/g, "_"), content: Buffer.from(await file.arrayBuffer()) }];
   }
 
-  await sendContactEmail({
-    subject: `Supportsak – ${parsed.data.category} – ${parsed.data.priority}`,
-    replyTo: parsed.data.email,
-    attachments,
-    html: `<h1>Ny supportsak</h1><p><strong>Navn:</strong> ${escapeHtml(parsed.data.name)}</p><p><strong>Virksomhet:</strong> ${escapeHtml(parsed.data.company)}</p><p><strong>E-post:</strong> ${escapeHtml(parsed.data.email)}</p><p><strong>Kategori:</strong> ${escapeHtml(parsed.data.category)}</p><p><strong>Prioritet:</strong> ${escapeHtml(parsed.data.priority)}</p><p><strong>Beskrivelse:</strong></p><p>${escapeHtml(parsed.data.description).replace(/\n/g, "<br>")}</p>`,
-  });
-  return { ok: true, message: "Takk. Saken er sendt inn." };
-}
+  const blocked = await checkHuman(formData);
+  if (blocked) return blocked;
 
-function escapeHtml(value: string) { return value.replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[char] ?? char); }
+  const data = parsed.data;
+  return deliver(
+    {
+      subject: `Supportsak – ${data.category} – ${data.priority}`,
+      replyTo: data.email,
+      attachments,
+      html: emailTable("Ny supportsak fra nettsiden", [
+        ["Prioritet", data.priority],
+        ["Kategori", data.category],
+        ["Navn", data.name],
+        ["Virksomhet", data.company],
+        ["E-post", data.email],
+        ["Beskrivelse", data.description],
+        ["Vedlegg", attachments?.[0]?.filename],
+      ]),
+    },
+    "Takk! Saken er sendt inn, og vi følger den opp.",
+  );
+}

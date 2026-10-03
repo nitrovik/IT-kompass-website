@@ -1,26 +1,19 @@
-"use client";
-
-import { motion, useReducedMotion } from "motion/react";
-
-export function WordReveal({ lines }: { lines: string[] }) {
-  const reduce = useReducedMotion();
+/*
+  Ordvis avdekking med ren CSS. Teksten finnes i HTML-en fra start, så den er
+  synlig selv om JavaScript ikke har lastet, og den teller med i LCP med en gang.
+*/
+export function WordReveal({ lines, accentLast = false }: { lines: string[]; accentLast?: boolean }) {
   return (
-    <span className="block">
+    <>
       {lines.map((line, lineIndex) => (
-        <span className="block" key={line}>
+        <span className={accentLast && lineIndex === lines.length - 1 ? "block text-[#176bb5]" : "block"} key={line}>
           {line.split(" ").map((word, wordIndex) => (
-            <motion.span
-              key={`${lineIndex}-${wordIndex}-${word}`}
-              initial={reduce ? false : { y: "110%", opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: .65, ease: [0.22, 1, .36, 1], delay: reduce ? 0 : (lineIndex * .12 + wordIndex * .06) }}
-              className="mr-[.22em] inline-block overflow-hidden align-bottom"
-            >
-              <span className="inline-block">{word}</span>
-            </motion.span>
+            <span key={`${lineIndex}-${wordIndex}`} className="word-reveal mr-[.22em] last:mr-0" style={{ animationDelay: `${lineIndex * 0.12 + wordIndex * 0.06}s` }}>
+              {word}
+            </span>
           ))}
         </span>
       ))}
-    </span>
+    </>
   );
 }

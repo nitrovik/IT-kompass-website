@@ -1,97 +1,110 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { ArrowRight, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { navItems, site } from "@/config/site";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-function CompassMark({ progress = 0 }: { progress?: number }) {
-  const rotation = progress * 210;
-  return (
-    <span className="relative grid size-9 place-items-center rounded-full border border-white/15 bg-white/[0.035]" aria-hidden="true">
-      <span className="absolute inset-1 rounded-full border border-white/8" />
-      <span className="absolute inset-[10px] rounded-full border border-[#269BFF]/30" />
-      <span style={{ transform: `rotate(${rotation}deg)` }} className="absolute h-[13px] w-px origin-bottom bg-gradient-to-b from-[#6EC5FF] to-[#269BFF]" />
-      <span className="relative size-1.5 rounded-full bg-white shadow-[0_0_12px_#269BFF]" />
-    </span>
-  );
-}
-
 function Brand() {
   return (
-    <Link href="/" className="flex items-center gap-3" aria-label={`${site.name} – forsiden`}>
-      <CompassMark />
-      <span className="leading-tight">
-        <span className="block text-[15px] font-bold tracking-[-.02em]">IT Kompass</span>
-        <span className="block text-[10px] font-medium uppercase tracking-[.18em] text-slate-400">AS</span>
-      </span>
+    <Link href="/" className="flex shrink-0 items-center" aria-label={`${site.name} – til forsiden`}>
+      <Image src="/brand/it-kompass-logo-web.png" alt={site.name} width={414} height={148} priority className="h-auto w-[150px] sm:w-[180px] lg:w-[205px]" />
     </Link>
   );
 }
 
 export function SiteHeader() {
   const pathname = usePathname();
-  const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [lastPathname, setLastPathname] = useState(pathname);
-  const reduceMotion = useReducedMotion();
 
+  // Lukk mobilmenyen når brukeren navigerer til en ny side.
   if (pathname !== lastPathname) {
     setLastPathname(pathname);
     setOpen(false);
   }
 
   useEffect(() => {
-    const update = () => {
-      const y = window.scrollY;
-      const doc = document.documentElement.scrollHeight - window.innerHeight;
-      setScrolled(y > 12);
-      setProgress(doc > 0 ? Math.min(y / doc, 1) : 0);
-    };
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-    return () => window.removeEventListener("scroll", update);
-  }, []);
+    if (!open) return;
+    const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") setOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
 
   return (
-    <header className={cn("fixed inset-x-0 top-0 z-50 transition-all duration-300", scrolled ? "py-3" : "py-5")}>
-      <div className={cn("container-shell rounded-2xl px-3", scrolled && "glass")}> 
-        <div className="flex h-14 items-center justify-between gap-4 px-1 sm:px-2">
-          <Brand />
-          <nav className="hidden items-center gap-1 lg:flex" aria-label="Hovednavigasjon">
-            {navItems.map((item) => {
-              const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
-              return (
-                <Link key={item.href} href={item.href} className={cn("rounded-lg px-3 py-2 text-sm font-medium transition", active ? "text-white" : "text-slate-400 hover:bg-white/[.04] hover:text-white")}>
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-          <div className="flex items-center gap-2">
-            <Link href="/kontakt" className={cn(buttonVariants({ size: "sm" }), "hidden sm:inline-flex")}>Kontakt</Link>
-            <button className="inline-grid size-11 place-items-center rounded-xl border border-white/10 bg-white/[.03] text-white lg:hidden" onClick={() => setOpen((v) => !v)} aria-expanded={open} aria-controls="mobile-navigation" aria-label={open ? "Lukk meny" : "Åpne meny"}>
-              {open ? <X size={19} /> : <Menu size={19} />}
-            </button>
-            <CompassMark progress={reduceMotion ? 0 : progress} />
-          </div>
+    <header className="sticky top-0 z-50 border-b border-line/90 bg-white/90 backdrop-blur-xl">
+      <div className="container-shell flex h-[68px] items-center gap-8 lg:h-[78px]">
+        <Brand />
+        <nav className="mx-auto hidden items-center gap-8 lg:flex" aria-label="Hovednavigasjon">
+          {navItems.map((item) => {
+            const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "relative py-2 text-sm font-medium text-[#244568] transition-colors hover:text-ink",
+                  "after:absolute after:inset-x-0 after:-bottom-[9px] after:h-0.5 after:rounded-full after:bg-brand after:opacity-0 after:transition-opacity hover:after:opacity-100",
+                  active && "text-ink after:opacity-100",
+                )}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+        <div className="ml-auto flex items-center gap-2 lg:ml-0">
+          <Link href="/kontakt" className={cn(buttonVariants({ size: "sm" }), "hidden sm:inline-flex")}>
+            Ta kontakt <ArrowRight size={15} aria-hidden="true" />
+          </Link>
+          <button
+            type="button"
+            className="inline-grid size-11 place-items-center rounded-full border border-line-strong bg-white text-ink lg:hidden"
+            onClick={() => setOpen((value) => !value)}
+            aria-expanded={open}
+            aria-controls="mobilmeny"
+            aria-label={open ? "Lukk meny" : "Åpne meny"}
+          >
+            {open ? <X size={19} aria-hidden="true" /> : <Menu size={19} aria-hidden="true" />}
+          </button>
         </div>
-        <AnimatePresence>
-          {open && (
-            <motion.nav id="mobile-navigation" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden border-t border-white/10 lg:hidden" aria-label="Mobilnavigasjon">
-              <div className="grid gap-1 px-2 py-4">
-                {navItems.map((item) => <Link key={item.href} href={item.href} className="rounded-xl px-4 py-3 text-base text-slate-200 hover:bg-white/[.05]">{item.label}</Link>)}
-                <Link href="/finn-riktig-losning" className={cn(buttonVariants({ size: "lg" }), "mt-2 w-full")}>Finn riktig løsning</Link>
-              </div>
-            </motion.nav>
-          )}
-        </AnimatePresence>
       </div>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.nav
+            id="mobilmeny"
+            aria-label="Mobilnavigasjon"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden border-t border-line bg-white lg:hidden"
+          >
+            <div className="container-shell grid gap-1 py-4">
+              {navItems.map((item) => {
+                const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+                return (
+                  <Link key={item.href} href={item.href} aria-current={active ? "page" : undefined} className={cn("rounded-xl px-4 py-3 text-base font-medium text-ink hover:bg-soft", active && "bg-sky")}>
+                    {item.label}
+                  </Link>
+                );
+              })}
+              <Link href="/finn-riktig-losning" className={cn(buttonVariants({ size: "lg" }), "mt-3 w-full")}>
+                Finn riktig løsning <ArrowRight size={17} aria-hidden="true" />
+              </Link>
+              <Link href="/kontakt" className={cn(buttonVariants({ variant: "secondary", size: "lg" }), "w-full sm:hidden")}>
+                Ta kontakt
+              </Link>
+            </div>
+          </motion.nav>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

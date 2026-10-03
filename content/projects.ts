@@ -1,8 +1,22 @@
-export const projects = [
-  { slug: "prosjekt-01", title: "Nettside for virksomheten", category: "Nettsider", year: "Plassholder", description: "Plassholder for et ekte prosjekt. Her kan vi vise den ferdige nettsiden, prosessen og hva som ble levert." },
-  { slug: "prosjekt-02", title: "Trådløst nett i bygg", category: "WiFi", year: "Plassholder", description: "Plassholder for et ekte WiFi-prosjekt med kartlegging, installasjon og dokumentasjon." },
-  { slug: "prosjekt-03", title: "Samlet telecom-leveranse", category: "Fiber og telecom", year: "Plassholder", description: "Plassholder for en samlet fiber-, mobil- og telefonileveranse." },
-] as const;
+/*
+  Ekte kundeprosjekter legges inn her når de er klare for publisering.
+  Bildet legges i public/media/ (f.eks. "/media/kunde-nettside.jpg").
+  Ikke legg inn oppdiktede prosjekter, kunder eller resultater.
+
+  Eksempel:
+  { slug: "kunde-as-nettside", title: "Ny nettside for Kunde AS", category: "Nettsider", year: "2026",
+    description: "Kort om hva som ble levert.", image: { src: "/media/kunde-as.jpg", alt: "Forsiden til Kunde AS på laptop og mobil" } },
+*/
+export type Project = {
+  slug: string;
+  title: string;
+  category: string;
+  year: string;
+  description: string;
+  image?: { src: string; alt: string };
+};
+
+export const projects: Project[] = [];
 
 export const websitePackages = [
   { name: "Start", description: "En tydelig og profesjonell nettside for virksomheter som trenger et solid fundament.", features: ["Design og utvikling", "Responsivt nettsted", "Grunnleggende SEO", "Hosting klar for drift"], price: "Pris kommer", featured: false },

@@ -1,26 +1,50 @@
-export const privacySections = [
+/*
+  Utkast til personvernerklæring. Må gjennomgås av IT Kompass AS før lansering,
+  særlig punktene om lagringstid og hvilke tjenester som faktisk brukes.
+*/
+export type PrivacySection = { title: string; body: string[]; onlyWithAnalytics?: boolean };
+
+export const privacyUpdated = "2026-10-03";
+
+export const privacySections: PrivacySection[] = [
   {
-    title: "Hva vi behandler",
-    body: "Når du bruker kontaktskjema, veiviser eller supportskjema, kan vi behandle opplysninger du selv sender inn, som navn, virksomhet, kontaktinformasjon og beskrivelsen du skriver.",
+    title: "Behandlingsansvarlig",
+    body: ["IT Kompass AS (org.nr. 937 441 614) er behandlingsansvarlig for personopplysningene som samles inn via dette nettstedet."],
+  },
+  {
+    title: "Hvilke opplysninger vi behandler",
+    body: [
+      "Når du sender inn kontaktskjema, supportsak eller bruker veiviseren, behandler vi opplysningene du selv oppgir: navn, virksomhet, e-postadresse, eventuelt telefonnummer og adresse, og det du skriver i meldingen. Legger du ved en fil i en supportsak, behandler vi også den.",
+      "Vi bruker ikke informasjonskapsler (cookies) til markedsføring eller sporing.",
+    ],
   },
   {
     title: "Hvorfor vi behandler dem",
-    body: "Opplysningene brukes for å svare på henvendelser, følge opp forespørsler og levere eller planlegge tjenester du ber om.",
+    body: [
+      "Opplysningene brukes til å svare på henvendelsen din, følge opp supportsaker og gi deg tilbud eller tjenester du ber om.",
+      "Grunnlaget er at behandlingen er nødvendig for å gjennomføre tiltak du ber om før en eventuell avtale, eller for å oppfylle en avtale med deg eller virksomheten du representerer (personvernforordningen art. 6 nr. 1 bokstav b og f).",
+    ],
   },
   {
-    title: "Skjema og e-post",
-    body: "Skjemaene er bygget for server-side behandling. Når produksjonsmiljøet konfigureres, sendes innholdet til oppgitt mottaker via Resend. Cloudflare Turnstile brukes som spamvern når nøklene er satt.",
+    title: "Tjenester vi bruker",
+    body: [
+      "Skjemaene sendes til oss som e-post via Resend. Cloudflare Turnstile brukes for å stoppe spam og automatiserte innsendinger. Disse leverandørene behandler opplysningene på våre vegne.",
+    ],
   },
   {
-    title: "Analyse",
-    body: "Nettstedet er forberedt for Plausible som personvernvennlig, informasjonskapsel-fri analyse. Analyse aktiveres først når domenet er konfigurert.",
+    title: "Besøksstatistikk",
+    onlyWithAnalytics: true,
+    body: ["Vi bruker Plausible for å se anonym besøksstatistikk. Plausible bruker ikke informasjonskapsler og lagrer ikke opplysninger som kan identifisere deg."],
   },
   {
-    title: "Lagring og sletting",
-    body: "Hvor lenge henvendelser og vedlegg lagres, skal bestemmes av virksomhetens behandlingsgrunnlag og rutiner. Før publisering bør dere fastsette konkrete slettelister og rutiner for innsyn og sletting.",
+    title: "Hvor lenge vi lagrer opplysningene",
+    body: ["Vi lagrer henvendelser så lenge det er nødvendig for å følge opp saken eller kundeforholdet, og sletter dem når de ikke lenger trengs, med mindre lovpålagte krav tilsier noe annet."],
   },
   {
-    title: "Kontakt om personvern",
-    body: "For personvernspørsmål bruker du kontaktkanalen på nettstedet. Kontaktinformasjon som skal stå her settes i den sentrale nettstedskonfigurasjonen før publisering.",
+    title: "Dine rettigheter",
+    body: [
+      "Du har rett til innsyn i opplysningene vi har om deg, og til å be om retting eller sletting. Du kan også protestere mot behandlingen eller be om at den begrenses.",
+      "Ta kontakt med oss via kontaktskjemaet hvis du vil bruke rettighetene dine. Mener du at vi behandler opplysninger i strid med regelverket, kan du klage til Datatilsynet.",
+    ],
   },
 ];

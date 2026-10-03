@@ -1,13 +1,21 @@
 import { Check } from "lucide-react";
 import type { websitePackages } from "@/content/projects";
+import { cn } from "@/lib/utils";
 
 type Package = (typeof websitePackages)[number];
 
 export function PackageCard({ pack }: { pack: Package }) {
-  return <article className={`rounded-[1.5rem] border p-7 ${pack.featured ? "border-[#269BFF]/45 bg-[#0d2035]" : "border-white/10 bg-[#0a1828]"}`}>
-    <div className="flex items-center justify-between gap-4"><h2 className="text-2xl font-semibold">{pack.name}</h2>{pack.featured ? <span className="rounded-full border border-[#269BFF]/30 bg-[#269BFF]/10 px-3 py-1 text-xs text-[#8bd1ff]">Mest fleksibel</span> : null}</div>
-    <p className="mt-4 min-h-[76px] text-sm leading-6 text-slate-400">{pack.description}</p>
-    <div className="mt-6 grid gap-3 border-t border-white/8 pt-6">{pack.features.map((feature) => <div key={feature} className="flex gap-3 text-sm text-slate-300"><Check size={17} className="mt-0.5 shrink-0 text-[#6EC5FF]"/>{feature}</div>)}</div>
-    <div className="mt-8 text-2xl font-semibold">{pack.price}</div>
-  </article>;
+  return (
+    <article className={cn("relative flex h-full flex-col rounded-[22px] border bg-white p-7", pack.featured ? "border-brand/40 shadow-[0_24px_60px_rgba(10,110,209,.14)]" : "border-line shadow-card")}>
+      <div className="flex items-center justify-between gap-4">
+        <h3 className="text-2xl font-extrabold tracking-[-.02em] text-ink">{pack.name}</h3>
+        {pack.featured ? <span className="rounded-full bg-tile px-3 py-1 text-xs font-bold text-brand">Mest fleksibel</span> : null}
+      </div>
+      <p className="mt-3 text-sm leading-6 text-muted">{pack.description}</p>
+      <ul className="mt-6 grid gap-3 border-t border-line pt-6">
+        {pack.features.map((feature) => <li key={feature} className="flex gap-3 text-sm text-body"><Check size={17} className="mt-0.5 shrink-0 text-brand" aria-hidden="true" />{feature}</li>)}
+      </ul>
+      <p className="mt-auto pt-8 text-xl font-extrabold text-ink">{pack.price}</p>
+    </article>
+  );
 }

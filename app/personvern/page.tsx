@@ -1,9 +1,34 @@
 import type { Metadata } from "next";
-import { privacySections } from "@/content/legal";
+import { privacySections, privacyUpdated } from "@/content/legal";
 import { PageHero } from "@/components/site/page-hero";
+import { site } from "@/config/site";
+import { formatDate } from "@/lib/utils";
 
-export const metadata: Metadata = { title: "Personvern", description: "Informasjon om hvordan IT Kompass AS behandler personopplysninger på nettstedet." };
+export const metadata: Metadata = {
+  title: "Personvern",
+  description: "Slik behandler IT Kompass AS personopplysninger på nettstedet.",
+  alternates: { canonical: "/personvern" },
+};
 
 export default function PrivacyPage() {
-  return <main id="main"><PageHero eyebrow="Personvern" title="Personvern skal være forståelig." body="Her beskriver vi hvordan nettstedet er lagt opp for å behandle opplysninger på en ryddig og personvernvennlig måte."/><section className="section-pad"><div className="container-shell max-w-4xl grid gap-4">{privacySections.map((section) => <article key={section.title} className="surface-card rounded-[1.4rem] p-6 sm:p-8"><h2 className="text-2xl font-semibold tracking-[-.03em]">{section.title}</h2><p className="mt-4 leading-7 text-slate-400">{section.body}</p></article>)}</div></section></main>;
+  const sections = privacySections.filter((section) => !section.onlyWithAnalytics || site.plausibleDomain);
+  return (
+    <main id="main">
+      <PageHero eyebrow="Personvern" title="Personvern skal være forståelig." body="Her forklarer vi hvilke opplysninger vi behandler når du bruker nettstedet, og hvorfor." />
+      <section className="section-pad">
+        <div className="container-shell max-w-3xl">
+          <div className="grid gap-10">
+            {sections.map((section) => (
+              <article key={section.title}>
+                <h2 className="text-2xl font-extrabold tracking-[-.02em] text-ink">{section.title}</h2>
+                {section.body.map((paragraph) => <p key={paragraph} className="mt-3 leading-7 text-body">{paragraph}</p>)}
+                {site.email && section.title === "Dine rettigheter" ? <p className="mt-3 leading-7 text-body">Du kan også skrive til <a className="font-semibold text-brand hover:underline" href={`mailto:${site.email}`}>{site.email}</a>.</p> : null}
+              </article>
+            ))}
+          </div>
+          <p className="mt-12 border-t border-line pt-6 text-sm text-muted">Sist oppdatert {formatDate(privacyUpdated)}.</p>
+        </div>
+      </section>
+    </main>
+  );
 }

@@ -1,24 +1,68 @@
 import type { Metadata } from "next";
-import { ArrowDownToLine, ExternalLink, LifeBuoy } from "lucide-react";
-import Link from "next/link";
+import { ArrowDownToLine, LifeBuoy, PhoneCall } from "lucide-react";
 import { PageHero } from "@/components/site/page-hero";
 import { SupportForm } from "@/components/forms/support-form";
 import { StatusBoard } from "@/components/support/status-board";
-import { site } from "@/config/site";
-import { buttonVariants } from "@/components/ui/button";
 import { SectionHeading } from "@/components/site/section-heading";
+import { buttonVariants } from "@/components/ui/button";
+import { site } from "@/config/site";
 import { getStatusServices } from "@/lib/status";
 
-export const metadata: Metadata = { title: "Support", description: "Meld inn en IT-supportsak, få fjernhjelp og se driftsstatus." };
+export const metadata: Metadata = {
+  title: "Support",
+  description: "Meld inn en IT-supportsak til IT Kompass AS.",
+  alternates: { canonical: "/support" },
+};
 
 export default async function SupportPage() {
-  const services = await getStatusServices();
-  return <main id="main">
-    <PageHero eyebrow="Support" title="Når noe stopper, skal veien videre være kort." body="Meld inn saken med kategori, prioritet, beskrivelse og eventuelt vedlegg. Du kan også finne veien til fjernhjelp og driftsstatus." />
-    <section className="section-pad"><div className="container-shell grid gap-5 lg:grid-cols-[1.15fr_.85fr]"><div><SupportForm/></div><div className="grid gap-5">
-      <div className="rounded-[1.6rem] border border-white/10 bg-[#0a1828] p-6 sm:p-8"><LifeBuoy className="text-[#6EC5FF]"/><h2 className="mt-6 text-2xl font-semibold">Fjernhjelp</h2><p className="mt-3 text-sm leading-6 text-slate-400">Når vi skal hjelpe deg på skjermen, bruker vi et fjernhjelpsverktøy. Lenken legges inn når løsningen er valgt og klar.</p>{site.remoteHelpUrl ? <a href={site.remoteHelpUrl} target="_blank" rel="noreferrer" className={`${buttonVariants({ size: "lg" })} mt-6`}>Last ned fjernhjelp <ArrowDownToLine size={17}/></a> : <span className="mt-6 inline-flex rounded-xl border border-white/10 bg-white/[.025] px-4 py-3 text-sm text-slate-500">Nedlastingslenke konfigureres før publisering</span>}</div>
-      <div className="rounded-[1.6rem] border border-white/10 bg-[#0a1828] p-6 sm:p-8"><SectionHeading eyebrow="Driftsstatus" title="Se hva som skjer." body="Statusflaten er klar for live data fra et eksternt driftsstatussystem."/><div className="mt-6"><StatusBoard services={services}/></div><Link href="#status" className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-white">Detaljer <ExternalLink size={15}/></Link></div>
-    </div></div></section>
-    <section id="status" className="section-pad border-t border-white/8 bg-[#050f1b]"><div className="container-shell"><SectionHeading eyebrow="Status" title="Status for tjenestene." body="I denne versjonen er status manuelt markert som ikke koblet. Når leverandørens status-API er tilgjengelig, kan denne flaten kobles til uten at designsystemet endres."/><div className="mt-10 max-w-3xl"><StatusBoard services={services}/></div></div></section>
-  </main>;
+  const status = await getStatusServices();
+  return (
+    <main id="main">
+      <PageHero eyebrow="Support" title="Når noe stopper, skal veien videre være kort." body="Meld inn saken med kategori, prioritet og beskrivelse. Legg gjerne ved et skjermbilde, så går det raskere å finne ut av det." />
+
+      <section className="section-pad">
+        <div className="container-shell grid gap-5 lg:grid-cols-[1.2fr_.8fr]">
+          <div className="surface-card p-6 sm:p-8">
+            <h2 className="text-[22px] font-extrabold tracking-[-.02em] text-ink">Meld inn en sak</h2>
+            <div className="mt-6"><SupportForm /></div>
+          </div>
+          <div className="grid content-start gap-5">
+            {site.phone ? (
+              <div className="surface-card p-6 sm:p-7">
+                <span className="grid size-11 place-items-center rounded-[13px] bg-tile text-brand" aria-hidden="true"><PhoneCall size={20} /></span>
+                <h2 className="mt-5 text-xl font-bold text-ink">Haster det?</h2>
+                <p className="mt-2 text-sm leading-6 text-muted">Ved kritiske feil kan du ringe oss direkte.</p>
+                <a href={`tel:${site.phone.replace(/\s/g, "")}`} className={`${buttonVariants({ variant: "secondary" })} mt-5`}>{site.phone}</a>
+              </div>
+            ) : null}
+            {site.remoteHelpUrl ? (
+              <div className="surface-card p-6 sm:p-7">
+                <span className="grid size-11 place-items-center rounded-[13px] bg-tile text-brand" aria-hidden="true"><LifeBuoy size={20} /></span>
+                <h2 className="mt-5 text-xl font-bold text-ink">Fjernhjelp</h2>
+                <p className="mt-2 text-sm leading-6 text-muted">Når vi skal hjelpe deg på skjermen, laster du ned fjernhjelpsverktøyet her og gir oss koden som vises.</p>
+                <a href={site.remoteHelpUrl} target="_blank" rel="noreferrer" className={`${buttonVariants()} mt-5`}>Last ned fjernhjelp <ArrowDownToLine size={16} aria-hidden="true" /></a>
+              </div>
+            ) : null}
+            <div className="surface-card p-6 sm:p-7">
+              <h2 className="text-xl font-bold text-ink">Slik behandler vi saken</h2>
+              <ol className="mt-4 grid gap-3 text-sm text-body">
+                <li className="flex gap-3"><span className="font-extrabold text-brand">01</span>Vi mottar saken og ser på prioriteten du har valgt.</li>
+                <li className="flex gap-3"><span className="font-extrabold text-brand">02</span>Vi tar kontakt hvis vi trenger mer informasjon.</li>
+                <li className="flex gap-3"><span className="font-extrabold text-brand">03</span>Vi løser saken eller avtaler videre oppfølging.</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {status ? (
+        <section id="status" className="section-pad border-t border-line bg-soft">
+          <div className="container-shell">
+            <SectionHeading eyebrow="Driftsstatus" title="Status for tjenestene." align="left" />
+            <div className="mt-8 max-w-3xl"><StatusBoard services={status} /></div>
+          </div>
+        </section>
+      ) : null}
+    </main>
+  );
 }
