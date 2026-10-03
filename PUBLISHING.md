@@ -1,82 +1,72 @@
-# Publisering og domene
+# Publisering
 
-## Rimelig hosting for kommersiell bruk
+Nettsiden bruker Next.js med serverfunksjoner for skjemaene. Den trenger derfor en vertstjeneste som kjører Next.js. Et vanlig statisk webhotell er ikke nok.
 
-Nettsiden bruker Next.js med server actions. Velg derfor en host som støtter Node.js/Next.js og kommersiell bruk. Et enkelt alternativ er en host som kan kjøre en standard Next.js deployment. Et statisk webhotell alene er ikke nok fordi skjemaene bruker server-side funksjoner.
+## 1. Velg vertstjeneste
 
-## Før publisering
+Nettsiden er kommersiell, så tjenesten må tillate kommersiell bruk.
 
-1. Legg inn logo i `public/brand/logo.svg`.
-2. Fyll ut telefon, e-post, adresse, postnummer og sted i `config/site.ts`.
-3. Fyll inn `.env`-verdiene fra `.env.example`.
-4. Opprett Turnstile-site og secret key hos Cloudflare.
-5. Verifiser `RESEND_FROM` og `CONTACT_RECIPIENT` i Resend.
-6. Legg inn Cal.com-lenke i `NEXT_PUBLIC_CAL_URL`.
-7. Legg inn fjernhjelpslenke i `REMOTE_HELP_URL`.
-8. Opprett Plausible-site for `itkompass.no` og fyll inn `NEXT_PUBLIC_PLAUSIBLE_DOMAIN`.
-9. Legg inn ekte prosjektbilder og bekreftede partnerlogoer.
-10. Bekreft personverninnhold og konkrete sletterutiner før lansering.
+| Tjeneste | Kommersiell bruk | Merknad |
+| --- | --- | --- |
+| **Vercel Pro** | Ja | Laget av dem som lager Next.js. Gratisplanen (Hobby) er bare for ikke-kommersiell bruk. |
+| **Netlify** | Ja, også på gratisplanen | Støtter Next.js godt. Nye Next.js-funksjoner kommer av og til litt senere enn hos Vercel. |
 
-## Gigahost
+Begge kobles til GitHub-repoet og publiserer automatisk når `main` oppdateres. Sjekk gjeldende priser og vilkår hos tjenesten før du velger.
 
-Domenet kan bli liggende hos Gigahost selv om selve nettsiden hostes et annet sted. På hosten du velger får du vanligvis en produksjons-URL. I Gigahosts DNS-administrasjon kobler du domenet til hostens oppgitte DNS-poster.
+## 2. Koble til GitHub
 
-Bruk hostens eksakte DNS-verdier. Ikke kopier eksempler fra denne filen, fordi målverdiene varierer mellom tilbydere.
+1. Opprett konto hos tjenesten og velg «Import project» / «Add new site» fra GitHub.
+2. Velg repoet `nitrovik/IT-kompass-website`.
+3. Tjenesten kjenner igjen Next.js automatisk. Byggekommando: `npm run build`.
 
-Vanligvis må du håndtere:
+## 3. Legg inn miljøvariabler
 
-- `@` for hoveddomenet `itkompass.no`
-- `www` for `www.itkompass.no`
-- Eventuelt en `CNAME` eller `A`-post som hosten oppgir
+Legg dem inn i tjenestens kontrollpanel (ikke i koden). Hele listen med forklaringer står i `.env.example`.
 
-Etter DNS-endringen må HTTPS utstedes av hosten, og begge versjoner bør videresendes til hoveddomenet.
+**Påkrevd for at skjemaene skal fungere:**
 
-## Skjema og e-post
+- `NEXT_PUBLIC_SITE_URL` = `https://itkompass.no`
+- `RESEND_API_KEY`, `RESEND_FROM`, `CONTACT_RECIPIENT`
+- `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`
 
-Produksjonsskjemaene krever:
+Mangler Turnstile-nøklene, avviser skjemaene alle innsendinger i produksjon. Det er med vilje, for å stoppe spam.
 
-- Resend API key
-- Bekreftet fra-adresse
-- Mottakeradresse
-- Turnstile site key + secret key
+Når du har lagt inn eller endret variabler, må nettsiden publiseres på nytt («Redeploy») før endringen virker.
 
-Turnstile-token må valideres på serveren før innsending godtas.
+### Resend (e-post)
 
-## Analyse
+1. Opprett konto på resend.com og legg til domenet `itkompass.no`.
+2. Resend gir deg noen DNS-poster (SPF/DKIM). Legg dem inn hos Gigahost (se punkt 4).
+3. Lag en API-nøkkel og lim den inn som `RESEND_API_KEY`.
 
-Plausible er valgt fordi integrasjonen kan kjøre uten informasjonskapsler. Aktiver kun scriptet når domene og personverninformasjon er bekreftet.
+### Cloudflare Turnstile (spamvern)
 
-## Siste kontroll før lansering
+1. Opprett gratis konto hos Cloudflare og åpne «Turnstile».
+2. Legg til et nettsted for `itkompass.no` (og gjerne vertstjenestens testadresse).
+3. Kopier «Site key» til `NEXT_PUBLIC_TURNSTILE_SITE_KEY` og «Secret key» til `TURNSTILE_SECRET_KEY`.
 
-```bash
-npm ci
-npm run typecheck
-npm run lint
-npm run build
-```
+## 4. Koble domenet hos Gigahost
 
-Deretter kjører du en lokal produksjonsserver med:
+Domenet kan bli liggende hos Gigahost.
 
-```bash
-npm start
-```
+1. Legg til `itkompass.no` og `www.itkompass.no` hos vertstjenesten. Den viser hvilke DNS-poster du trenger.
+2. Logg inn hos Gigahost, åpne DNS for `itkompass.no` og legg inn postene **nøyaktig** slik vertstjenesten oppgir dem (vanligvis en `A`-post for `@` og en `CNAME` for `www`).
+3. **Ikke rør eksisterende e-postposter** (MX, SPF osv.), med mindre du vet at de skal endres.
+4. HTTPS ordnes automatisk når DNS er på plass. Det kan ta fra noen minutter til noen timer.
 
-Test minst:
+## 5. Test etter publisering
 
-- mobilmeny
-- alle navigasjonslenker
-- kontaktskjema
-- supportskjema og vedlegg
-- veiviseren
-- møtebooking
-- fjernhjelpslenke
-- sitemap.xml
-- robots.txt
-- 404
-- redusert bevegelse
-- tastaturnavigasjon
-- mobil og stor skjerm
+- [ ] Forsiden, menyen og mobilmenyen
+- [ ] Kontaktskjema på forsiden og på `/kontakt`: e-posten kommer frem
+- [ ] Supportskjema med og uten vedlegg
+- [ ] Veiviseren `/finn-riktig-losning` hele veien
+- [ ] `https://itkompass.no/sitemap.xml` og `/robots.txt`
+- [ ] En side som ikke finnes, så du ser 404-siden
+- [ ] Både `www.itkompass.no` og `itkompass.no` havner på samme side
 
-## DNS hos Gigahost
+## Valgfritt senere
 
-Logg inn i Gigahost sitt kontrollpanel og åpne DNS-administrasjonen for `itkompass.no`. Opprett eller endre postene hostingleverandøren oppgir for rot-domenet og `www`. La eksisterende e-post-DNS-poster være urørt med mindre samme leverandør faktisk skal håndtere e-post.
+- **Plausible** (besøksstatistikk uten informasjonskapsler): sett `NEXT_PUBLIC_PLAUSIBLE_DOMAIN`. Personvernsiden får da et avsnitt om statistikk automatisk.
+- **Møtebooking**: sett `NEXT_PUBLIC_CAL_URL`.
+- **Fjernhjelp**: sett `REMOTE_HELP_URL`.
+- **Driftsstatus**: sett `STATUS_API_URL`.

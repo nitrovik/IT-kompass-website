@@ -1,68 +1,44 @@
-# IT Kompass AS – komplett nettsted
+# IT Kompass AS – nettside
 
-Dette prosjektet er den komplette implementasjonen av nettstedet til IT Kompass AS, bygget videre fra fase 2 og 3.
+Nettsiden til IT Kompass AS, bygget med Next.js. Designet følger den godkjente forhåndsvisningen i `design/reference-homepage-preview.html`. Retningslinjene står i `HANDOFF.md` og `CLAUDE.md`.
 
-## Teknologi
+## Sider
 
-- Next.js 16 App Router
-- React 19
-- TypeScript 7
-- Tailwind CSS 4
-- shadcn/ui mønster
-- Motion for komponentanimasjoner
-- GSAP klar for scrollsekvenser
-- Lenis for myk scrolling
-- React Three Fiber + Drei for hero-scene
-- Zod for server-side validering
-- Resend for e-post
-- Cloudflare Turnstile for spamvern
-- Plausible for personvernvennlig analyse
+| Adresse | Innhold |
+| --- | --- |
+| `/` | Forside: hero med fiberanimasjon, tjenester, leverandøruavhengig, prosess, nettsider/pakker, veiviser og kontakt |
+| `/tjenester` og `/tjenester/[tjeneste]` | Oversikt og egen side for WiFi, fiber og telecom, IT support og nettsider |
+| `/prosjekter` | Prosjekter (vises når ekte prosjekter er lagt inn) og nettsidepakkene Start / Pro / Premium |
+| `/om-oss` | Om IT Kompass |
+| `/support` | Supportskjema med vedlegg. Fjernhjelp og driftsstatus vises når de er koblet til |
+| `/kontakt` | Kontaktskjema, kontaktinfo, møtebooking (når lenke er satt) og kartplassholder |
+| `/finn-riktig-losning` | Veiviser med tre spørsmål som gir en anbefaling og sender en forespørsel |
+| `/personvern` | Personvernerklæring (utkast, må gjennomgås) |
 
-Pakken er låst på versjoner kontrollert 2. oktober 2026. React 19.3.0, TypeScript 7.0.2, Lenis 1.3.26, GSAP 3.15.0, Resend 6.32.0, Zod 4.6.5 og Turnstile-adapteren 1.6.1 er de versjonene som er definert i `package.json`.
+## Hvor endrer jeg tekst og informasjon?
 
-## Faser som nå er med
+- **Kontaktinfo, org.nr., dekningsområde:** `config/site.ts`
+- **Tekster på forsiden:** `content/home.ts`
+- **Tjenestene:** `content/services.ts`
+- **Prosjekter og nettsidepakker:** `content/projects.ts`
+- **Veiviseren:** `content/wizard.ts`
+- **Personvern:** `content/legal.ts`
+- **Bilder:** legg dem i `public/media/` (se README der)
 
-### Fase 1
-Visuell retning, designsystem og sidekart.
+Felt som står tomme (telefon, e-post, adresse, booking, fjernhjelp) blir ikke vist på nettsiden. Det står altså aldri «settes inn senere» eller lignende ute på siden.
 
-### Fase 2
-Felles layout, design tokens, responsiv header/footer, reduced motion og prosjektgrunnlag.
+## Kjøre lokalt
 
-### Fase 3
-Komplett forside med hero, fiber/kompass-tema, tjenestekort, arbeidsprosess og nettsideutstilling.
-
-### Fase 4
-Alle hovedundersider:
-
-- Tjenester
-- Egen side for hver tjeneste
-- Prosjekter
-- Nettsidepakker Start / Pro / Premium
-- Om oss
-- Support
-- Kontakt
-- Personvern
-- 404
-
-### Fase 5
-Server Actions, Zod, Resend, Turnstile, supportskjema med vedlegg, løsningsveiviser, metadata, sitemap, robots, LocalBusiness structured data og Plausible-integrasjon.
-
-### Fase 6
-README, sluttkontroll og produksjonsforberedelser.
-
-### Fase 7
-Publiseringsguide og Gigahost-domeneoppsett. Se `PUBLISHING.md`.
-
-## Start lokalt
-
-Node.js 20.9+ anbefales.
+Krever Node.js 20.9 eller nyere.
 
 ```bash
 npm install
-npm run dev
+npm run dev        # http://localhost:3000
 ```
 
-## Produksjonskontroll
+Uten miljøvariabler går skjemaene i testmodus lokalt. Innsendinger godtas, men det sendes ingen e-post.
+
+## Kontroll før publisering
 
 ```bash
 npm run typecheck
@@ -70,67 +46,23 @@ npm run lint
 npm run build
 ```
 
-## Miljøvariabler
+## Teknologi
 
-Kopier `.env.example` til `.env.local` og fyll inn verdier før produksjon.
+Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Motion, Lenis, Zod, Resend og Cloudflare Turnstile. Fonten Inter ligger lokalt i `app/fonts/` (SIL Open Font License).
 
-Viktigst:
+Fiberanimasjonen er SVG og CSS. Den er statisk på mobil og når brukeren har slått på «redusert bevegelse».
 
-- `NEXT_PUBLIC_SITE_URL`
-- `RESEND_API_KEY`
-- `RESEND_FROM`
-- `CONTACT_RECIPIENT`
-- `TURNSTILE_SECRET_KEY`
-- `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
-- `NEXT_PUBLIC_CAL_URL`
-- `REMOTE_HELP_URL`
-- `NEXT_PUBLIC_PLAUSIBLE_DOMAIN`
+Lighthouse (3. oktober 2026): mobil ytelse 95, PC ytelse 100, tilgjengelighet 100, beste praksis 100, SEO 100.
 
-## Logo
+## Publisering
 
-Legg den faktiske SVG-logoen i:
+Se `PUBLISHING.md`.
 
-`public/brand/logo.svg`
+## Mangler fra eier før lansering
 
-Header/footer er nå bygd med en kompakt kompassmarkering slik at prosjektet fungerer før logoen legges inn. Når logoen er levert, byttes markeringen i `components/layout/site-header.tsx` og ved behov i footer.
-
-## Ekte bilder og partnere
-
-Prosjektet bruker bevisst bildeplassholdere. Ikke fyll disse med stockbilder. Legg inn ekte prosjektbilder i `public/media/` og bytt inn i prosjektdataene.
-
-Partnerseksjonen bruker kun nøytrale plassholdere. Legg kun inn leverandører dere faktisk har avtale med.
-
-## Kontaktinformasjon
-
-Telefon, e-post og adresse er ikke oppdiktet. Sett verdier i `config/site.ts` før publisering.
-
-## Driftstatus
-
-`content/status.ts` er en adapterklar statisk modell. Når valgt driftsleverandør tilbyr et status-API, kan data hentes fra en server-side adapter uten å endre UI-et.
-
-## Headless CMS senere
-
-Alt synlig innhold ligger i `content/` og kan migreres til Sanity senere uten omskriving av sidekomponentene.
-
-## Framtidige utvidelser
-
-Arkitekturen er lagt opp slik at følgende kan legges til senere:
-
-- Kundeportal og innlogging
-- Supportsaker per kunde
-- Blogg
-- Adressesjekk for fiber
-- Chat
-- Engelsk versjon
-
-## Viktig om manglende kildedata
-
-Logo-SVG, faktisk dekningsområde, telefon, e-post, adresse, bekreftede partnerlogoer, ekte prosjektbilder og reell møte-/fjernhjelpslenke er ikke oppgitt i arbeidsgrunnlaget. Prosjektet inneholder derfor ikke oppdiktede verdier. Disse feltene er sentralisert og klare for innsetting før publisering.
-
-## Design handoff
-The current approved visual direction and Claude Code instructions are in:
-- `CLAUDE.md`
-- `HANDOFF.md`
-- `CLAUDE_FIRST_PROMPT.md`
-- `START_HER.md`
-- `reference-homepage-preview.html`
+- Telefon, e-post og adresse (`config/site.ts`)
+- Dekningsområde (`config/site.ts` → `coverageArea`)
+- Ekte bilde til «Leverandøruavhengig»-seksjonen og eventuelle prosjekter
+- Priser på nettsidepakkene (står nå som «Pris kommer»)
+- Gjennomgang av personvernerklæringen
+- Kontoer og nøkler: Resend, Cloudflare Turnstile, og valgfritt Plausible, Cal.com og fjernhjelp

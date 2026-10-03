@@ -8,8 +8,8 @@ The site owner is not a developer. Explain important changes in simple Norwegian
 ## Source of truth for the current design
 The current approved visual direction is documented in:
 - `HANDOFF.md`
-- `reference-homepage-preview.html`
-- `public/reference/design-reference-user.png`
+- `design/reference-homepage-preview.html`
+- `design/design-reference-user.png` (owner's original inspiration; it contains invented details such as "Viken" and partner logos that must NOT be copied)
 - `public/brand/it-kompass-logo.png`
 - `public/brand/it-kompass-logo-web.png`
 
@@ -126,15 +126,15 @@ Always check:
 ## Technical stack
 Next.js App Router
 TypeScript
-Tailwind CSS
+Tailwind CSS (design tokens in `app/globals.css` under `@theme`)
 shadcn/ui patterns
 Motion
-GSAP / ScrollTrigger where justified
 Lenis
-React Three Fiber / Three.js where justified
 Zod
 Resend
 Cloudflare Turnstile
+
+The hero fiber scene is SVG + CSS (`components/site/fiber-field.tsx`), not Three.js. It matches the approved preview, costs almost nothing to load, and is static on mobile and with reduced motion. GSAP and React Three Fiber were removed because nothing used them after that change. Add them back only with a concrete reason.
 
 ## Commands
 - `npm install`
@@ -158,3 +158,13 @@ For meaningful tasks:
 5. report what changed and what remains
 
 Do not rewrite working architecture without a concrete reason.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

@@ -5,8 +5,8 @@ This is the design handoff for continuing the project with Claude Code.
 The owner has approved the current visual direction and wants the implementation to match the supplied preview closely while keeping the site technically robust.
 
 ## Reference files
-- `reference-homepage-preview.html` = latest standalone visual preview
-- `public/reference/design-reference-user.png` = original visual reference supplied by the owner
+- `design/reference-homepage-preview.html` = latest standalone visual preview
+- `design/design-reference-user.png` = original visual reference supplied by the owner
 - `public/brand/it-kompass-logo.png` = supplied final transparent logo
 - `public/brand/it-kompass-logo-web.png` = tightly cropped web-ready logo
 
