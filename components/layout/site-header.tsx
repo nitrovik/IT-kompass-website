@@ -3,23 +3,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowRight, Menu, X } from "lucide-react";
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { useEffect, useRef, useState } from "react";
 import { navItems, site } from "@/config/site";
 import { buttonVariants } from "@/components/ui/button";
+import { Arrow } from "@/components/ui/arrow";
 import { cn } from "@/lib/utils";
-
-function Brand() {
-  return (
-    <Link href="/" className="flex shrink-0 items-center" aria-label={`${site.name} – til forsiden`}>
-      <Image src="/brand/it-kompass-logo-web.png" alt={site.name} width={414} height={148} priority className="h-auto w-[150px] sm:w-[180px] lg:w-[205px]" />
-    </Link>
-  );
-}
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const headerRef = useRef<HTMLElement>(null);
+  const menuButton = useRef<HTMLButtonElement>(null);
+  const firstLink = useRef<HTMLAnchorElement>(null);
   const [open, setOpen] = useState(false);
   const [lastPathname, setLastPathname] = useState(pathname);
 
@@ -29,82 +23,100 @@ export function SiteHeader() {
     setOpen(false);
   }
 
+  // Krymp headeren og vis framdrift ved scrolling. Skrives rett til DOM-en, uten React-state per scroll.
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const y = window.scrollY;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      header.dataset.scrolled = y > 12 ? "true" : "false";
+      header.style.setProperty("--progress", max > 0 ? Math.min(y / max, 1).toFixed(4) : "0");
+    };
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
+
+  // Mobilmeny: lås scroll, Escape lukker, fokus flyttes inn og tilbake.
   useEffect(() => {
     if (!open) return;
+    const html = document.documentElement;
+    html.style.overflow = "hidden";
+    firstLink.current?.focus();
+    const button = menuButton.current;
     const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") setOpen(false); };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      html.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
+      button?.focus();
+    };
   }, [open]);
 
+  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+
   return (
-    <header className="sticky top-0 z-50 border-b border-line/90 bg-white/90 backdrop-blur-xl">
-      <div className="container-shell flex h-[68px] items-center gap-8 lg:h-[78px]">
-        <Brand />
-        <nav className="mx-auto hidden items-center gap-8 lg:flex" aria-label="Hovednavigasjon">
-          {navItems.map((item) => {
-            const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-current={active ? "page" : undefined}
-                className={cn(
-                  "relative py-2 text-sm font-medium text-[#244568] transition-colors hover:text-ink",
-                  "after:absolute after:inset-x-0 after:-bottom-[9px] after:h-0.5 after:rounded-full after:bg-brand after:opacity-0 after:transition-opacity hover:after:opacity-100",
-                  active && "text-ink after:opacity-100",
-                )}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
+    <>
+    <header ref={headerRef} data-scrolled="false" className="site-header fixed inset-x-0 top-0 z-50">
+      <div className="container-shell flex h-full items-center gap-10">
+        <Link href="/" className="relative z-10 flex shrink-0 items-center" aria-label={`${site.name} – til forsiden`}>
+          <Image src="/brand/it-kompass-logo-web-opt.png" alt={site.name} width={414} height={148} priority unoptimized className="brand-logo h-auto" />
+        </Link>
+
+        <nav className="ml-auto hidden items-center gap-9 lg:flex" aria-label="Hovednavigasjon">
+          {navItems.map((item) => (
+            <Link key={item.href} href={item.href} aria-current={isActive(item.href) ? "page" : undefined}
+              className={cn("nav-link text-[14.5px] font-medium text-[#2a4566] transition-colors hover:text-ink", isActive(item.href) && "text-ink")}>
+              {item.label}
+            </Link>
+          ))}
         </nav>
-        <div className="ml-auto flex items-center gap-2 lg:ml-0">
+
+        <div className="relative z-10 ml-auto flex items-center gap-3 lg:ml-2">
           <Link href="/kontakt" className={cn(buttonVariants({ size: "sm" }), "hidden sm:inline-flex")}>
-            Ta kontakt <ArrowRight size={15} aria-hidden="true" />
+            Ta kontakt <Arrow size={14} />
           </Link>
-          <button
-            type="button"
-            className="inline-grid size-11 place-items-center rounded-full border border-line-strong bg-white text-ink lg:hidden"
-            onClick={() => setOpen((value) => !value)}
-            aria-expanded={open}
-            aria-controls="mobilmeny"
-            aria-label={open ? "Lukk meny" : "Åpne meny"}
-          >
-            {open ? <X size={19} aria-hidden="true" /> : <Menu size={19} aria-hidden="true" />}
+          <button ref={menuButton} type="button" onClick={() => setOpen((value) => !value)} aria-expanded={open} aria-controls="mobilmeny" aria-label={open ? "Lukk meny" : "Åpne meny"}
+            className="relative grid size-11 place-items-center rounded-full border border-line-strong bg-white/80 text-ink backdrop-blur transition hover:border-[#9fc0e0] lg:hidden">
+            <span aria-hidden="true" className={cn("absolute h-[1.5px] w-[18px] rounded-full bg-current transition-transform duration-300", open ? "rotate-45" : "-translate-y-[4px]")} />
+            <span aria-hidden="true" className={cn("absolute h-[1.5px] w-[18px] rounded-full bg-current transition-transform duration-300", open ? "-rotate-45" : "translate-y-[4px]")} />
           </button>
         </div>
       </div>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.nav
-            id="mobilmeny"
-            aria-label="Mobilnavigasjon"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="overflow-hidden border-t border-line bg-white lg:hidden"
-          >
-            <div className="container-shell grid gap-1 py-4">
-              {navItems.map((item) => {
-                const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
-                return (
-                  <Link key={item.href} href={item.href} aria-current={active ? "page" : undefined} className={cn("rounded-xl px-4 py-3 text-base font-medium text-ink hover:bg-soft", active && "bg-sky")}>
-                    {item.label}
-                  </Link>
-                );
-              })}
-              <Link href="/finn-riktig-losning" className={cn(buttonVariants({ size: "lg" }), "mt-3 w-full")}>
-                Finn riktig løsning <ArrowRight size={17} aria-hidden="true" />
-              </Link>
-              <Link href="/kontakt" className={cn(buttonVariants({ variant: "secondary", size: "lg" }), "w-full sm:hidden")}>
-                Ta kontakt
-              </Link>
-            </div>
-          </motion.nav>
-        )}
-      </AnimatePresence>
+
+      <div className="scroll-progress pointer-events-none absolute inset-x-0 bottom-[-1px] h-[2px] rounded-r-full bg-[linear-gradient(90deg,rgba(72,185,255,.25),#48b9ff_40%,#0a6ed1)] opacity-0 transition-opacity duration-500 [[data-scrolled=true]_&]:opacity-100" aria-hidden="true" />
+
     </header>
+      {/* Mobilmeny */}
+      <div id="mobilmeny" hidden={!open} className="fixed inset-0 z-40 overflow-y-auto bg-[#f8fbff]/[.97] backdrop-blur-xl lg:hidden" data-lenis-prevent>
+        <nav aria-label="Mobilnavigasjon" className="container-shell flex min-h-full flex-col pt-[calc(var(--header-h)+1.5rem)] pb-8">
+          <ul className="grid">
+            {[{ href: "/", label: "Forside" }, ...navItems].map((item, index) => (
+              <li key={item.href} className="border-b border-line" style={{ animation: open ? `hero-fade-in .6s var(--ease-out-soft) both ${index * 45}ms` : undefined }}>
+                <Link ref={index === 0 ? firstLink : undefined} href={item.href} aria-current={pathname === item.href ? "page" : undefined}
+                  className="group flex items-center justify-between py-4 font-display text-[28px] font-semibold tracking-[-.02em] text-ink">
+                  {item.label}
+                  <Arrow size={20} className={cn("text-faint", pathname === item.href && "text-brand")} />
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-auto grid gap-3 pt-10">
+            <Link href="/finn-riktig-losning" className={cn(buttonVariants({ size: "lg" }), "w-full")}>Finn riktig løsning <Arrow /></Link>
+            <Link href="/kontakt" className={cn(buttonVariants({ variant: "secondary", size: "lg" }), "w-full")}>Ta kontakt</Link>
+            <p className="mt-3 text-center text-xs text-muted">{site.legalName} · Org.nr. {site.orgNumber}</p>
+          </div>
+        </nav>
+      </div>
+    </>
   );
 }

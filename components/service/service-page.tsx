@@ -1,43 +1,61 @@
 import Link from "next/link";
-import { ArrowRight, Check } from "lucide-react";
 import type { Service } from "@/content/services";
-import { buttonVariants } from "@/components/ui/button";
+import { services } from "@/content/services";
+import { serviceIcons } from "@/components/icons/service-icons";
 import { PageHero } from "@/components/site/page-hero";
 import { SectionHeading } from "@/components/site/section-heading";
-import { Reveal } from "@/components/ui/reveal";
+import { ProcessTrack } from "@/components/home/process-track";
+import { WizardCta } from "@/components/home/wizard-cta";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
+import { Arrow } from "@/components/ui/arrow";
 
 export function ServicePage({ service }: { service: Service }) {
-  const Icon = service.icon;
+  const Icon = serviceIcons[service.slug];
+  const others = services.filter((item) => item.slug !== service.slug);
   return (
-    <main id="main">
-      <PageHero eyebrow={service.shortTitle} title={service.title} body={service.description} cta={{ href: "/kontakt", label: "Ta kontakt" }} secondaryCta={{ href: "/finn-riktig-losning", label: "Finn riktig løsning" }} />
+    <main id="main" tabIndex={-1} className="outline-none">
+      <PageHero
+        crumbs={[{ href: "/tjenester", label: "Tjenester" }, { href: `/tjenester/${service.slug}`, label: service.shortTitle }]}
+        eyebrow={service.shortTitle}
+        title={service.title}
+        body={service.description}
+        cta={{ href: "/kontakt", label: "Ta kontakt" }}
+        secondaryCta={{ href: `/finn-riktig-losning?behov=${encodeURIComponent(service.slug === "nettsider" ? "Nettsider" : service.shortTitle)}`, label: "Finn riktig løsning" }}
+        aside={
+          <span className="relative hidden size-36 place-items-center rounded-[36px] border border-white bg-white/70 text-brand shadow-[0_30px_60px_-30px_rgba(14,39,71,.5)] backdrop-blur lg:grid" data-inview="true" aria-hidden="true">
+            <span className="absolute inset-0 rounded-[36px] bg-[radial-gradient(circle_at_50%_35%,rgba(42,166,255,.25),transparent_70%)]" />
+            <Icon size={58} className="relative" />
+          </span>
+        }
+      />
 
       <section className="section-pad">
-        <div className="container-shell grid gap-10 lg:grid-cols-[.8fr_1.2fr] lg:gap-14">
+        <div className="container-shell grid gap-12 lg:grid-cols-[.85fr_1.15fr] lg:gap-16">
           <div>
-            <span className="grid size-14 place-items-center rounded-2xl bg-tile text-brand" aria-hidden="true"><Icon size={26} /></span>
-            <p className="mt-6 text-2xl leading-[1.4] font-semibold tracking-[-.02em] text-ink">{service.intro}</p>
+            <p className="eyebrow" data-reveal="fade">Hva du får</p>
+            <p data-reveal className="mt-6 font-display text-[clamp(1.6rem,2.6vw,2.15rem)] leading-[1.25] font-medium tracking-[-.02em] text-ink">{service.intro}</p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             {service.detailed.map((item, index) => (
-              <Reveal key={item.title} delay={index * 0.05}>
-                <article className="surface-card h-full p-6">
-                  <h2 className="text-lg font-bold text-ink">{item.title}</h2>
-                  <p className="mt-2 text-sm leading-6 text-muted">{item.body}</p>
-                </article>
-              </Reveal>
+              <article key={item.title} data-reveal style={{ ["--d" as string]: `${index * 0.07}s` }} className="surface-card p-7">
+                <span className="tabular text-xs font-semibold tracking-[.16em] text-brand">0{index + 1}</span>
+                <h2 className="card-title mt-4 text-[19px] text-ink">{item.title}</h2>
+                <p className="mt-2 text-[15px] leading-[1.6] text-muted">{item.body}</p>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
       <section className="section-pad bg-soft">
-        <div className="container-shell">
+        <div className="container-shell grid gap-10 lg:grid-cols-[.85fr_1.15fr] lg:gap-16">
           <SectionHeading eyebrow="Leveransen" title="Dette kan vi hjelpe deg med." align="left" />
-          <ul className="mt-8 grid gap-3 md:grid-cols-3">
-            {service.bullets.map((item) => (
-              <li key={item} className="surface-card flex items-center gap-3 p-5 font-semibold text-ink">
-                <span className="grid size-7 shrink-0 place-items-center rounded-full bg-sky text-brand" aria-hidden="true"><Check size={15} strokeWidth={3} /></span>
+          <ul className="grid content-start gap-3 self-end">
+            {service.bullets.map((item, index) => (
+              <li key={item} data-reveal style={{ ["--d" as string]: `${index * 0.07}s` }} className="flex items-center gap-4 rounded-2xl border border-line bg-white px-5 py-4 text-[16px] font-medium text-ink shadow-[0_1px_2px_rgba(14,39,71,.04)]">
+                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-tile text-brand" aria-hidden="true">
+                  <svg width="13" height="13" viewBox="0 0 12 12"><path d="m2 6.3 2.6 2.6L10 3.4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </span>
                 {item}
               </li>
             ))}
@@ -48,21 +66,31 @@ export function ServicePage({ service }: { service: Service }) {
       <section className="section-pad">
         <div className="container-shell">
           <SectionHeading eyebrow="Slik jobber vi" title="Fra behov til en løsning som er i drift." align="left" />
-          <ol className="relative mt-10 grid gap-3 sm:grid-cols-5">
-            <span className="absolute top-[42px] right-[10%] left-[10%] hidden h-px bg-[linear-gradient(90deg,rgba(39,167,255,.1),rgba(39,167,255,.45),rgba(39,167,255,.1))] sm:block" aria-hidden="true" />
-            {service.process.map((step, index) => (
-              <li key={step} className="relative rounded-2xl border border-line bg-white p-5">
-                <span className="relative z-10 grid size-11 place-items-center rounded-[13px] border border-line bg-white text-sm font-extrabold text-brand">0{index + 1}</span>
-                <span className="mt-5 block text-sm font-bold text-ink">{step}</span>
-              </li>
-            ))}
-          </ol>
-          <div className="mt-12 flex flex-wrap gap-3">
-            <Link href="/finn-riktig-losning" className={buttonVariants({ size: "lg" })}>Finn riktig løsning <ArrowRight size={17} aria-hidden="true" /></Link>
-            <Link href="/tjenester" className={buttonVariants({ variant: "secondary", size: "lg" })}>Se alle tjenester</Link>
-          </div>
+          <ProcessTrack steps={service.process.map((step, i) => ({ number: `0${i + 1}`, title: step }))} />
         </div>
       </section>
+
+      <section className="pb-[clamp(2rem,4vw,3rem)]">
+        <div className="container-shell">
+          <h2 className="eyebrow" data-reveal="fade">Andre tjenester</h2>
+          <ul className="mt-6 grid gap-4 md:grid-cols-3">
+            {others.map((item, index) => {
+              const OtherIcon = serviceIcons[item.slug];
+              return (
+                <li key={item.slug} data-reveal style={{ ["--d" as string]: `${index * 0.07}s` }}>
+                  <SpotlightCard tilt={false} className="group flex items-center gap-4 p-5">
+                    <span className="grid size-11 shrink-0 place-items-center rounded-[14px] bg-tile text-brand" aria-hidden="true"><OtherIcon /></span>
+                    <Link href={`/tjenester/${item.slug}`} className="card-title flex-1 text-[17px] text-ink outline-none after:absolute after:inset-0 after:rounded-[24px] after:content-['']">{item.shortTitle}</Link>
+                    <Arrow className="text-brand" />
+                  </SpotlightCard>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </section>
+
+      <WizardCta />
     </main>
   );
 }

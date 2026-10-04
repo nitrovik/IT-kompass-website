@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import { notFound } from "next/navigation";
 import { getService, services } from "@/content/services";
 import { ServicePage } from "@/components/service/service-page";
@@ -9,7 +10,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const service = getService(slug);
   if (!service) return {};
-  return { title: { absolute: service.metaTitle }, description: service.metaDescription, alternates: { canonical: `/tjenester/${service.slug}` } };
+  return pageMetadata({ title: service.metaTitle, description: service.metaDescription, path: `/tjenester/${service.slug}`, absoluteTitle: true });
 }
 
 export default async function ServiceSlugPage({ params }: { params: Promise<{ slug: string }> }) {

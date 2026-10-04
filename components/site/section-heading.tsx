@@ -1,13 +1,17 @@
+import { SplitLines } from "@/components/ui/split-words";
 import { cn } from "@/lib/utils";
 
-export function SectionHeading({ eyebrow, title, body, align = "split", id, className }: { eyebrow: string; title: string; body?: string; align?: "left" | "center" | "split"; id?: string; className?: string }) {
+export function SectionHeading({ eyebrow, title, body, align = "split", id, className, dark = false }: { eyebrow: string; title: string | string[]; body?: string; align?: "left" | "center" | "split"; id?: string; className?: string; dark?: boolean }) {
+  const lines = Array.isArray(title) ? title : [title];
   return (
-    <div className={cn(align === "split" && "flex flex-col gap-5 md:flex-row md:items-end md:justify-between md:gap-10", align === "center" && "mx-auto max-w-3xl text-center", className)}>
-      <div className={cn(align === "split" && "max-w-2xl")}>
-        <p className="eyebrow">{eyebrow}</p>
-        <h2 id={id} className="section-title mt-3 text-ink">{title}</h2>
+    <div className={cn(align === "split" && "grid gap-6 lg:grid-cols-[1.15fr_.85fr] lg:items-end lg:gap-16", align === "center" && "mx-auto max-w-3xl text-center", className)}>
+      <div>
+        <p className="eyebrow" data-reveal="fade">{eyebrow}</p>
+        <h2 id={id} data-split className={cn("section-title mt-5", dark ? "text-white" : "text-ink")}><SplitLines lines={lines} /></h2>
       </div>
-      {body ? <p className={cn("leading-[1.65] text-muted", align === "split" ? "max-w-[38rem] md:pb-1.5" : "mt-5 max-w-2xl", align === "center" && "mx-auto")}>{body}</p> : null}
+      {body ? (
+        <p data-reveal style={{ ["--d" as string]: ".15s" }} className={cn("lead max-w-[36rem] lg:pb-2", dark && "!text-on-navy", align === "center" && "mx-auto mt-6", align === "left" && "mt-6")}>{body}</p>
+      ) : null}
     </div>
   );
 }

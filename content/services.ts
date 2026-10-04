@@ -1,13 +1,11 @@
-import { Headphones, Network, Wifi, Globe2 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import type { ServiceIconKey } from "@/content/types";
 
 export type Service = {
-  slug: string;
+  slug: ServiceIconKey;
   title: string;
   shortTitle: string;
   description: string;
   intro: string;
-  icon: LucideIcon;
   bullets: string[];
   detailed: { title: string; body: string }[];
   process: string[];
@@ -22,7 +20,6 @@ export const services: Service[] = [
     shortTitle: "WiFi",
     description: "Prosjektering, installasjon og full drift av trådløse nett for bedrifter, hoteller, skoler og offentlige bygg.",
     intro: "Et godt trådløst nett skal være stabilt, oversiktlig og dimensjonert for hvordan bygget faktisk brukes.",
-    icon: Wifi,
     bullets: ["Prosjektering og kartlegging", "Installasjon og konfigurering", "Drift og overvåking"],
     detailed: [
       { title: "Kartlegging", body: "Vi starter med bygg, bruksmønster, kapasitet og hvilke områder som må ha dekning." },
@@ -40,7 +37,6 @@ export const services: Service[] = [
     shortTitle: "Fiber og telecom",
     description: "Fiber, bredbånd, mobil, fasttelefoni og sentralbord samlet hos én partner.",
     intro: "Vi hjelper virksomheten med forbindelser og telefoni som er tilpasset behov, lokasjon og arbeidsform.",
-    icon: Network,
     bullets: ["Fiber og bredbånd", "Mobil og bedriftsabonnement", "Fasttelefoni og sentralbord"],
     detailed: [
       { title: "Fiber og bredbånd", body: "Vi vurderer tilgjengelige alternativer og hjelper med valg, bestilling og oppfølging." },
@@ -58,7 +54,6 @@ export const services: Service[] = [
     shortTitle: "IT support",
     description: "Brukerstøtte, drift og overvåking, sikkerhet, backup, utstyr og installasjoner.",
     intro: "IT support handler om å få hverdagen til å fungere, fra én bruker med et problem til drift av et helt miljø.",
-    icon: Headphones,
     bullets: ["Brukerstøtte", "Drift og overvåking", "Sikkerhet og backup"],
     detailed: [
       { title: "Brukerstøtte", body: "Vi hjelper med vanlige IT-problemer, oppsett og spørsmål i arbeidshverdagen." },
@@ -76,7 +71,6 @@ export const services: Service[] = [
     shortTitle: "Nettsider og drift",
     description: "Design, utvikling, hosting, SEO og innhold for virksomheter som vil ha en nettside som gjør jobben sin.",
     intro: "Vi bygger nettsider med samme prinsipp som resten av leveransene våre: forstå behovet, velg riktig løsning og gjør det enkelt å videreutvikle.",
-    icon: Globe2,
     bullets: ["Design og utvikling", "Hosting og drift", "SEO og innhold"],
     detailed: [
       { title: "Design", body: "Vi utvikler et tydelig visuelt uttrykk rundt virksomheten, innholdet og målgruppen." },
