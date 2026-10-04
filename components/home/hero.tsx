@@ -1,35 +1,54 @@
 import Link from "next/link";
-import { ArrowRight, Check } from "lucide-react";
 import { homeHero, homeServices } from "@/content/home";
-import { FiberField } from "@/components/site/fiber-field";
-import { HeroPointer } from "@/components/home/hero-pointer";
-import { WordReveal } from "@/components/home/word-reveal";
+import { HeroFiber } from "@/components/home/fiber/hero-fiber";
 import { MagneticLink } from "@/components/ui/magnetic-link";
+import { Arrow } from "@/components/ui/arrow";
+
+/* Hver bokstavgruppe glir opp bak en maske – ren CSS, synlig også uten JavaScript. */
+function HeroHeadline({ lines }: { lines: string[] }) {
+  const starts = lines.map((_, i) => lines.slice(0, i).reduce((sum, line) => sum + line.split(" ").length, 0));
+  return (
+    <>
+      {lines.map((line, lineIndex) => (
+        <span key={line} className={lineIndex === lines.length - 1 ? "block text-[#0b63c0]" : "block"}>
+          {line.split(" ").map((word, w, words) => (
+            <span key={`${line}-${w}`}>
+              <span className="hero-word"><span style={{ ["--i" as string]: starts[lineIndex] + w }}>{word}</span></span>
+              {w < words.length - 1 ? " " : null}
+            </span>
+          ))}
+        </span>
+      ))}
+    </>
+  );
+}
 
 export function Hero() {
-  const { panel } = homeHero;
   return (
-    <section className="hero-surface relative overflow-hidden" aria-labelledby="hero-heading">
-      <HeroPointer className="fiber-parallax absolute inset-0 opacity-60 lg:opacity-95">
-        <FiberField variant="hero" />
-      </HeroPointer>
-      <div className="container-shell relative z-10 grid items-center gap-10 py-16 sm:py-20 lg:min-h-[650px] lg:grid-cols-[1fr_.72fr] lg:gap-[70px] lg:py-[108px]">
-        <div>
-          <p className="eyebrow">{homeHero.eyebrow}</p>
-          <h1 id="hero-heading" className="display-text mt-5 max-w-[700px] text-ink">
-            <WordReveal lines={homeHero.title} accentLast />
+    <section data-hero data-observe="toggle" className="hero-surface relative isolate overflow-hidden" aria-labelledby="hero-heading">
+      <div className="grid-lines pointer-events-none absolute inset-0 [mask-image:radial-gradient(70%_60%_at_70%_45%,#000,transparent)]" aria-hidden="true" />
+      <HeroFiber />
+
+      <div className="container-shell relative z-10 flex min-h-[100svh] flex-col pt-[calc(var(--header-h)+2rem)] pb-6 lg:min-h-[max(780px,min(100svh,960px))] lg:pb-10">
+        <div className="my-auto max-w-[640px] py-10 lg:py-16">
+          <p className="eyebrow hero-fade" style={{ ["--d" as string]: ".05s" }}>{homeHero.eyebrow}</p>
+          <h1 id="hero-heading" className="display-text mt-6 text-ink">
+            <HeroHeadline lines={homeHero.title} />
           </h1>
-          <p className="mt-6 max-w-[650px] text-[17px] leading-[1.65] text-body sm:text-[19px]">{homeHero.body}</p>
-          <div className="mt-8 flex flex-wrap gap-3.5">
-            <MagneticLink href={homeHero.primaryCta.href}>{homeHero.primaryCta.label} <ArrowRight size={17} aria-hidden="true" /></MagneticLink>
+          <p className="lead hero-fade mt-7 max-w-[560px] sm:text-[1.2rem]" style={{ ["--d" as string]: ".55s" }}>{homeHero.body}</p>
+          <div className="hero-fade mt-9 flex flex-wrap gap-3" style={{ ["--d" as string]: ".7s" }}>
+            <MagneticLink href={homeHero.primaryCta.href}>{homeHero.primaryCta.label} <Arrow /></MagneticLink>
             <MagneticLink href={homeHero.secondaryCta.href} variant="secondary">{homeHero.secondaryCta.label}</MagneticLink>
           </div>
-          <nav aria-label="Tjenester" className="mt-8">
-            <ul className="flex flex-wrap items-center gap-x-5 gap-y-3 text-[13px] font-medium text-body">
+          <nav aria-label={homeHero.quickLinksLabel} className="hero-fade mt-9" style={{ ["--d" as string]: ".85s" }}>
+            <ul className="flex flex-wrap gap-2">
               {homeServices.map((service) => (
                 <li key={service.href}>
-                  <Link href={service.href} className="inline-flex items-center gap-2.5 rounded-full py-1 transition-colors hover:text-brand">
-                    <span className="size-[7px] rounded-full bg-brand shadow-[0_0_0_6px_rgba(8,124,240,.09)]" aria-hidden="true" />
+                  <Link href={service.href} className="group inline-flex h-9 items-center gap-2 rounded-full border border-white/80 bg-white/55 pr-3.5 pl-2.5 text-[13px] font-medium text-body backdrop-blur transition hover:border-[#bcd6ee] hover:bg-white hover:text-ink">
+                    <span className="relative grid size-2 place-items-center" aria-hidden="true">
+                      <span className="absolute size-2 rounded-full bg-brand-bright/30 transition-transform duration-500 group-hover:scale-[2.2]" />
+                      <span className="relative size-1.5 rounded-full bg-brand" />
+                    </span>
                     {service.title}
                   </Link>
                 </li>
@@ -38,27 +57,15 @@ export function Hero() {
           </nav>
         </div>
 
-        <aside className="glass-panel relative rounded-[26px] p-3 sm:p-[18px]" aria-label={panel.title}>
-          <div className="flex items-center justify-between gap-4 px-2 pt-2 pb-4">
-            <h2 className="text-[15px] font-extrabold text-ink">{panel.title}</h2>
-            <span className="inline-flex items-center gap-2 text-[11px] font-bold text-[#1a64a8]">
-              <span className="size-2 rounded-full bg-[#39b86a] shadow-[0_0_0_6px_rgba(57,184,106,.12)]" aria-hidden="true" />
-              {panel.status}
-            </span>
-          </div>
-          <ul>
-            {panel.rows.map(({ icon: Icon, title, text }) => (
-              <li key={title} className="grid grid-cols-[42px_1fr_auto] items-center gap-3.5 border-t border-[#b8cfe5]/60 px-2.5 py-4">
-                <span className="grid size-[42px] place-items-center rounded-[13px] bg-[linear-gradient(145deg,#eff8ff,#dceeff)] text-brand" aria-hidden="true"><Icon size={19} strokeWidth={2} /></span>
-                <span>
-                  <span className="block text-[15px] font-extrabold text-ink">{title}</span>
-                  <span className="mt-1 block text-xs leading-[1.5] text-muted">{text}</span>
-                </span>
-                <Check size={16} strokeWidth={3} className="text-success" aria-hidden="true" />
-              </li>
-            ))}
-          </ul>
-        </aside>
+        <ul className="glass hero-fade grid grid-cols-2 overflow-hidden rounded-[22px] lg:grid-cols-4" style={{ ["--d" as string]: "1s" }} aria-label="Derfor IT Kompass">
+          {homeHero.reasons.map((reason, index) => (
+            <li key={reason.title} className="relative px-4 py-4 sm:px-6 sm:py-5 [&:nth-child(n+3)]:border-t [&:nth-child(n+3)]:border-white/70 lg:[&:nth-child(n+3)]:border-t-0 [&:not(:first-child)]:before:absolute [&:not(:first-child)]:before:inset-y-5 [&:not(:first-child)]:before:left-0 [&:not(:first-child)]:before:w-px [&:not(:first-child)]:before:bg-[#c9dcee] [&:nth-child(3)]:before:hidden lg:[&:nth-child(3)]:before:block">
+              <span className="tabular text-[11px] font-semibold tracking-[.14em] text-brand">0{index + 1}</span>
+              <p className="card-title mt-1.5 text-[15px] text-ink sm:text-base">{reason.title}</p>
+              <p className="mt-1 text-[12.5px] leading-[1.5] text-muted sm:text-[13px]">{reason.text}</p>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );
