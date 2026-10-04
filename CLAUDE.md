@@ -126,7 +126,7 @@ Always check:
 ## Technical stack
 Next.js App Router
 TypeScript
-Tailwind CSS (design tokens in `app/globals.css` under `@theme`)
+Tailwind CSS (design tokens in `app/globals.css` under `@theme`; component classes live in `@layer components` so utilities can override them)
 shadcn/ui patterns
 Motion
 Lenis
@@ -134,7 +134,21 @@ Zod
 Resend
 Cloudflare Turnstile
 
-The hero fiber scene is SVG + CSS (`components/site/fiber-field.tsx`), not Three.js. It matches the approved preview, costs almost nothing to load, and is static on mobile and with reduced motion. GSAP and React Three Fiber were removed because nothing used them after that change. Add them back only with a concrete reason.
+Fonts: Schibsted Grotesk (headings, Norwegian typeface) and Inter (body), self-hosted in `app/fonts/` via `next/font/local`.
+
+### Hero fiber scene
+`components/home/fiber/engine.ts` is a small custom WebGL renderer (no library): three depth layers with perspective, glass-tube cable shading, shader-driven light pulses (varied speed, brightness, occasional strong pulses, near-silent fibers), network nodes, pointer repulsion/parallax, and adaptive quality. All fibers are one draw call, nodes another.
+- `hero-fiber.tsx` loads the engine after `load` + idle, pauses it off-screen and in hidden tabs.
+- Static SVG fallback (`fiber-fallback.tsx`) is server-rendered and stays for weak devices, Save-Data, no WebGL, and software-rendered WebGL (no GPU). Reduced motion renders one still frame.
+- `?fiber=1` forces the scene on software renderers – for visual QA only.
+- The compass (`hero-compass.tsx`) sits where the fibers converge; its needle points toward the pointer.
+GSAP and React Three Fiber are not used. Motion is used for the magnetic CTAs. Add libraries back only with a concrete reason.
+
+### Motion system
+- Scroll reveals: add `data-reveal` (`fade`, `scale`, `clip`) or `data-split` (word-by-word headings via `SplitWords`). One shared IntersectionObserver (`components/ui/reveal-observer.tsx`) sets `data-inview`. Content is only hidden when JS runs (`js-reveal` class), and anything visible at load is shown instantly.
+- `data-observe="toggle"` pauses CSS animations inside an element while it is off-screen. Always pair infinite CSS animations with it.
+- Pointer effects (spotlight cards, compass) write CSS variables in one requestAnimationFrame; no React state per pointer frame.
+- Lenis only runs its frame loop while the page is actually scrolling.
 
 ## Commands
 - `npm install`

@@ -21,6 +21,7 @@ Nettsiden til IT Kompass AS, bygget med Next.js. Designet følger den godkjente 
 - **Tekster på forsiden:** `content/home.ts`
 - **Tjenestene:** `content/services.ts`
 - **Prosjekter og nettsidepakker:** `content/projects.ts`
+- **Partnere (vises bare når listen ikke er tom):** `content/partners.ts`
 - **Veiviseren:** `content/wizard.ts`
 - **Personvern:** `content/legal.ts`
 - **Bilder:** legg dem i `public/media/` (se README der)
@@ -48,11 +49,11 @@ npm run build
 
 ## Teknologi
 
-Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Motion, Lenis, Zod, Resend og Cloudflare Turnstile. Fonten Inter ligger lokalt i `app/fonts/` (SIL Open Font License).
+Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Motion, Lenis, Zod, Resend og Cloudflare Turnstile. Skriftene Schibsted Grotesk (overskrifter) og Inter (brødtekst) ligger lokalt i `app/fonts/` (SIL Open Font License).
 
-Fiberanimasjonen er SVG og CSS. Den er statisk på mobil og når brukeren har slått på «redusert bevegelse».
+Fiberscenen i heroen er en egen, lett WebGL-renderer (`components/home/fiber/`). Den lastes etter at siden er vist, pauser når den ikke er synlig, og viser et statisk bilde på svake enheter, uten skjermkort og ved «redusert bevegelse». Se CLAUDE.md for detaljer.
 
-Lighthouse (3. oktober 2026): mobil ytelse 95, PC ytelse 100, tilgjengelighet 100, beste praksis 100, SEO 100.
+Lighthouse (4. oktober 2026, mobil): forsiden ytelse 95, undersidene 94–99. PC: 100. Tilgjengelighet, beste praksis og SEO: 100 på alle sider.
 
 ## Publisering
 
