@@ -56,7 +56,7 @@ Lighthouse (3. oktober 2026): mobil ytelse 95, PC ytelse 100, tilgjengelighet 10
 
 ## Publisering
 
-Se `PUBLISHING.md`.
+Nettsiden publiseres på Railway. Steg for steg står i `PUBLISHING.md`.
 
 ## Mangler fra eier før lansering
 

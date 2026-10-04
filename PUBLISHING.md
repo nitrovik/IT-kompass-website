@@ -1,27 +1,24 @@
-# Publisering
+# Publisering på Railway
 
-Nettsiden bruker Next.js med serverfunksjoner for skjemaene. Den trenger derfor en vertstjeneste som kjører Next.js. Et vanlig statisk webhotell er ikke nok.
+Nettsiden kjører som en Next.js-server på [Railway](https://railway.com). Domenet `itkompass.no` kan bli liggende hos Gigahost.
 
-## 1. Velg vertstjeneste
+Prosjektet er allerede satt opp for Railway:
 
-Nettsiden er kommersiell, så tjenesten må tillate kommersiell bruk.
+- `railway.json` sier hvordan siden bygges (`npm run build`) og startes (`npm run start`), og at Railway skal sjekke at forsiden svarer før en ny versjon tas i bruk.
+- `npm run start` bruker automatisk porten Railway gir (`PORT`).
+- `package.json` låser Node.js til versjon 20–24.
+- Besøk på den andre varianten av domenet (med eller uten `www`) sendes automatisk videre til hovedadressen i `NEXT_PUBLIC_SITE_URL`.
 
-| Tjeneste | Kommersiell bruk | Merknad |
-| --- | --- | --- |
-| **Vercel Pro** | Ja | Laget av dem som lager Next.js. Gratisplanen (Hobby) er bare for ikke-kommersiell bruk. |
-| **Netlify** | Ja, også på gratisplanen | Støtter Next.js godt. Nye Next.js-funksjoner kommer av og til litt senere enn hos Vercel. |
+## 1. Opprett prosjektet
 
-Begge kobles til GitHub-repoet og publiserer automatisk når `main` oppdateres. Sjekk gjeldende priser og vilkår hos tjenesten før du velger.
+1. Logg inn på railway.com med GitHub-kontoen din. En bedriftsside trenger et betalt abonnement. Sjekk gjeldende pris og vilkår hos Railway.
+2. Velg **New Project → Deploy from GitHub repo** og velg `nitrovik/IT-kompass-website`.
+3. Under **Settings → Source** velger du hvilken gren som skal publiseres (normalt `main`). Hver gang den grenen oppdateres, publiserer Railway på nytt.
+4. Under **Settings → Networking** trykker du **Generate Domain**. Da får du en testadresse som slutter på `.up.railway.app`.
 
-## 2. Koble til GitHub
+## 2. Legg inn miljøvariabler
 
-1. Opprett konto hos tjenesten og velg «Import project» / «Add new site» fra GitHub.
-2. Velg repoet `nitrovik/IT-kompass-website`.
-3. Tjenesten kjenner igjen Next.js automatisk. Byggekommando: `npm run build`.
-
-## 3. Legg inn miljøvariabler
-
-Legg dem inn i tjenestens kontrollpanel (ikke i koden). Hele listen med forklaringer står i `.env.example`.
+Legg dem inn under fanen **Variables** i tjenesten (ikke i koden). Hele listen med forklaringer står i `.env.example`.
 
 **Påkrevd for at skjemaene skal fungere:**
 
@@ -29,32 +26,41 @@ Legg dem inn i tjenestens kontrollpanel (ikke i koden). Hele listen med forklari
 - `RESEND_API_KEY`, `RESEND_FROM`, `CONTACT_RECIPIENT`
 - `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`
 
-Mangler Turnstile-nøklene, avviser skjemaene alle innsendinger i produksjon. Det er med vilje, for å stoppe spam.
+Mangler Turnstile-nøklene, avviser skjemaene alle innsendinger. Det er med vilje, for å stoppe spam.
 
-Når du har lagt inn eller endret variabler, må nettsiden publiseres på nytt («Redeploy») før endringen virker.
+Railway publiserer på nytt når du endrer variabler. Variabler som starter med `NEXT_PUBLIC_` bakes inn når siden bygges, så de virker først etter neste publisering.
 
 ### Resend (e-post)
 
 1. Opprett konto på resend.com og legg til domenet `itkompass.no`.
-2. Resend gir deg noen DNS-poster (SPF/DKIM). Legg dem inn hos Gigahost (se punkt 4).
+2. Resend gir deg noen DNS-poster (SPF/DKIM). Legg dem inn hos Gigahost.
 3. Lag en API-nøkkel og lim den inn som `RESEND_API_KEY`.
 
 ### Cloudflare Turnstile (spamvern)
 
-1. Opprett gratis konto hos Cloudflare og åpne «Turnstile».
-2. Legg til et nettsted for `itkompass.no` (og gjerne vertstjenestens testadresse).
-3. Kopier «Site key» til `NEXT_PUBLIC_TURNSTILE_SITE_KEY` og «Secret key» til `TURNSTILE_SECRET_KEY`.
+1. Opprett gratis konto hos Cloudflare og åpne **Turnstile**.
+2. Legg til et nettsted med disse vertsnavnene: `itkompass.no`, `www.itkompass.no` og testadressen fra Railway (`…up.railway.app`).
+3. Kopier **Site key** til `NEXT_PUBLIC_TURNSTILE_SITE_KEY` og **Secret key** til `TURNSTILE_SECRET_KEY`.
 
-## 4. Koble domenet hos Gigahost
+## 3. Koble domenet
 
-Domenet kan bli liggende hos Gigahost.
-
-1. Legg til `itkompass.no` og `www.itkompass.no` hos vertstjenesten. Den viser hvilke DNS-poster du trenger.
-2. Logg inn hos Gigahost, åpne DNS for `itkompass.no` og legg inn postene **nøyaktig** slik vertstjenesten oppgir dem (vanligvis en `A`-post for `@` og en `CNAME` for `www`).
-3. **Ikke rør eksisterende e-postposter** (MX, SPF osv.), med mindre du vet at de skal endres.
+1. I Railway: **Settings → Networking → Custom Domain**. Legg til både `itkompass.no` og `www.itkompass.no`.
+2. Railway viser hvilke DNS-poster du trenger for hvert domene. Legg dem inn **nøyaktig** slik Railway oppgir i DNS-oppsettet for `itkompass.no` hos Gigahost.
+3. **Ikke rør eksisterende e-postposter** (MX, SPF osv.).
 4. HTTPS ordnes automatisk når DNS er på plass. Det kan ta fra noen minutter til noen timer.
 
-## 5. Test etter publisering
+### Viktig om hoveddomenet (`itkompass.no` uten www)
+
+Railway peker domener med en `CNAME`-post. For hoveddomenet (uten www) krever det at DNS-leverandøren støtter **ALIAS**, **ANAME** eller **CNAME-flattening**. `www` er ikke noe problem.
+
+Sjekk i Gigahosts DNS-panel om du kan velge posttypen ALIAS eller ANAME:
+
+- **Ja:** legg inn hoveddomenet som ALIAS/ANAME mot verdien Railway oppgir.
+- **Nei:** velg ett av disse alternativene:
+  - **Flytt DNS til Cloudflare (gratis).** Domenet blir fortsatt registrert hos Gigahost, du bytter bare navnetjenere. Kopier **alle** eksisterende DNS-poster (særlig e-post) til Cloudflare før du bytter.
+  - **Bruk `www.itkompass.no` som hovedadresse.** Sett `NEXT_PUBLIC_SITE_URL=https://www.itkompass.no`, og be Gigahost videresende `itkompass.no` til `https://www.itkompass.no`.
+
+## 4. Test etter publisering
 
 - [ ] Forsiden, menyen og mobilmenyen
 - [ ] Kontaktskjema på forsiden og på `/kontakt`: e-posten kommer frem
@@ -62,7 +68,7 @@ Domenet kan bli liggende hos Gigahost.
 - [ ] Veiviseren `/finn-riktig-losning` hele veien
 - [ ] `https://itkompass.no/sitemap.xml` og `/robots.txt`
 - [ ] En side som ikke finnes, så du ser 404-siden
-- [ ] Både `www.itkompass.no` og `itkompass.no` havner på samme side
+- [ ] `www.itkompass.no` sender deg videre til `itkompass.no` (eller omvendt hvis www er hovedadressen)
 
 ## Valgfritt senere
 
