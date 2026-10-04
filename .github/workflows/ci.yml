@@ -1,0 +1,23 @@
+# Bygger og sjekker nettsiden ved hver endring. Railway kan vente på denne
+# kontrollen («Wait for CI») før en ny versjon publiseres.
+name: Kontroll
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  bygg:
+    name: Typesjekk, lint og bygg
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run build

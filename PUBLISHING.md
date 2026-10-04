@@ -13,7 +13,8 @@ Prosjektet er allerede satt opp for Railway:
 
 1. Logg inn på railway.com med GitHub-kontoen din. En bedriftsside trenger et betalt abonnement. Sjekk gjeldende pris og vilkår hos Railway.
 2. Velg **New Project → Deploy from GitHub repo** og velg `nitrovik/IT-kompass-website`.
-3. Under **Settings → Source** velger du hvilken gren som skal publiseres (normalt `main`). Hver gang den grenen oppdateres, publiserer Railway på nytt.
+3. Under **Settings → Source** velger du grenen `main`. Hver gang `main` oppdateres, publiserer Railway på nytt.
+   - Slå gjerne på **Wait for CI**. Da venter Railway på den automatiske kontrollen i GitHub (`.github/workflows/ci.yml`), så en versjon med feil aldri går live.
 4. Under **Settings → Networking** trykker du **Generate Domain**. Da får du en testadresse som slutter på `.up.railway.app`.
 
 ## 2. Legg inn miljøvariabler
@@ -69,6 +70,10 @@ Sjekk i Gigahosts DNS-panel om du kan velge posttypen ALIAS eller ANAME:
 - [ ] `https://itkompass.no/sitemap.xml` og `/robots.txt`
 - [ ] En side som ikke finnes, så du ser 404-siden
 - [ ] `www.itkompass.no` sender deg videre til `itkompass.no` (eller omvendt hvis www er hovedadressen)
+
+## Slik oppdateres nettsiden senere
+
+Endringer gjøres på en egen gren og samles i en «pull request» mot `main` på GitHub. Den automatiske kontrollen bygger og sjekker siden. Når alt er grønt og du trykker **Merge**, publiserer Railway den nye versjonen.
 
 ## Valgfritt senere
 
