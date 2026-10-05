@@ -11,8 +11,9 @@ import { CompassToTop } from "@/components/layout/compass-to-top";
 import { site } from "@/config/site";
 
 // Inter (brødtekst) og Schibsted Grotesk (overskrifter, norsk skrift). Begge SIL Open Font License, se app/fonts/.
-const inter = localFont({ src: "./fonts/inter-latin-wght.woff2", weight: "100 900", display: "swap", variable: "--font-inter" });
-const schibsted = localFont({ src: "./fonts/schibsted-grotesk-latin-wght.woff2", weight: "400 900", display: "swap", variable: "--font-schibsted" });
+// Reserveskriftene er målt for normal og fet vekt og definert i globals.css (ingen tekst som hopper når skriften lastes).
+const inter = localFont({ src: "./fonts/inter-latin-wght.woff2", weight: "100 900", display: "swap", variable: "--font-inter", adjustFontFallback: false, fallback: ["Inter Fallback Metric"] });
+const schibsted = localFont({ src: "./fonts/schibsted-grotesk-latin-wght.woff2", weight: "400 900", display: "swap", variable: "--font-schibsted", adjustFontFallback: false, fallback: ["Schibsted Fallback Metric"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),

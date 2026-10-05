@@ -1,6 +1,24 @@
 @import "tailwindcss";
 
 /*
+  Reserveskrifter som tar like stor plass som Inter og Schibsted Grotesk, så teksten ikke
+  hopper (layoutforskyvning) når de ekte skriftene er lastet. Bredden er målt på nettsidens
+  egen tekst (size-adjust): fet vekt mot fet Arial, normal vekt mot vanlig Arial.
+  Arial, Helvetica, Liberation Sans og Arimo har like bredder, og Roboto (Android) nesten
+  like, så samme verdi passer alle. Brukes via `fallback` i app/layout.tsx.
+*/
+@font-face { font-family: "Schibsted Fallback Metric"; font-weight: 100 549; size-adjust: 106.3%; ascent-override: 91.9%; descent-override: 24.3%; line-gap-override: 0%;
+  src: local("Arial"), local("ArialMT"), local("Helvetica"), local("Liberation Sans"), local("LiberationSans-Regular"), local("Arimo"), local("Roboto"), local("Roboto-Regular"); }
+@font-face { font-family: "Schibsted Fallback Metric"; font-weight: 550 1000; size-adjust: 100.5%; ascent-override: 97.2%; descent-override: 25.7%; line-gap-override: 0%;
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Helvetica Bold"), local("Helvetica-Bold"), local("Liberation Sans Bold"), local("LiberationSans-Bold"), local("Arimo Bold"), local("Arimo-Bold"), local("Roboto Bold"), local("Roboto-Bold"); }
+@font-face { font-family: "Inter Fallback Metric"; font-weight: 100 449; size-adjust: 106.7%; ascent-override: 90.8%; descent-override: 22.6%; line-gap-override: 0%;
+  src: local("Arial"), local("ArialMT"), local("Helvetica"), local("Liberation Sans"), local("LiberationSans-Regular"), local("Arimo"), local("Roboto"), local("Roboto-Regular"); }
+@font-face { font-family: "Inter Fallback Metric"; font-weight: 450 549; size-adjust: 108%; ascent-override: 89.7%; descent-override: 22.3%; line-gap-override: 0%;
+  src: local("Arial"), local("ArialMT"), local("Helvetica"), local("Liberation Sans"), local("LiberationSans-Regular"), local("Arimo"), local("Roboto"), local("Roboto-Regular"); }
+@font-face { font-family: "Inter Fallback Metric"; font-weight: 550 1000; size-adjust: 100.9%; ascent-override: 96%; descent-override: 23.9%; line-gap-override: 0%;
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Helvetica Bold"), local("Helvetica-Bold"), local("Liberation Sans Bold"), local("LiberationSans-Bold"), local("Arimo Bold"), local("Arimo-Bold"), local("Roboto Bold"), local("Roboto-Bold"); }
+
+/*
   IT Kompass – designsystem.
   Lyst og luftig grunnuttrykk, marine for typografi og kontrastflater,
   elektrisk blå som lys/aksent. Tekstfarger er kontrollert mot WCAG 2.1 AA.
