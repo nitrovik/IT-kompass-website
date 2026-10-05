@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 function MiniSite({ compact = false }: { compact?: boolean }) {
   return (
     <div className="relative h-full overflow-hidden bg-[linear-gradient(180deg,#f8fbff,#eaf3fd)]">
-      <svg className="absolute inset-0 size-full" viewBox="0 0 400 250" preserveAspectRatio="none" aria-hidden="true">
+      <svg className="absolute inset-0 size-full will-change-transform" viewBox="0 0 400 250" preserveAspectRatio="none" aria-hidden="true">
         {[0, 1, 2, 3, 4].map((i) => (
           <path key={i} d={`M${compact ? 0 : 150} ${250 - i * 10} C ${compact ? 140 : 250} ${200 - i * 14}, ${compact ? 260 : 300} ${120 - i * 8}, 400 ${60 - i * 12}`} fill="none" stroke="#2a8ae0" strokeOpacity={0.18 + i * 0.05} strokeWidth="1.2" />
         ))}

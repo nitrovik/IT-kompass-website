@@ -206,11 +206,12 @@ html.lenis, html.lenis body { height: auto; }
   backdrop-filter: blur(18px) saturate(1.6);
   -webkit-backdrop-filter: blur(18px) saturate(1.6);
 }
-.site-header .brand-logo { width: 196px; transition: width .45s var(--ease-out-soft); }
-.site-header[data-scrolled="true"] .brand-logo { width: 168px; }
+/* Logoen krympes med transform (ingen ny layout per bilde under overgangen) */
+.site-header .brand-logo { width: 196px; transform-origin: 0 50%; transition: transform .45s var(--ease-out-soft); }
+.site-header[data-scrolled="true"] .brand-logo { transform: scale(.857); }
 @media (max-width: 1023px) {
   .site-header .brand-logo { width: 150px; }
-  .site-header[data-scrolled="true"] .brand-logo { width: 140px; }
+  .site-header[data-scrolled="true"] .brand-logo { transform: scale(.933); }
 }
 .nav-link { position: relative; }
 .nav-link::after {
@@ -224,7 +225,8 @@ html.lenis, html.lenis body { height: auto; }
   transition: transform .4s var(--ease-out-soft);
 }
 .nav-link:hover::after, .nav-link[aria-current="page"]::after { transform: scaleX(1); }
-.scroll-progress { transform-origin: 0 50%; transform: scaleX(var(--progress, 0)); }
+/* scaleX settes av site-header.tsx; eget lag, så endringen ikke maler headeren på nytt */
+.scroll-progress { transform-origin: 0 50%; transform: scaleX(0); will-change: transform; }
 
 /* ---------- Avdekking ved scroll ---------- */
 /* Skjules bare når JavaScript kjører (klassen settes før første tegning). */
@@ -266,52 +268,46 @@ html.lenis, html.lenis body { height: auto; }
 @keyframes icon-spark { 0% { opacity: 0; stroke-dashoffset: .16; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { opacity: 0; stroke-dashoffset: -1; } }
 
 /* ---------- Spotlight-kort ---------- */
-/* Verdiene (--mx, --my, --rx, --ry, --sx, --sy, --hover) settes av spotlight-card.tsx, interpolert per bilde. */
+/*
+  Lyset, kantlyset og hover-skyggen er egne elementer (se spotlight-card.tsx) som bare flyttes
+  med transform og tones med opacity. Alt ligger i én avrundet ramme (.spotlight-frame):
+  bunnen er kantfargen, kantlyset ligger over den, den hvite flaten dekker alt innenfor
+  kanten, og lyskjeglen ligger øverst. Dermed synes kantlyset bare i den 1 px brede kanten,
+  uten maske. På PC med mus ligger de bevegelige delene i egne GPU-lag fra start, så ingenting
+  males på nytt per bilde og det ikke hakker når pekeren treffer kortet. I ro har kortet
+  bare den faste skyggen under.
+*/
 .spotlight-card {
-  --mx: 50%; --my: 50%; --rx: 0deg; --ry: 0deg; --sx: 0px; --sy: 0px; --hover: 0; --ix: 0px; --iy: 0px;
   position: relative;
   isolation: isolate;
-  background: #fff;
-  border: 1px solid var(--color-line);
+  background: transparent;
+  border: 1px solid transparent;
   border-radius: 24px;
-  transform: perspective(1100px) rotateX(var(--rx)) rotateY(var(--ry)) translate3d(0, calc(var(--hover) * -6px), 0);
-  box-shadow:
-    0 1px 2px rgba(14, 39, 71, .04),
-    calc(var(--sx) * var(--hover)) calc(14px + var(--sy) * var(--hover) + var(--hover) * 14px) calc(32px + var(--hover) * 28px) calc(-14px - var(--hover) * 4px) rgba(14, 39, 71, calc(.10 + var(--hover) * .08));
-  transition: border-color .4s ease;
+  box-shadow: 0 1px 2px rgba(14, 39, 71, .04), 0 14px 32px -14px rgba(14, 39, 71, .10);
   will-change: transform;
 }
-.spotlight-card::before {
-  /* Myk lyskjegle på overflaten */
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
+.spotlight-shadow, .spotlight-frame { position: absolute; inset: -1px; z-index: -1; border-radius: inherit; pointer-events: none; }
+.spotlight-shadow { box-shadow: 0 28px 60px -18px rgba(14, 39, 71, .11); opacity: 0; }
+.spotlight-frame { overflow: hidden; background: var(--color-line); }
+.spotlight-surface { position: absolute; inset: 1px; border-radius: 23px; background: #fff; }
+/* Myk lyskjegle på overflaten (laget er bare så stort som lyset er synlig) */
+.spotlight-light {
+  position: absolute; left: 0; top: 0; width: 324px; height: 324px; opacity: 0;
   background:
-    radial-gradient(260px circle at var(--mx) var(--my), rgba(42, 166, 255, .13), transparent 62%),
-    radial-gradient(120px circle at var(--mx) var(--my), rgba(255, 255, 255, .9), transparent 70%);
-  opacity: var(--hover);
-  pointer-events: none;
+    radial-gradient(260px circle at 50% 50%, rgba(42, 166, 255, .13), transparent 62%),
+    radial-gradient(120px circle at 50% 50%, rgba(255, 255, 255, .9), transparent 70%);
 }
-.spotlight-card::after {
-  /* Lysende kant der lyset treffer */
-  content: "";
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  padding: 1px;
-  background: radial-gradient(200px circle at var(--mx) var(--my), rgba(42, 166, 255, .85), rgba(42, 166, 255, .12) 45%, transparent 70%);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: var(--hover);
-  pointer-events: none;
+/* Lysende kant der lyset treffer */
+.spotlight-rim-light {
+  position: absolute; left: 0; top: 0; width: 280px; height: 280px; opacity: 0;
+  background: radial-gradient(200px circle at 50% 50%, rgba(42, 166, 255, .85), rgba(42, 166, 255, .12) 45%, transparent 70%);
+}
+@media (hover: hover) and (pointer: fine) {
+  .spotlight-card :is(.spotlight-shadow, .spotlight-light, .spotlight-rim-light, .card-icon) { will-change: transform, opacity; }
 }
 .spotlight-card:has(a:focus-visible) { outline: 2px solid var(--color-brand); outline-offset: 4px; }
-.spotlight-card .card-icon { transform: translate3d(var(--ix), var(--iy), 0); }
-.spotlight-card .card-icon-glow { opacity: calc(.25 + var(--hover) * .75); }
-.spotlight-card .card-fiber { opacity: calc(.35 + var(--hover) * .65); }
+.spotlight-card .card-icon-glow { opacity: .25; }
+.spotlight-card .card-fiber { opacity: .35; }
 .spotlight-card:hover .card-fiber-pulse, .spotlight-card:focus-visible .card-fiber-pulse { animation: card-fiber 1.4s var(--ease-in-out-soft) infinite; }
 @keyframes card-fiber { from { transform: translateX(-30%); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } to { transform: translateX(330%); opacity: 0; } }
 
@@ -384,21 +380,22 @@ select.form-control {
 @media (prefers-reduced-motion: reduce) { .route-pulse { display: none; } }
 
 /* Prosesslinjen: vertikal på mobil, horisontal fra md */
-.process-light { transform: scaleY(var(--p, 0)); transform-origin: 50% 0; }
+/* --p settes på selve lyslinjen (ikke på listen), så bare den beregnes på nytt; eget lag */
+.process-light { transform: scaleY(var(--p, 0)); transform-origin: 50% 0; will-change: transform; }
 @media (min-width: 768px) { .process-light { transform: scaleX(var(--p, 0)); transform-origin: 0 50%; } }
 
 /* Lysimpulser i veiviserbanneret: to lange, myke streker per fiber */
-.banner-pulse { stroke-dasharray: .07 .43; stroke-dashoffset: 0; filter: drop-shadow(0 0 5px rgba(72, 185, 255, .9)); animation: banner-pulse 8s linear infinite; animation-play-state: paused; }
+.banner-pulse { stroke-dasharray: .07 .43; stroke-dashoffset: 0; animation: banner-pulse 8s linear infinite; animation-play-state: paused; }
 [data-inview="true"] .banner-pulse { animation-play-state: running; }
 @keyframes banner-pulse { to { stroke-dashoffset: -1; } }
 
 /* Én lysimpuls langs toppen av footeren */
-.footer-pulse { stroke-dasharray: .12 1.4; stroke-dashoffset: .12; filter: drop-shadow(0 0 4px #2aa6ff); animation: footer-pulse 7s var(--ease-in-out-soft) infinite; animation-play-state: paused; }
+.footer-pulse { stroke-dasharray: .12 1.4; stroke-dashoffset: .12; animation: footer-pulse 7s var(--ease-in-out-soft) infinite; animation-play-state: paused; }
 [data-inview="true"] .footer-pulse { animation-play-state: running; }
 @keyframes footer-pulse { to { stroke-dashoffset: -1.2; } }
 
 /* Rolige lysimpulser i undersidetoppen */
-.page-pulse { stroke-dasharray: .1 1.3; stroke-dashoffset: .1; opacity: .9; filter: drop-shadow(0 0 5px rgba(42, 166, 255, .8)); animation: page-pulse 6.5s var(--ease-in-out-soft) infinite; animation-play-state: paused; }
+.page-pulse { stroke-dasharray: .1 1.3; stroke-dashoffset: .1; opacity: .9; animation: page-pulse 6.5s var(--ease-in-out-soft) infinite; animation-play-state: paused; }
 [data-inview="true"] .page-pulse { animation-play-state: running; }
 @keyframes page-pulse { to { stroke-dashoffset: -1.2; } }
 @media (max-width: 767px) { .page-pulse { display: none; } }

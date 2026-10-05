@@ -41,7 +41,6 @@ function RouteDiagram() {
 
           {/* Behov → kompass */}
           <path d={needPath} className="fiber" stroke="#8fd0ff" strokeOpacity=".55" strokeWidth="1.6" />
-          <path d={needPath} pathLength={1} className="fiber route-pulse route-pulse-in" stroke="#fff" strokeWidth="2.6" />
 
           {/* Kompass → alternativer */}
           {diagram.options.map((_, i) => {
@@ -50,8 +49,6 @@ function RouteDiagram() {
             return (
               <g key={i}>
                 <path d={routeTo(y)} className="fiber" stroke={chosen ? "url(#route-chosen)" : "#8fa8c2"} strokeOpacity={chosen ? 1 : 0.32} strokeWidth={chosen ? 2 : 1.2} />
-                <path d={routeTo(y)} pathLength={1} className="fiber route-pulse route-pulse-scan" stroke="#cfe9ff" strokeWidth="2.2" style={{ animationDelay: `${0.4 + i * 0.55}s` }} />
-                {chosen ? <path d={routeTo(y)} pathLength={1} className="fiber route-pulse route-pulse-chosen" stroke="#fff" strokeWidth="3" /> : null}
                 <circle cx={OPTION_X} cy={y} r={chosen ? 9 : 6} fill={chosen ? "#2aa6ff" : "#0b2342"} stroke={chosen ? "#bfe6ff" : "#8fa8c2"} strokeOpacity={chosen ? 1 : 0.6} strokeWidth="1.6" className={chosen ? "route-node-chosen" : undefined} />
               </g>
             );
@@ -72,6 +69,19 @@ function RouteDiagram() {
             <path d={`M${HUB.x - 5} ${HUB.y} L${HUB.x + 5} ${HUB.y} L${HUB.x} ${HUB.y + 19} Z`} fill="#4fb3cf" />
             <circle cx={HUB.x} cy={HUB.y} r="2.6" fill="#0e2747" stroke="#fff" strokeWidth="1.2" />
           </g>
+        </svg>
+        {/* Lyspulsene i et eget lag: bare de tegnes på nytt per bilde, ikke glød, noder og kompass */}
+        <svg viewBox={`0 0 ${W} ${H}`} className="pointer-events-none absolute inset-0 size-full overflow-visible will-change-transform" aria-hidden="true">
+          <path d={needPath} pathLength={1} className="fiber route-pulse route-pulse-in" stroke="#fff" strokeWidth="2.6" />
+          {diagram.options.map((_, i) => {
+            const y = optionY(i, n);
+            return (
+              <g key={i}>
+                <path d={routeTo(y)} pathLength={1} className="fiber route-pulse route-pulse-scan" stroke="#cfe9ff" strokeWidth="2.2" style={{ animationDelay: `${0.4 + i * 0.55}s` }} />
+                {i === diagram.chosen ? <path d={routeTo(y)} pathLength={1} className="fiber route-pulse route-pulse-chosen" stroke="#fff" strokeWidth="3" /> : null}
+              </g>
+            );
+          })}
         </svg>
 
         {/* Etiketter i HTML, så de er skarpe og lesbare på alle skjermstørrelser */}

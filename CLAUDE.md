@@ -128,7 +128,6 @@ Next.js App Router
 TypeScript
 Tailwind CSS (design tokens in `app/globals.css` under `@theme`; component classes live in `@layer components` so utilities can override them)
 shadcn/ui patterns
-Motion
 Lenis
 Zod
 Resend
@@ -139,16 +138,21 @@ Fonts: Schibsted Grotesk (headings, Norwegian typeface) and Inter (body), self-h
 ### Hero fiber scene
 `components/home/fiber/engine.ts` is a small custom WebGL renderer (no library): three depth layers with perspective, glass-tube cable shading, shader-driven light pulses (varied speed, brightness, occasional strong pulses, near-silent fibers), network nodes, pointer repulsion/parallax, and adaptive quality. All fibers are one draw call, nodes another.
 - `hero-fiber.tsx` loads the engine after `load` + idle, pauses it off-screen and in hidden tabs.
+- Quality tiers HIGH / MID / LOW (`TIERS` in `engine.ts`: DPR cap 1.5 / 1 / 0.75, fiber density, fps 60 / 60 / 30). Start tier: HIGH on desktop with a mouse, MID on capable touch devices, LOW otherwise. The engine keeps measuring frame times and steps down a tier when it cannot keep up; below LOW the last frame stays still.
+- Max 60 fps (also on 120 Hz screens), half rate while the page scrolls. No MSAA (edges are smoothed in the shader). Per-fiber pulse values are computed in the vertex shader; keep per-pixel work in the fragment shader minimal.
 - Static SVG fallback (`fiber-fallback.tsx`) is server-rendered and stays for weak devices, Save-Data, no WebGL, and software-rendered WebGL (no GPU). Reduced motion renders one still frame.
 - `?fiber=1` forces the scene on software renderers – for visual QA only.
 - The compass (`hero-compass.tsx`) sits where the fibers converge; its needle points toward the pointer.
-GSAP and React Three Fiber are not used. Motion is used for the magnetic CTAs. Add libraries back only with a concrete reason.
+GSAP, React Three Fiber and Motion are not used (the magnetic CTAs use a small spring in `magnetic-link.tsx`). Add libraries back only with a concrete reason.
 
 ### Motion system
 - Scroll reveals: add `data-reveal` (`fade`, `scale`, `clip`) or `data-split` (word-by-word headings via `SplitWords`). One shared IntersectionObserver (`components/ui/reveal-observer.tsx`) sets `data-inview`. Content is only hidden when JS runs (`js-reveal` class), and anything visible at load is shown instantly.
 - `data-observe="toggle"` pauses CSS animations inside an element while it is off-screen. Always pair infinite CSS animations with it.
-- Pointer effects (spotlight cards, compass) write CSS variables in one requestAnimationFrame; no React state per pointer frame.
-- Lenis only runs its frame loop while the page is actually scrolling.
+- One shared frame loop: `lib/frame.ts`. Lenis runs first, then scroll effects (`onScroll({ measure, update })`), then animations (`onFrame(tick)`, e.g. spotlight, magnetic CTAs, fiber scene). Do not add separate scroll listeners or rAF loops.
+- `measure` may read layout and only runs when the page size changes; `update` only writes (transform, opacity, CSS variables on the element that needs them) and only when the value changed. Never call `getBoundingClientRect` per scroll or pointer frame.
+- Pointer effects animate transform and opacity on their own layers. Do not animate box-shadow, filter, blur or gradient positions per frame (spotlight light, rim and shadow are separate elements).
+- Animated SVG pulses use wide, faint strokes for glow, not `filter: drop-shadow`, and sit in their own layer (`will-change-transform` on the `<svg>`).
+- Lenis is loaded after `load` + idle and uses its own clock, so the first scroll after a pause glides instead of jumping. The loop stops when nothing moves.
 
 ## Commands
 - `npm install`

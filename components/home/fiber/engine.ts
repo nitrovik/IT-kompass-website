@@ -8,15 +8,28 @@
   - Tre dybdelag (bakgrunn, midt, forgrunn) med ekte perspektiv: z-verdien skalerer
     bredde og posisjon, og musen flytter «kameraet» litt slik at lagene glir mot hverandre.
   - Fiberkroppen tegnes som et glassrør (mørkere kanter, lys kjerne, lysrefleks på én side).
-  - Lyspulsene regnes ut i fragment-shaderen fra tid, fart og et frø per fiber: tre pulser
-    per fiber med ulik fart, hale og styrke, enkelte kraftigere impulser, og noen fibre
-    som nesten er stille. Ingen tilfeldig blinking – alt er deterministisk og flytende.
+  - Lyspulsene: tre pulser per fiber med ulik fart, hale og styrke, enkelte kraftigere
+    impulser, og noen fibre som nesten er stille. Alt som er likt for hele fiberen (hvor
+    pulsen er, om den er på, hvor lang halen er) regnes ut én gang per hjørne i
+    vertex-shaderen; per piksel gjenstår bare selve lysprofilen. Deterministisk og flytende.
   - Musen skyver fibre svakt unna, forsterker lyset i nærheten og vipper perspektivet.
-  - Adaptiv kvalitet: måler bildetiden og går ned i oppløsning/antall fibre, eller stopper
-    animasjonen, hvis enheten ikke klarer det.
+  - Bildetakt: maks 60 bilder/s (også på 120 Hz-skjermer), halv takt mens siden scrolles,
+    og tegningen går i den felles bildeløkken (lib/frame.ts) etter scroll-effektene.
+  - Kvalitetsnivåer HIGH / MID / LOW (oppløsning, antall fibre, bildetakt). Bildetiden måles
+    hele tiden; klarer ikke enheten nivået, går scenen ned ett nivå, og under LOW blir
+    siste bilde stående stille.
 */
 
-export type FiberTier = "high" | "medium";
+import { onFrame, scrollState } from "@/lib/frame";
+
+export type FiberTier = "high" | "mid" | "low";
+
+const TIERS: Record<FiberTier, { dpr: number; density: number; samples: number; fps: number }> = {
+  high: { dpr: 1.5, density: 1, samples: 150, fps: 60 },
+  mid: { dpr: 1, density: 0.75, samples: 110, fps: 60 },
+  low: { dpr: 0.75, density: 0.55, samples: 80, fps: 30 },
+};
+const LOWER: Record<FiberTier, FiberTier | null> = { high: "mid", mid: "low", low: null };
 
 export type FiberSceneOptions = {
   tier: FiberTier;
@@ -88,12 +101,17 @@ attribute vec3 a_uv;     // u langs fiberen, side (-1/+1), bølgeamplitude
 attribute vec4 a_fiber;  // kjerneradius (px), glorie-faktor, lag (0/1/2), frø
 attribute vec4 a_anim;   // fart (u/s), aktivitet, lengde (px), lysstyrke
 
-varying vec3 v_uv;
-varying vec4 v_fiber;
-varying vec4 v_anim;
-varying float v_glow;
-varying float v_mask;
-varying float v_corePx;
+uniform float u_reveal;   // sekunder siden start (tegner fibrene inn fra venstre)
+uniform float u_energy;   // 0..1, pulsene tones inn etter innføringen
+
+varying vec4 v_uv;        // u, på tvers (kjerneradier), på tvers (0..1 mot kanten), u i px
+varying vec3 v_fiber;     // glorie, lag, innføringsterskel
+varying vec3 v_head;      // pulshodenes posisjon i px langs fiberen
+varying vec3 v_amp;       // pulsstyrke (0 = av)
+varying vec3 v_tail;      // halelengde i px
+varying vec3 v_px;        // musglød, tekstmaske, kjernebredde i skjermpiksler
+
+float hash(float n) { return fract(sin(n) * 43758.5453123); }
 
 void main() {
   float seed = a_fiber.w;
@@ -108,48 +126,68 @@ void main() {
   vec2 normal = vec2(-dir.y, dir.x);
 
   float core = max(a_fiber.x * s, 0.35);
-  float halfWidth = core * a_fiber.y + 1.0;
+  // Gloriens ytterste del er usynlig (< 1 %); båndet gjøres smalere → færre piksler å fylle
+  float halfWidth = core * a_fiber.y * 0.72 + 1.0;
   vec2 pos = sp + normal * a_uv.y * halfWidth;
 
-  v_uv = vec3(a_uv.x, a_uv.y * halfWidth / core, a_uv.z);
-  v_fiber = a_fiber;
-  v_anim = a_anim;
-  v_glow = g;
-  v_mask = textMask(sp);
-  v_corePx = core * u_dpr;
+  // Pulsene: likt for hele fiberen, så de regnes her og ikke per piksel
+  float len = a_anim.z;
+  vec3 head, amp, tail;
+  for (int i = 0; i < 3; i++) {
+    float fi = float(i);
+    float h1 = hash(seed * 17.0 + fi * 3.1);
+    float h2 = hash(seed * 31.0 + fi * 7.3);
+    float speed = a_anim.x * (0.7 + 0.6 * h1);
+    float period = 1.3 + 1.7 * h2;
+    float phase = u_time * speed + h1 * period;
+    float cycle = floor(phase / period);
+    float on = step(1.0 - a_anim.y, hash(seed * 13.0 + fi * 5.0 + cycle * 1.37));
+    float strong = step(0.8, hash(seed * 7.0 + fi + cycle * 2.11));
+    float hd = (mod(phase, period) - 0.15) * len;
+    float am = on * (0.6 + 0.4 * h1) * (1.0 + strong * 1.5) * a_anim.w * u_energy;
+    float tl = mix(50.0, 170.0, h2) * (1.0 + strong * 0.9);
+    if (i == 0) { head.x = hd; amp.x = am; tail.x = tl; }
+    else if (i == 1) { head.y = hd; amp.y = am; tail.y = tl; }
+    else { head.z = hd; amp.z = am; tail.z = tl; }
+  }
+
+  float delay = layer < 0.5 ? 0.0 : (layer < 1.5 ? 0.25 : 0.45);
+  v_uv = vec4(a_uv.x, a_uv.y * halfWidth / core, a_uv.y, a_uv.x * len);
+  v_fiber = vec3(a_fiber.y, layer, u_reveal * 0.8 - delay - hash(seed) * 0.3);
+  v_head = head;
+  v_amp = amp;
+  v_tail = tail;
+  v_px = vec3(g, textMask(sp), core * u_dpr);
   gl_Position = vec4(pos.x / (u_res.x * 0.5), -pos.y / (u_res.y * 0.5), 0.0, 1.0);
 }
 `;
 
 const FIBER_FS = /* glsl */ `
 precision highp float;
-uniform float u_time;
-uniform float u_reveal;   // sekunder siden start (tegner fibrene inn fra venstre)
-uniform float u_energy;   // 0..1, pulsene tones inn etter innføringen
 
-varying vec3 v_uv;
-varying vec4 v_fiber;
-varying vec4 v_anim;
-varying float v_glow;
-varying float v_mask;
-varying float v_corePx;
+varying vec4 v_uv;
+varying vec3 v_fiber;
+varying vec3 v_head;
+varying vec3 v_amp;
+varying vec3 v_tail;
+varying vec3 v_px;
 
-float hash(float n) { return fract(sin(n) * 43758.5453123); }
+float pulse(float d, float tail) { return d <= 0.0 ? exp(d / tail) : exp(-d * d / 180.0); }
+float spark(float d, float tail) { return d <= 0.0 ? exp(d / (tail * 0.16)) : exp(-d * d / 40.0); }
 
 void main() {
   float u = v_uv.x;
   float s = v_uv.y;               // på tvers, målt i kjerneradier
   float a = abs(s);
-  float halo = v_fiber.y;
-  float layer = v_fiber.z;
-  float seed = v_fiber.w;
-  float len = v_anim.z;
+  float halo = v_fiber.x;
+  float layer = v_fiber.y;
+  float corePx = v_px.z;
   float layerA = layer < 0.5 ? 0.3 : (layer < 1.5 ? 0.8 : 1.0);
 
   // Glassrøret
-  float e = clamp(1.0 / max(v_corePx, 0.5), 0.04, 1.0);
+  float e = clamp(1.0 / max(corePx, 0.5), 0.04, 1.0);
   if (layer < 0.5) e = max(e, 0.9);                        // bakgrunnen er uskarp, som ute av fokus
-  float coverage = clamp(v_corePx, 0.25, 1.0);
+  float coverage = clamp(corePx, 0.25, 1.0);
   float body = (1.0 - smoothstep(1.0 - e, 1.0 + e, a)) * coverage;
   float edge = smoothstep(0.3, 1.0, a);
   vec3 bodyCol = mix(vec3(0.82, 0.91, 1.0), vec3(0.16, 0.36, 0.60), edge);
@@ -158,36 +196,20 @@ void main() {
   float alpha = bodyA;
 
   float sk = (s + 0.42) / 0.22;
-  float spec = body * exp(-sk * sk) * 0.7 * layerA * step(1.5, v_corePx);
+  float spec = body * exp(-sk * sk) * 0.7 * layerA * step(1.5, corePx);
   rgb += vec3(spec);
   alpha += spec * 0.35;
 
-  // Lyspulser
+  // Lyspulser (posisjon og styrke kommer ferdig fra vertex-shaderen)
+  vec3 d = v_uv.w - v_head;
   float pulses = 0.0;
   float hot = 0.0;
-  for (int i = 0; i < 3; i++) {
-    float fi = float(i);
-    float h1 = hash(seed * 17.0 + fi * 3.1);
-    float h2 = hash(seed * 31.0 + fi * 7.3);
-    float speed = v_anim.x * (0.7 + 0.6 * h1);
-    float period = 1.3 + 1.7 * h2;
-    float phase = u_time * speed + h1 * period;
-    float cycle = floor(phase / period);
-    float head = mod(phase, period) - 0.15;
-    float d = (u - head) * len;
-    float on = step(1.0 - v_anim.y, hash(seed * 13.0 + fi * 5.0 + cycle * 1.37));
-    float strong = step(0.8, hash(seed * 7.0 + fi + cycle * 2.11));
-    float tail = mix(50.0, 170.0, h2) * (1.0 + strong * 0.9);
-    float p = d <= 0.0 ? exp(d / tail) : exp(-d * d / 180.0);
-    float boost = (0.6 + 0.4 * h1) * (1.0 + strong * 1.5);
-    pulses += p * on * boost;
-    hot += (d <= 0.0 ? exp(d / (tail * 0.16)) : exp(-d * d / 40.0)) * on * boost;
-  }
-  pulses *= v_anim.w * u_energy;
-  hot *= v_anim.w * u_energy;
+  if (v_amp.x > 0.0) { pulses += pulse(d.x, v_tail.x) * v_amp.x; hot += spark(d.x, v_tail.x) * v_amp.x; }
+  if (v_amp.y > 0.0) { pulses += pulse(d.y, v_tail.y) * v_amp.y; hot += spark(d.y, v_tail.y) * v_amp.y; }
+  if (v_amp.z > 0.0) { pulses += pulse(d.z, v_tail.z) * v_amp.z; hot += spark(d.z, v_tail.z) * v_amp.z; }
 
-  // Glorie rundt pulsen (elektrisk blå) og hvitglødende kjerne
-  float haloProfile = exp(-a * a / (halo * halo * 0.11));
+  // Glorie rundt pulsen (elektrisk blå) og hvitglødende kjerne. Tones ut mot båndets kant.
+  float haloProfile = exp(-a * a / (halo * halo * 0.11)) * (1.0 - smoothstep(0.7, 1.0, abs(v_uv.z)));
   float haloI = clamp(haloProfile * pulses * 0.42 * layerA, 0.0, 0.85);
   rgb += vec3(0.03, 0.44, 1.0) * haloI;
   alpha += haloI;
@@ -199,15 +221,14 @@ void main() {
   alpha += coreI * 0.6;
 
   // Musen lyser opp fibrene i nærheten
-  float glowI = haloProfile * v_glow * 0.22 * layerA;
+  float glowI = haloProfile * v_px.x * 0.22 * layerA;
   rgb += vec3(0.05, 0.45, 1.0) * glowI;
   alpha += glowI;
 
   // Innføring: fibrene tegnes fra venstre mot høyre
-  float delay = layer < 0.5 ? 0.0 : (layer < 1.5 ? 0.25 : 0.45);
-  float reveal = smoothstep(0.0, 0.18, u_reveal * 0.8 - delay - hash(seed) * 0.3 - u);
+  float reveal = smoothstep(0.0, 0.18, v_fiber.z - u);
 
-  float k = v_mask * reveal;
+  float k = v_px.y * reveal;
   gl_FragColor = vec4(rgb, min(alpha, 1.0)) * k;
 }
 `;
@@ -337,7 +358,7 @@ function compose(W: number, H: number, tier: FiberTier): FiberDef[] {
   const r = (a: number, b: number) => a + (b - a) * rnd();
   const wide = W >= 1024;
   const fibers: FiberDef[] = [];
-  const dense = tier === "high" ? 1 : 0.55;
+  const dense = TIERS[tier].density;
 
   const hub: Vec3 = wide ? [W * (hubX(W) - 0.5), H * (HUB.y - 0.5), 0] : [W * 0.46, H * 0.12, 0];
 
@@ -362,7 +383,7 @@ function compose(W: number, H: number, tier: FiberTier): FiberDef[] {
   }
 
   // Midt: hovednettverket – samles i kompasset
-  const trunk = Math.round((wide ? 15 : 11) * (tier === "high" ? 1 : 0.8));
+  const trunk = Math.round((wide ? 15 : 11) * (tier === "low" ? 0.8 : 1));
   for (let i = 0; i < trunk; i++) {
     const t = trunk > 1 ? i / (trunk - 1) - 0.5 : 0;
     const zStart = r(-140, 120);
@@ -545,7 +566,8 @@ export function createFiberScene(canvas: HTMLCanvasElement, options: FiberSceneO
   let tier = options.tier;
   // failIfMajorPerformanceCaveat: uten skjermkort (programvaretegning) får vi ingen kontekst,
   // og det statiske SVG-bildet blir stående i stedet for å belaste prosessoren.
-  const context = canvas.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: tier === "high", depth: false, stencil: false, powerPreference: "high-performance", failIfMajorPerformanceCaveat: !options.allowSoftware }) as WebGLRenderingContext | null;
+  // Ingen MSAA: kantene glattes allerede i shaderen, og MSAA ville firedoblet fyllarbeidet
+  const context = canvas.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false, powerPreference: "high-performance", failIfMajorPerformanceCaveat: !options.allowSoftware }) as WebGLRenderingContext | null;
   if (!context) return null;
   const gl: WebGLRenderingContext = context;
   if (!options.allowSoftware && isSoftwareRenderer(gl)) return null;
@@ -581,11 +603,9 @@ export function createFiberScene(canvas: HTMLCanvasElement, options: FiberSceneO
   let width = 1;
   let height = 1;
   let dpr = 1;
-  const maxDpr = () => (tier === "high" ? 1.75 : 1);
 
   const rebuild = () => {
-    const samples = tier === "high" ? 150 : 90;
-    const built = build(compose(width, height, tier), samples);
+    const built = build(compose(width, height, tier), TIERS[tier].samples);
     if (built.indices instanceof Uint32Array && !uintIndices) return;
     gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
     gl.bufferData(gl.ARRAY_BUFFER, built.vertices, gl.STATIC_DRAW);
@@ -602,7 +622,7 @@ export function createFiberScene(canvas: HTMLCanvasElement, options: FiberSceneO
     const rect = canvas.getBoundingClientRect();
     width = Math.max(1, Math.round(rect.width));
     height = Math.max(1, Math.round(rect.height));
-    dpr = Math.min(window.devicePixelRatio || 1, maxDpr());
+    dpr = Math.min(window.devicePixelRatio || 1, TIERS[tier].dpr);
     canvas.width = Math.round(width * dpr);
     canvas.height = Math.round(height * dpr);
     gl.viewport(0, 0, canvas.width, canvas.height);
@@ -616,13 +636,13 @@ export function createFiberScene(canvas: HTMLCanvasElement, options: FiberSceneO
 
   const start = performance.now();
   let last = start;
-  let frame = 0;
   let running = false;
   let visible = true;
   let destroyed = false;
-  let skip = false;
+  let lastDraw = 0;
+  let cancelFrame: (() => void) | null = null;
+  // Bildetider (mellom tegnede bilder) for adaptiv kvalitet
   const frameTimes: number[] = [];
-  let measured = false;
 
   const layout = (p: WebGLProgram, attrs: [string, number, number][]) => attrs.map(([name, size, offset]) => ({ loc: gl.getAttribLocation(p, name), size, offset }));
   const fiberAttrs = layout(fiberProgram, [["a_pos", 3, 0], ["a_prev", 3, 3], ["a_next", 3, 6], ["a_uv", 3, 9], ["a_fiber", 4, 12], ["a_anim", 4, 16]]);
@@ -636,9 +656,9 @@ export function createFiberScene(canvas: HTMLCanvasElement, options: FiberSceneO
     }
   };
 
+  const maxAttribs = Math.min(gl.getParameter(gl.MAX_VERTEX_ATTRIBS) as number, 8);
   const disableAll = () => {
-    const max = gl.getParameter(gl.MAX_VERTEX_ATTRIBS) as number;
-    for (let i = 0; i < Math.min(max, 8); i++) gl.disableVertexAttribArray(i);
+    for (let i = 0; i < maxAttribs; i++) gl.disableVertexAttribArray(i);
   };
 
   function draw(now: number) {
@@ -694,37 +714,34 @@ export function createFiberScene(canvas: HTMLCanvasElement, options: FiberSceneO
     }
   }
 
-  const loop = (now: number) => {
-    if (!running) return;
-    frame = requestAnimationFrame(loop);
-    // Medium: 30 bilder i sekundet er nok og sparer batteri
-    if (tier === "medium") { skip = !skip; if (skip) return; }
+  // Kjøres av den felles bildeløkken. Tegner maks 60 (LOW: 30) bilder/s, og halvparten mens
+  // siden scrolles, så scrollingen alltid får forrang.
+  const tick = (now: number) => {
+    if (!running) return false;
+    const fps = TIERS[tier].fps / (scrollState().scrolling ? 2 : 1);
+    if (now - lastDraw < 1000 / fps - 2) return true;
+    if (lastDraw && !scrollState().scrolling) sample(now - lastDraw, fps);
+    lastDraw = now;
     draw(now);
-    measure(now);
+    return true;
   };
 
-  // Adaptiv kvalitet: mål gjennomsnittlig bildetid etter innføringen
-  let lastFrameAt = 0;
-  function measure(now: number) {
-    if (measured) return;
-    if (lastFrameAt) frameTimes.push(now - lastFrameAt);
-    lastFrameAt = now;
-    if (frameTimes.length < 150) return;
-    measured = true;
-    const sorted = [...frameTimes].sort((a, b) => a - b);
-    const median = sorted[Math.floor(sorted.length / 2)];
-    const budget = tier === "high" ? 26 : 52;
-    if (median > budget) {
-      if (tier === "high") {
-        tier = "medium";
-        frameTimes.length = 0;
-        measured = false;
-        lastFrameAt = 0;
-        resize();
-      } else {
-        stop();
-        options.onDegrade?.("slow");
-      }
+  // Adaptiv kvalitet: medianen av 90 bildetider. Er den mer enn 1,6 × målet, går scenen
+  // ned ett nivå; under LOW stopper animasjonen og siste bilde blir stående.
+  function sample(interval: number, fps: number) {
+    if (performance.now() - start < 2500) return; // innføring og lasting teller ikke
+    frameTimes.push(interval);
+    if (frameTimes.length < 90) return;
+    const median = [...frameTimes].sort((a, b) => a - b)[45];
+    frameTimes.length = 0;
+    if (median <= (1000 / fps) * 1.6) return;
+    const next = LOWER[tier];
+    if (next) {
+      tier = next;
+      resize();
+    } else {
+      stop();
+      options.onDegrade?.("slow");
     }
   }
 
@@ -732,12 +749,14 @@ export function createFiberScene(canvas: HTMLCanvasElement, options: FiberSceneO
     if (running || destroyed || !options.animate || !visible) return;
     running = true;
     last = performance.now();
-    lastFrameAt = 0;
-    frame = requestAnimationFrame(loop);
+    lastDraw = 0;
+    frameTimes.length = 0;
+    cancelFrame = onFrame(tick);
   }
   function stop() {
     running = false;
-    cancelAnimationFrame(frame);
+    cancelFrame?.();
+    cancelFrame = null;
   }
 
   const onLost = (event: Event) => {

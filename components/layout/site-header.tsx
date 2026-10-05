@@ -8,10 +8,12 @@ import { navItems, site } from "@/config/site";
 import { buttonVariants } from "@/components/ui/button";
 import { Arrow } from "@/components/ui/arrow";
 import { cn } from "@/lib/utils";
+import { onScroll } from "@/lib/frame";
 
 export function SiteHeader() {
   const pathname = usePathname();
   const headerRef = useRef<HTMLElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
   const firstLink = useRef<HTMLAnchorElement>(null);
   const [open, setOpen] = useState(false);
@@ -23,27 +25,22 @@ export function SiteHeader() {
     setOpen(false);
   }
 
-  // Krymp headeren og vis framdrift ved scrolling. Skrives rett til DOM-en, uten React-state per scroll.
+  // Krymp headeren og vis framdrift ved scrolling. Kjører i den felles bildeløkken og skriver
+  // bare når noe faktisk endres: attributtet ved terskelen, framdriften som transform.
   useEffect(() => {
     const header = headerRef.current;
-    if (!header) return;
-    let frame = 0;
-    const update = () => {
-      frame = 0;
-      const y = window.scrollY;
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      header.dataset.scrolled = y > 12 ? "true" : "false";
-      header.style.setProperty("--progress", max > 0 ? Math.min(y / max, 1).toFixed(4) : "0");
-    };
-    const onScroll = () => { if (!frame) frame = requestAnimationFrame(update); };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
+    const bar = progressRef.current;
+    if (!header || !bar) return;
+    let scrolled = "";
+    let progress = "";
+    return onScroll({
+      update: ({ y, max }) => {
+        const nextScrolled = y > 12 ? "true" : "false";
+        if (nextScrolled !== scrolled) header.dataset.scrolled = scrolled = nextScrolled;
+        const nextProgress = max > 0 ? Math.min(y / max, 1).toFixed(3) : "0";
+        if (nextProgress !== progress) bar.style.transform = `scaleX(${(progress = nextProgress)})`;
+      },
+    });
   }, []);
 
   // Mobilmeny: lås scroll, Escape lukker, fokus flyttes inn og tilbake.
@@ -69,7 +66,7 @@ export function SiteHeader() {
     <header ref={headerRef} data-scrolled="false" className="site-header fixed inset-x-0 top-0 z-50">
       <div className="container-shell flex h-full items-center gap-10">
         <Link href="/" className="relative z-10 flex shrink-0 items-center" aria-label={`${site.name} – til forsiden`}>
-          <Image src="/brand/it-kompass-logo-web-opt.png" alt={site.name} width={414} height={148} priority unoptimized className="brand-logo h-auto" />
+          <Image src="/brand/it-kompass-logo-web-opt.png" alt={site.name} width={414} height={148} loading="eager" fetchPriority="high" unoptimized className="brand-logo h-auto" />
         </Link>
 
         <nav className="ml-auto hidden items-center gap-9 lg:flex" aria-label="Hovednavigasjon">
@@ -93,7 +90,7 @@ export function SiteHeader() {
         </div>
       </div>
 
-      <div className="scroll-progress pointer-events-none absolute inset-x-0 bottom-[-1px] h-[2px] rounded-r-full bg-[linear-gradient(90deg,rgba(72,185,255,.25),#48b9ff_40%,#0a6ed1)] opacity-0 transition-opacity duration-500 [[data-scrolled=true]_&]:opacity-100" aria-hidden="true" />
+      <div ref={progressRef} className="scroll-progress pointer-events-none absolute inset-x-0 bottom-[-1px] h-[2px] rounded-r-full bg-[linear-gradient(90deg,rgba(72,185,255,.25),#48b9ff_40%,#0a6ed1)] opacity-0 transition-opacity duration-500 [[data-scrolled=true]_&]:opacity-100" aria-hidden="true" />
 
     </header>
       {/* Mobilmeny */}
