@@ -49,11 +49,13 @@ npm run build
 
 ## Teknologi
 
-Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Motion, Lenis, Zod, Resend og Cloudflare Turnstile. Skriftene Schibsted Grotesk (overskrifter) og Inter (brødtekst) ligger lokalt i `app/fonts/` (SIL Open Font License).
+Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Lenis, Zod, Resend og Cloudflare Turnstile. Skriftene Schibsted Grotesk (overskrifter) og Inter (brødtekst) ligger lokalt i `app/fonts/` (SIL Open Font License).
 
 Fiberscenen i heroen er en egen, lett WebGL-renderer (`components/home/fiber/`). Den lastes etter at siden er vist, pauser når den ikke er synlig, og viser et statisk bilde på svake enheter, uten skjermkort og ved «redusert bevegelse». Se CLAUDE.md for detaljer.
 
-Lighthouse (4. oktober 2026, mobil): forsiden ytelse 95, undersidene 94–99. PC: 100. Tilgjengelighet, beste praksis og SEO: 100 på alle sider.
+Alt som beveger seg med scroll eller mus går i én felles bildeløkke (`lib/frame.ts`), slik at nettleseren slipper å måle siden på nytt i hvert bilde.
+
+Lighthouse (5. oktober 2026, lokal måling, mobil): forsiden ytelse 94–95, undersidene 95–99. PC: 100. Tilgjengelighet, beste praksis og SEO: 100 på alle sider.
 
 ## Publisering
 

@@ -14,30 +14,30 @@ import { cn } from "@/lib/utils";
   → resultatet skrives som transform og opacity på egne lag.
 
   Lyset, den lysende kanten og hover-skyggen er egne elementer som bare flyttes (transform)
-  og tones (opacity). Da slipper nettleseren å male kortet på nytt per bilde – skjermkortet
+  og tones (opacity). Kantlyset ligger bak kortets hvite flate og synes bare i den 1 px brede
+  kanten – én felles avrundet beskjæring, ingen maske. Da slipper nettleseren å male kortet på nytt per bilde – skjermkortet
   setter lagene sammen. Kortet tiltes med transform og glir tilbake til rotateX(0)
   rotateY(0) translateY(0) når pekeren forlater det. Tilt bare med mus og uten
   «redusert bevegelse». Ingen React-state per bevegelse, ingen layoutmåling per bilde.
 */
 type State = { mx: number; my: number; rx: number; ry: number; hover: number };
 
-const LIGHT = 260; // radius på lyskjeglen (px)
-const RIM = 200;   // radius på kantlyset (px)
+// Halv størrelse på lagene: bare så store som lyset faktisk er synlig (se globals.css)
+const LIGHT = 162; // lyskjeglen
+const RIM = 140;   // kantlyset
 
 export function SpotlightCard({ href, className, children, tilt = true, style }: { href?: string; className?: string; children: ReactNode; tilt?: boolean; style?: CSSProperties }) {
   const ref = useRef<HTMLElement | null>(null);
   const lightRef = useRef<HTMLSpanElement>(null);
-  const rimRef = useRef<HTMLSpanElement>(null);
   const rimLightRef = useRef<HTMLSpanElement>(null);
   const shadowRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const el = ref.current;
     const light = lightRef.current;
-    const rim = rimRef.current;
     const rimLight = rimLightRef.current;
     const shadow = shadowRef.current;
-    if (!el || !light || !rim || !rimLight || !shadow) return;
+    if (!el || !light || !rimLight || !shadow) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const icon = el.querySelector<HTMLElement>(".card-icon");
     const iconGlow = el.querySelector<HTMLElement>(".card-icon-glow");
@@ -59,7 +59,7 @@ export function SpotlightCard({ href, className, children, tilt = true, style }:
       light.style.transform = `translate3d(${(x - LIGHT).toFixed(1)}px, ${(y - LIGHT).toFixed(1)}px, 0)`;
       light.style.opacity = hover.toFixed(3);
       rimLight.style.transform = `translate3d(${(x - RIM).toFixed(1)}px, ${(y - RIM).toFixed(1)}px, 0)`;
-      rim.style.opacity = hover.toFixed(3);
+      rimLight.style.opacity = hover.toFixed(3);
       // Lyset står ved pekeren → skyggen faller motsatt vei
       shadow.style.transform = `translate3d(${((0.5 - mx) * 18 * hover).toFixed(2)}px, ${((0.5 - my) * 10 * hover).toFixed(2)}px, 0)`;
       shadow.style.opacity = hover.toFixed(3);
@@ -71,8 +71,7 @@ export function SpotlightCard({ href, className, children, tilt = true, style }:
     // I ro: tilbake til stilarket (ingen transform, ingen ekstra lag)
     const reset = () => {
       for (const node of [el, light, rimLight, shadow, icon]) node?.style.removeProperty("transform");
-      for (const node of [light, rim, shadow, iconGlow, fiber]) node?.style.removeProperty("opacity");
-      delete el.dataset.lit;
+      for (const node of [light, rimLight, shadow, iconGlow, fiber]) node?.style.removeProperty("opacity");
     };
 
     const tick = (now: number) => {
@@ -99,7 +98,6 @@ export function SpotlightCard({ href, className, children, tilt = true, style }:
     const kick = () => {
       if (running) return;
       running = true;
-      el.dataset.lit = ""; // lagene får egne GPU-lag bare mens kortet lyser
       onFrame(tick);
     };
 
@@ -154,8 +152,11 @@ export function SpotlightCard({ href, className, children, tilt = true, style }:
   const layers = (
     <>
       <span ref={shadowRef} className="spotlight-shadow" aria-hidden="true" />
-      <span className="spotlight-clip" aria-hidden="true"><span ref={lightRef} className="spotlight-light" /></span>
-      <span ref={rimRef} className="spotlight-rim" aria-hidden="true"><span ref={rimLightRef} className="spotlight-rim-light" /></span>
+      <span className="spotlight-frame" aria-hidden="true">
+        <span ref={rimLightRef} className="spotlight-rim-light" />
+        <span className="spotlight-surface" />
+        <span ref={lightRef} className="spotlight-light" />
+      </span>
     </>
   );
   const classes = cn("spotlight-card block", className);

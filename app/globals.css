@@ -270,41 +270,41 @@ html.lenis, html.lenis body { height: auto; }
 /* ---------- Spotlight-kort ---------- */
 /*
   Lyset, kantlyset og hover-skyggen er egne elementer (se spotlight-card.tsx) som bare flyttes
-  med transform og tones med opacity. Mens kortet lyser (data-lit) får de egne GPU-lag, så
-  ingenting males på nytt per bilde. I ro har kortet bare den faste skyggen under.
+  med transform og tones med opacity. Alt ligger i én avrundet ramme (.spotlight-frame):
+  bunnen er kantfargen, kantlyset ligger over den, den hvite flaten dekker alt innenfor
+  kanten, og lyskjeglen ligger øverst. Dermed synes kantlyset bare i den 1 px brede kanten,
+  uten maske. På PC med mus ligger de bevegelige delene i egne GPU-lag fra start, så ingenting
+  males på nytt per bilde og det ikke hakker når pekeren treffer kortet. I ro har kortet
+  bare den faste skyggen under.
 */
 .spotlight-card {
   position: relative;
   isolation: isolate;
-  background: #fff;
-  border: 1px solid var(--color-line);
+  background: transparent;
+  border: 1px solid transparent;
   border-radius: 24px;
   box-shadow: 0 1px 2px rgba(14, 39, 71, .04), 0 14px 32px -14px rgba(14, 39, 71, .10);
-  transition: border-color .4s ease;
   will-change: transform;
 }
-.spotlight-shadow, .spotlight-clip, .spotlight-rim { position: absolute; border-radius: inherit; pointer-events: none; }
-.spotlight-shadow { inset: -1px; z-index: -1; box-shadow: 0 28px 60px -18px rgba(14, 39, 71, .11); opacity: 0; }
-/* Myk lyskjegle på overflaten */
-.spotlight-clip { inset: 0; z-index: -1; overflow: hidden; }
+.spotlight-shadow, .spotlight-frame { position: absolute; inset: -1px; z-index: -1; border-radius: inherit; pointer-events: none; }
+.spotlight-shadow { box-shadow: 0 28px 60px -18px rgba(14, 39, 71, .11); opacity: 0; }
+.spotlight-frame { overflow: hidden; background: var(--color-line); }
+.spotlight-surface { position: absolute; inset: 1px; border-radius: 23px; background: #fff; }
+/* Myk lyskjegle på overflaten (laget er bare så stort som lyset er synlig) */
 .spotlight-light {
-  position: absolute; left: 0; top: 0; width: 520px; height: 520px; opacity: 0;
+  position: absolute; left: 0; top: 0; width: 324px; height: 324px; opacity: 0;
   background:
     radial-gradient(260px circle at 50% 50%, rgba(42, 166, 255, .13), transparent 62%),
     radial-gradient(120px circle at 50% 50%, rgba(255, 255, 255, .9), transparent 70%);
 }
 /* Lysende kant der lyset treffer */
-.spotlight-rim {
-  inset: -1px; padding: 1px; overflow: hidden; opacity: 0;
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-}
 .spotlight-rim-light {
-  position: absolute; left: 0; top: 0; width: 400px; height: 400px;
+  position: absolute; left: 0; top: 0; width: 280px; height: 280px; opacity: 0;
   background: radial-gradient(200px circle at 50% 50%, rgba(42, 166, 255, .85), rgba(42, 166, 255, .12) 45%, transparent 70%);
 }
-.spotlight-card[data-lit] :is(.spotlight-shadow, .spotlight-light, .spotlight-rim, .spotlight-rim-light, .card-icon, .card-icon-glow, .card-fiber) { will-change: transform, opacity; }
+@media (hover: hover) and (pointer: fine) {
+  .spotlight-card :is(.spotlight-shadow, .spotlight-light, .spotlight-rim-light, .card-icon) { will-change: transform, opacity; }
+}
 .spotlight-card:has(a:focus-visible) { outline: 2px solid var(--color-brand); outline-offset: 4px; }
 .spotlight-card .card-icon-glow { opacity: .25; }
 .spotlight-card .card-fiber { opacity: .35; }
