@@ -15,7 +15,7 @@ function HeroFibers() {
     return `M1240 ${40 + t * 300} C 1000 ${60 + t * 260}, 860 ${300 - t * 60}, 620 ${330 + t * 40} S 300 ${380 + t * 30}, -20 ${300 + t * 140}`;
   });
   return (
-    <svg className="pointer-events-none absolute inset-0 size-full [mask-image:linear-gradient(180deg,transparent_35%,#000_85%)] md:[mask-image:none]" viewBox="0 0 1200 460" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+    <svg className="pointer-events-none absolute inset-0 size-full will-change-transform [mask-image:linear-gradient(180deg,transparent_35%,#000_85%)] md:[mask-image:none]" viewBox="0 0 1200 460" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
       <defs>
         <linearGradient id="ph-fade" x1="1" x2="0" y1="0" y2="0">
           <stop offset="0" stopColor="#3f7fbf" stopOpacity=".42" />
@@ -27,7 +27,10 @@ function HeroFibers() {
         {strands.map((d, i) => <path key={d} d={d} strokeWidth={i % 3 === 0 ? 1.4 : 0.8} />)}
       </g>
       <g fill="none" strokeLinecap="round">
+        {/* Glød som bred, svak strek under hver puls (ikke blurfilter) */}
+        <path d={strands[2]} stroke="#2aa6ff" strokeOpacity=".22" strokeWidth="7" pathLength={1} className="page-pulse" />
         <path d={strands[2]} stroke="#2aa6ff" strokeWidth="2.2" pathLength={1} className="page-pulse" />
+        <path d={strands[6]} stroke="#2aa6ff" strokeOpacity=".22" strokeWidth="6" pathLength={1} className="page-pulse [animation-delay:2.6s]" />
         <path d={strands[6]} stroke="#2aa6ff" strokeWidth="1.8" pathLength={1} className="page-pulse [animation-delay:2.6s]" />
       </g>
     </svg>

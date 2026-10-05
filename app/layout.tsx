@@ -47,7 +47,8 @@ export const viewport: Viewport = {
   slik at innholdet aldri blir liggende usynlig.
 */
 // Elementer som allerede er synlige når siden åpnes, vises med en gang (uten å vente på JavaScript-pakkene).
-const revealVisibleNow = `(function(){var h=innerHeight;document.querySelectorAll('[data-reveal],[data-split]').forEach(function(el){if(el.getBoundingClientRect().top<h){el.setAttribute('data-inview','true');el.setAttribute('data-instant','')}})})();`;
+// Leser alle posisjoner først og skriver etterpå (én layoutberegning, ikke én per element)
+const revealVisibleNow = `(function(){var h=innerHeight,els=document.querySelectorAll('[data-reveal],[data-split]'),show=[];els.forEach(function(el){if(el.getBoundingClientRect().top<h)show.push(el)});show.forEach(function(el){el.setAttribute('data-inview','true');el.setAttribute('data-instant','')})})();`;
 
 const revealBootstrap = `(function(){var d=document.documentElement;d.classList.add('js-reveal');setTimeout(function(){if(!d.hasAttribute('data-reveal-ready'))d.classList.remove('js-reveal')},3500)})();`;
 

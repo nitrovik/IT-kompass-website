@@ -6,7 +6,12 @@ import { Arrow } from "@/components/ui/arrow";
 import { SplitWords } from "@/components/ui/split-words";
 import { cn } from "@/lib/utils";
 
-/* Fiberbånd i bakgrunnen – CSS-animasjon som bare går mens seksjonen er synlig. */
+/*
+  Fiberbånd i bakgrunnen – CSS-animasjon som bare går mens seksjonen er synlig.
+  Gløden rundt pulsene er brede, svake streker med samme animasjon (ikke et blurfilter,
+  som måtte vært regnet ut på nytt for hele banneret i hvert bilde), og SVG-en ligger i
+  et eget lag, så bare den tegnes på nytt – ikke tekst og bakgrunn.
+*/
 function BannerFibers() {
   const paths = [
     "M-40 240 C 260 120, 520 90, 760 170 S 1100 210, 1280 40",
@@ -16,13 +21,20 @@ function BannerFibers() {
     "M-40 300 C 340 230, 640 170, 880 230 S 1160 280, 1280 200",
   ];
   return (
-    <svg className="pointer-events-none absolute inset-x-0 bottom-0 h-[300px] w-full [mask-image:linear-gradient(90deg,transparent_5%,#000_55%)] sm:inset-0 sm:h-full" viewBox="0 0 1240 300" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <svg className="pointer-events-none absolute inset-x-0 bottom-0 h-[300px] w-full will-change-transform [mask-image:linear-gradient(90deg,transparent_5%,#000_55%)] sm:inset-0 sm:h-full" viewBox="0 0 1240 300" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
       <g fill="none" strokeLinecap="round">
         {paths.map((d, i) => <path key={`c-${i}`} d={d} stroke="#5fb8ff" strokeOpacity={0.12 + i * 0.03} strokeWidth="1.1" />)}
-        {paths.map((d, i) => (
-          <path key={`p-${i}`} d={d} pathLength={1} stroke={i % 2 ? "#ffffff" : "#48b9ff"} strokeWidth={i % 2 ? 1.6 : 2.2}
-            className="banner-pulse" style={{ animationDuration: `${7 + i * 1.3}s`, animationDelay: `${-i * 2.1}s` }} />
-        ))}
+        {paths.map((d, i) => {
+          const timing = { animationDuration: `${7 + i * 1.3}s`, animationDelay: `${-i * 2.1}s` };
+          return (
+            <g key={`p-${i}`}>
+              <path d={d} pathLength={1} stroke="#48b9ff" strokeOpacity=".07" strokeWidth="11" className="banner-pulse" style={timing} />
+              <path d={d} pathLength={1} stroke="#48b9ff" strokeOpacity=".12" strokeWidth="7" className="banner-pulse" style={timing} />
+              <path d={d} pathLength={1} stroke="#48b9ff" strokeOpacity=".24" strokeWidth="4" className="banner-pulse" style={timing} />
+              <path d={d} pathLength={1} stroke={i % 2 ? "#ffffff" : "#48b9ff"} strokeWidth={i % 2 ? 1.6 : 2.2} className="banner-pulse" style={timing} />
+            </g>
+          );
+        })}
       </g>
     </svg>
   );

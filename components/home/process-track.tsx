@@ -1,51 +1,51 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { onScroll } from "@/lib/frame";
 
 type Step = { number: string; title: string; text?: string };
 
 /*
   Stegene i «Slik jobber vi». Fiberlinjen fylles med lys etter hvor langt du har scrollet
-  gjennom seksjonen (--p), og hvert steg tennes når lyset når det. Verdiene skrives direkte
-  til DOM-en i én requestAnimationFrame per scroll.
+  gjennom seksjonen, og hvert steg tennes når lyset når det. Plasseringen måles bare når
+  sidens størrelse endres; per bilde regnes framdriften ut fra scrollposisjonen alene, og
+  bare lyslinjen (transform) og stegene som faktisk skifter tilstand skrives.
 */
 export function ProcessTrack({ steps, className }: { steps: Step[]; className?: string }) {
   const ref = useRef<HTMLOListElement>(null);
+  const lightRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    const light = lightRef.current;
+    if (!el || !light) return;
     const items = Array.from(el.querySelectorAll<HTMLElement>("[data-step]"));
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const active = items.map(() => false);
+    let last = "";
     const apply = (p: number) => {
-      el.style.setProperty("--p", p.toFixed(4));
-      items.forEach((item, i) => { item.dataset.active = p >= (i / Math.max(items.length - 1, 1)) * 0.98 ? "true" : "false"; });
+      const value = p.toFixed(3);
+      if (value === last) return;
+      last = value;
+      light.style.setProperty("--p", value);
+      items.forEach((item, i) => {
+        const on = p >= (i / Math.max(items.length - 1, 1)) * 0.98;
+        if (on !== active[i]) { active[i] = on; item.dataset.active = String(on); }
+      });
     };
-    if (reduce) { apply(1); return; }
-    let frame = 0;
-    const update = () => {
-      frame = 0;
-      const rect = el.getBoundingClientRect();
-      const vh = window.innerHeight;
-      const p = Math.min(Math.max((vh * 0.82 - rect.top) / (vh * 0.55), 0), 1);
-      apply(p);
-    };
-    const onScroll = () => { if (!frame) frame = requestAnimationFrame(update); };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { apply(1); return; }
+
+    let top = 0;
+    return onScroll({
+      measure: ({ y }) => { top = el.getBoundingClientRect().top + y; },
+      update: ({ y, vh }) => apply(Math.min(Math.max((vh * 0.82 - (top - y)) / (vh * 0.55), 0), 1)),
+    });
   }, []);
 
   return (
-    <ol ref={ref} className={`relative mt-16 grid gap-10 md:grid-cols-[repeat(var(--n),minmax(0,1fr))] md:gap-8 ${className ?? ""}`} style={{ ["--p" as string]: 0, ["--n" as string]: steps.length }}>
+    <ol ref={ref} className={`relative mt-16 grid gap-10 md:grid-cols-[repeat(var(--n),minmax(0,1fr))] md:gap-8 ${className ?? ""}`} style={{ ["--n" as string]: steps.length }}>
       {/* Sporet og lyset */}
       <span aria-hidden="true" className="absolute top-7 bottom-7 left-7 w-px bg-line md:top-7 md:right-[calc(50%/var(--n))] md:bottom-auto md:left-[calc(50%/var(--n))] md:h-px md:w-auto">
-        <span className="process-light absolute inset-0 bg-[linear-gradient(180deg,#2aa6ff,#0a6ed1)] md:bg-[linear-gradient(90deg,#2aa6ff,#0a6ed1)]" />
+        <span ref={lightRef} className="process-light absolute inset-0 bg-[linear-gradient(180deg,#2aa6ff,#0a6ed1)] md:bg-[linear-gradient(90deg,#2aa6ff,#0a6ed1)]" />
       </span>
       {steps.map((step) => (
         <li key={step.number} data-step data-active="false" className="group/step relative grid grid-cols-[56px_1fr] gap-5 md:grid-cols-1 md:gap-0 md:text-center">
