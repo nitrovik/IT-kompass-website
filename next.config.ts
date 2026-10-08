@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const siteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://itkompass.no");
+const siteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.itkompass.no");
 // Den andre varianten av domenet (med eller uten www) sendes videre til hovedadressen.
 const alternateHost = siteUrl.hostname.startsWith("www.") ? siteUrl.hostname.slice(4) : `www.${siteUrl.hostname}`;
 

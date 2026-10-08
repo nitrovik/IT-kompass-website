@@ -6,12 +6,16 @@ import { PageHero } from "@/components/site/page-hero";
 import { SectionHeading } from "@/components/site/section-heading";
 import { ProcessTrack } from "@/components/home/process-track";
 import { WizardCta } from "@/components/home/wizard-cta";
+import { WebsitePackages } from "@/components/service/website-packages";
 import { SpotlightCard } from "@/components/ui/spotlight-card";
 import { Arrow } from "@/components/ui/arrow";
+import { cn } from "@/lib/utils";
 
 export function ServicePage({ service }: { service: Service }) {
   const Icon = serviceIcons[service.slug];
   const others = services.filter((item) => item.slug !== service.slug);
+  // Nettsidepakkene med priser vises bare på «Nettsider og drift»
+  const showPackages = service.slug === "nettsider";
   return (
     <main id="main" tabIndex={-1} className="outline-none">
       <PageHero
@@ -70,7 +74,9 @@ export function ServicePage({ service }: { service: Service }) {
         </div>
       </section>
 
-      <section className="pb-[clamp(2rem,4vw,3rem)]">
+      {showPackages ? <WebsitePackages /> : null}
+
+      <section className={cn("pb-[clamp(2rem,4vw,3rem)]", showPackages && "pt-[clamp(4rem,7vw,6rem)]")}>
         <div className="container-shell">
           <h2 className="eyebrow" data-reveal="fade">Andre tjenester</h2>
           <ul className="mt-6 grid gap-4 md:grid-cols-3">

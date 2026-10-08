@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { homePackages, homeWebsites } from "@/content/home";
+import { homeWebsites } from "@/content/home";
 import { SectionHeading } from "@/components/site/section-heading";
 import { DeviceMockup } from "@/components/site/device-mockup";
 import { Arrow } from "@/components/ui/arrow";
-import { cn } from "@/lib/utils";
 
 const capabilities = ["Design", "Utvikling", "Hosting", "SEO", "Innhold"];
 
@@ -28,38 +27,15 @@ export function WebsitesSection() {
                 </li>
               ))}
             </ul>
-            <Link href="/kontakt" className="group mt-auto inline-flex items-center gap-2 pt-8 text-[15px] font-semibold text-brand">
-              <span className="link-underline">Snakk med oss om nettside</span> <Arrow />
-            </Link>
-          </div>
-        </div>
-
-        <div className="mt-20">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="eyebrow" data-reveal="fade">{homeWebsites.packagesEyebrow}</p>
-              <h3 data-reveal className="card-title mt-4 text-[28px] leading-tight text-ink sm:text-[32px]">{homeWebsites.packagesTitle}</h3>
+            <div className="mt-auto grid gap-3 pt-8">
+              <Link href="/tjenester/nettsider#pakker" className="group inline-flex items-center gap-2 text-[15px] font-semibold text-brand">
+                <span className="link-underline">Se pakker og priser</span> <Arrow />
+              </Link>
+              <Link href="/kontakt" className="group inline-flex items-center gap-2 text-[15px] font-semibold text-ink">
+                <span className="link-underline">Snakk med oss om nettside</span> <Arrow />
+              </Link>
             </div>
-            <p data-reveal className="text-[15px] text-muted">{homeWebsites.packagesBody}</p>
           </div>
-          <ul className="mt-8 grid gap-4 md:grid-cols-3">
-            {homePackages.map((pack, i) => (
-              <li key={pack.name} data-reveal style={{ ["--d" as string]: `${i * 0.08}s` }}
-                className={cn("relative flex flex-col rounded-[24px] p-7", pack.featured ? "on-dark navy-slab text-white shadow-[0_30px_60px_-30px_rgba(7,26,49,.8)]" : "surface-card")}>
-                <div className="flex items-center justify-between">
-                  <span className={cn("card-title text-[24px]", pack.featured ? "text-white" : "text-ink")}>{pack.name}</span>
-                  {pack.featured ? <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-[#9fdcff] ring-1 ring-white/15">Mest fleksibel</span> : null}
-                </div>
-                <p className={cn("mt-4 text-[15px] leading-[1.6]", pack.featured ? "text-on-navy" : "text-muted")}>{pack.summary}</p>
-                <div className={cn("mt-auto flex items-center justify-between border-t pt-5", pack.featured ? "border-white/12 mt-8" : "border-line mt-8")}>
-                  <span className={cn("text-[15px] font-semibold", pack.featured ? "text-white" : "text-ink")}>{pack.price}</span>
-                  <Link href="/prosjekter#pakker" className={cn("group inline-flex items-center gap-1.5 text-sm font-semibold", pack.featured ? "text-[#9fdcff]" : "text-brand")} aria-label={`Les mer om ${pack.name}`}>
-                    Detaljer <Arrow size={14} />
-                  </Link>
-                </div>
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
     </section>
