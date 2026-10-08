@@ -23,7 +23,7 @@ Legg dem inn under fanen **Variables** i tjenesten (ikke i koden). Hele listen m
 
 **Påkrevd for at skjemaene skal fungere:**
 
-- `NEXT_PUBLIC_SITE_URL` = `https://itkompass.no`
+- `NEXT_PUBLIC_SITE_URL` = `https://www.itkompass.no` (kan også stå tom: www er standard i koden)
 - `RESEND_API_KEY`, `RESEND_FROM`, `CONTACT_RECIPIENT`
 - `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`
 
@@ -45,21 +45,19 @@ Railway publiserer på nytt når du endrer variabler. Variabler som starter med 
 
 ## 3. Koble domenet
 
-1. I Railway: **Settings → Networking → Custom Domain**. Legg til både `itkompass.no` og `www.itkompass.no`.
-2. Railway viser hvilke DNS-poster du trenger for hvert domene. Legg dem inn **nøyaktig** slik Railway oppgir i DNS-oppsettet for `itkompass.no` hos Gigahost.
-3. **Ikke rør eksisterende e-postposter** (MX, SPF osv.).
-4. HTTPS ordnes automatisk når DNS er på plass. Det kan ta fra noen minutter til noen timer.
+Hovedadressen er **`www.itkompass.no`**.
 
-### Viktig om hoveddomenet (`itkompass.no` uten www)
+1. I Railway: **Settings → Networking → Custom Domain**. Legg til `www.itkompass.no`.
+2. Railway viser en `CNAME`-post (og eventuelt en `TXT`-post for bekreftelse). Legg dem inn **nøyaktig** slik Railway oppgir i DNS-oppsettet for `itkompass.no` hos Gigahost, med navnet `www`.
+3. Sett opp videresending hos Gigahost fra `itkompass.no` til `https://www.itkompass.no`.
+4. **Ikke rør eksisterende e-postposter** (MX, SPF osv.).
+5. HTTPS ordnes automatisk når DNS er på plass. Det kan ta fra noen minutter til noen timer.
 
-Railway peker domener med en `CNAME`-post. For hoveddomenet (uten www) krever det at DNS-leverandøren støtter **ALIAS**, **ANAME** eller **CNAME-flattening**. `www` er ikke noe problem.
+### Hvorfor www (oktober 2026)
 
-Sjekk i Gigahosts DNS-panel om du kan velge posttypen ALIAS eller ANAME:
+Railway peker domener med en `CNAME`-post. Gigahost avviser `CNAME` på domenet uten www («A CNAME record cannot be placed at the zone apex»), og har ikke ALIAS/ANAME. Derfor er `www.itkompass.no` hovedadressen, og `itkompass.no` videresendes dit hos Gigahost. Nettsiden sender også selv besøk på `itkompass.no` videre til www, hvis de skulle nå Railway.
 
-- **Ja:** legg inn hoveddomenet som ALIAS/ANAME mot verdien Railway oppgir.
-- **Nei:** velg ett av disse alternativene:
-  - **Flytt DNS til Cloudflare (gratis).** Domenet blir fortsatt registrert hos Gigahost, du bytter bare navnetjenere. Kopier **alle** eksisterende DNS-poster (særlig e-post) til Cloudflare før du bytter.
-  - **Bruk `www.itkompass.no` som hovedadresse.** Sett `NEXT_PUBLIC_SITE_URL=https://www.itkompass.no`, og be Gigahost videresende `itkompass.no` til `https://www.itkompass.no`.
+Vil dere heller bruke adressen uten www senere, må DNS flyttes til en leverandør med CNAME-flattening (for eksempel Cloudflare, gratis), og `NEXT_PUBLIC_SITE_URL` settes til `https://itkompass.no`. Kopier **alle** eksisterende DNS-poster (særlig e-post) før navnetjenerne byttes.
 
 ## 4. Test etter publisering
 
@@ -67,9 +65,9 @@ Sjekk i Gigahosts DNS-panel om du kan velge posttypen ALIAS eller ANAME:
 - [ ] Kontaktskjema på forsiden og på `/kontakt`: e-posten kommer frem
 - [ ] Supportskjema med og uten vedlegg
 - [ ] Veiviseren `/finn-riktig-losning` hele veien
-- [ ] `https://itkompass.no/sitemap.xml` og `/robots.txt`
+- [ ] `https://www.itkompass.no/sitemap.xml` og `/robots.txt`
 - [ ] En side som ikke finnes, så du ser 404-siden
-- [ ] `www.itkompass.no` sender deg videre til `itkompass.no` (eller omvendt hvis www er hovedadressen)
+- [ ] `itkompass.no` sender deg videre til `https://www.itkompass.no`
 
 ## Slik oppdateres nettsiden senere
 

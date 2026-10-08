@@ -2,7 +2,8 @@ export const site = {
   name: "IT Kompass AS",
   legalName: "IT Kompass AS",
   domain: "itkompass.no",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://itkompass.no",
+  // Hovedadressen er www: Gigahost tillater ikke at domenet uten www pekes til Railway (CNAME)
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.itkompass.no",
   orgNumber: "937 441 614",
   phone: "",
   email: "",
