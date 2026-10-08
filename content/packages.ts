@@ -2,6 +2,7 @@
   Nettsidepakkene med priser. Vises på siden «Nettsider og drift» (/tjenester/nettsider).
   Prisene er bestemt av IT Kompass AS. Endre tekst og priser her.
 
+  Alle priser er eks. mva. (vatNote vises under prisene og i innledningen).
   price: setup = etablering (engangsbeløp), monthly = per måned, terms = vilkår under prisen.
   Bruk custom i stedet for setup/monthly når prisen settes ut fra behov.
   Mellomrommet i beløpene er et hardt mellomrom (U+00A0), så tallet aldri deles over to linjer.
@@ -13,6 +14,8 @@ export type WebsitePackage = {
   featured: boolean;
   price: { setup?: string; monthly?: string; custom?: string; terms?: string };
 };
+
+export const vatNote = "eks. mva";
 
 export const websitePackages: WebsitePackage[] = [
   {
