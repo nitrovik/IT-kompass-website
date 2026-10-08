@@ -112,7 +112,7 @@ Packages:
 - Pro
 - Premium
 
-Price should remain `Pris kommer` until real prices are provided.
+Prices were provided by the owner (October 2026) and live in `content/packages.ts`. The packages are shown on the “Nettsider og drift” service page (`/tjenester/nettsider#pakker`); the homepage and `/prosjekter` link there.
 
 ## “Finn riktig løsning” CTA
 This is an important conversion element.

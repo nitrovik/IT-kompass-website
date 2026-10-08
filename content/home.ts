@@ -94,17 +94,8 @@ export const homeWebsites = {
   eyebrow: "Nettsider",
   title: ["En del av løsningen", "skal også se bra ut."],
   body: "Nettsidene vi lager skal være raske, tydelige og gode å bruke. Her er en forhåndsvisning av uttrykket vi kan bygge for kundene våre.",
-  packagesEyebrow: "Nettsidepakker",
-  packagesTitle: "Tre nivåer for ulike behov.",
-  packagesBody: "Prisene fylles inn når pakkene er bestemt.",
   growth: { title: "Bygd for videre vekst", text: "Design, utvikling, hosting, SEO og innhold i samme leveranse." },
 };
-
-export const homePackages = [
-  { name: "Start", summary: "En profesjonell nettside for virksomheter som trenger en tydelig tilstedeværelse på nett.", price: "Pris kommer", featured: false },
-  { name: "Pro", summary: "Mer innhold, flere sider og større fleksibilitet for virksomheter i vekst.", price: "Pris kommer", featured: true },
-  { name: "Premium", summary: "En komplett digital profil med høy grad av tilpasning, innhold og videreutvikling.", price: "Pris kommer", featured: false },
-];
 
 export const homeWizardCta = {
   eyebrow: "Klar for neste steg?",

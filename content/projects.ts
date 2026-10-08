@@ -17,9 +17,3 @@ export type Project = {
 };
 
 export const projects: Project[] = [];
-
-export const websitePackages = [
-  { name: "Start", description: "En tydelig og profesjonell nettside for virksomheter som trenger et solid fundament.", features: ["Design og utvikling", "Responsivt nettsted", "Grunnleggende SEO", "Hosting klar for drift"], price: "Pris kommer", featured: false },
-  { name: "Pro", description: "For virksomheter som trenger mer innhold, flere sider og større fleksibilitet.", features: ["Alt i Start", "Flere innholdstyper", "Utvidet SEO", "Innholdsstruktur for vekst"], price: "Pris kommer", featured: true },
-  { name: "Premium", description: "For virksomheter som ønsker en komplett digital profil og høy grad av tilpasning.", features: ["Alt i Pro", "Skreddersydde komponenter", "Avanserte interaksjoner", "Prioritert videreutvikling"], price: "Pris kommer", featured: false },
-];

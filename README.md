@@ -6,9 +6,9 @@ Nettsiden til IT Kompass AS, bygget med Next.js. Designet følger den godkjente 
 
 | Adresse | Innhold |
 | --- | --- |
-| `/` | Forside: hero med fiberanimasjon, tjenester, leverandøruavhengig, prosess, nettsider/pakker, veiviser og kontakt |
-| `/tjenester` og `/tjenester/[tjeneste]` | Oversikt og egen side for WiFi, fiber og telecom, IT support og nettsider |
-| `/prosjekter` | Prosjekter (vises når ekte prosjekter er lagt inn) og nettsidepakkene Start / Pro / Premium |
+| `/` | Forside: hero med fiberanimasjon, tjenester, leverandøruavhengig, prosess, nettsider, veiviser og kontakt |
+| `/tjenester` og `/tjenester/[tjeneste]` | Oversikt og egen side for WiFi, fiber og telecom, IT support og nettsider. Siden «Nettsider og drift» (`/tjenester/nettsider`) viser nettsidepakkene Start / Pro / Premium med priser |
+| `/prosjekter` | Prosjekter (vises når ekte prosjekter er lagt inn) |
 | `/om-oss` | Om IT Kompass |
 | `/support` | Supportskjema med vedlegg. Fjernhjelp og driftsstatus vises når de er koblet til |
 | `/kontakt` | Kontaktskjema, kontaktinfo, møtebooking (når lenke er satt) og kartplassholder |
@@ -20,7 +20,8 @@ Nettsiden til IT Kompass AS, bygget med Next.js. Designet følger den godkjente 
 - **Kontaktinfo, org.nr., dekningsområde:** `config/site.ts`
 - **Tekster på forsiden:** `content/home.ts`
 - **Tjenestene:** `content/services.ts`
-- **Prosjekter og nettsidepakker:** `content/projects.ts`
+- **Prosjekter:** `content/projects.ts`
+- **Nettsidepakker og priser:** `content/packages.ts`
 - **Partnere (vises bare når listen ikke er tom):** `content/partners.ts`
 - **Veiviseren:** `content/wizard.ts`
 - **Personvern:** `content/legal.ts`
@@ -66,6 +67,5 @@ Nettsiden publiseres på Railway. Steg for steg står i `PUBLISHING.md`.
 - Telefon, e-post og adresse (`config/site.ts`)
 - Dekningsområde (`config/site.ts` → `coverageArea`)
 - Ekte bilde til «Leverandøruavhengig»-seksjonen og eventuelle prosjekter
-- Priser på nettsidepakkene (står nå som «Pris kommer»)
 - Gjennomgang av personvernerklæringen
 - Kontoer og nøkler: Resend, Cloudflare Turnstile, og valgfritt Plausible, Cal.com og fjernhjelp

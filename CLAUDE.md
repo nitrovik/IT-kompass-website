@@ -75,7 +75,7 @@ Approved homepage structure:
 - services
 - supplier-independent explanation / why IT Kompass
 - process / how we work
-- website showcase and website packages
+- website showcase (links to the packages and prices on `/tjenester/nettsider#pakker`; owner moved them there in October 2026)
 - “Finn riktig løsning” CTA
 - contact area with form and coverage-map placeholder
 - footer
