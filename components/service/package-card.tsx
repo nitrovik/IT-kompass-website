@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { WebsitePackage } from "@/content/packages";
+import { vatNote, type WebsitePackage } from "@/content/packages";
 import { Arrow } from "@/components/ui/arrow";
 import { cn } from "@/lib/utils";
 
@@ -47,6 +47,7 @@ export function PackageCard({ pack, index }: { pack: WebsitePackage; index: numb
                 <span className={cn("text-[15px]", label)}>per måned</span>
               </p>
             ) : null}
+            <p className={cn("mt-1 text-[13px]", label)}>Prisene er {vatNote}</p>
           </>
         )}
         {terms ? <p className={cn("mt-3 text-[14px]", label)}>{terms}</p> : null}
