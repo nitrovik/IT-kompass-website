@@ -1,4 +1,4 @@
-# IT Kompass AS – Claude Code project instructions
+**Text and copywriting:** Before writing or changing any text on the website, read and follow `SKRIVEREGLER.md`. It overrides any other writing guidance in this file.# IT Kompass AS – Claude Code project instructions
 
 You are working on the website for IT Kompass AS, a Norwegian IT and telecom company.
 
