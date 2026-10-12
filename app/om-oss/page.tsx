@@ -11,7 +11,7 @@ export const metadata: Metadata = pageMetadata({ title: "Om oss", description: "
 
 const values = [
   { title: "Behovet først", text: "Vi spør hva dere skal få til før vi foreslår noe." },
-  { title: "Færre å forholde seg til", text: "WiFi, fiber, mobil, IT og nettside kan samles hos oss." },
+  { title: "Fast kontaktperson", text: "Dere får én tildelt person som følger dere opp hver gang." },
   { title: "Enkelt å følge opp", text: "Oppsettet skal være forståelig også etter at vi er ferdige." },
   { title: "Klar prioritering", text: "Dere får vite hva som bør gjøres først, og hvorfor." },
 ];
@@ -19,7 +19,7 @@ const values = [
 export default function AboutPage() {
   return (
     <main id="main" tabIndex={-1} className="outline-none">
-      <PageHero crumbs={[{ href: "/om-oss", label: "Om oss" }]} eyebrow="Om oss" title="Én kontakt for IT og telecom." body="IT Kompass AS hjelper små og mellomstore bedrifter med IT og telecom. Vi sammenligner leverandørene og følger opp etterpå." />
+      <PageHero crumbs={[{ href: "/om-oss", label: "Om oss" }]} eyebrow="Om oss" title="Én kontakt for IT og telecom." body="IT Kompass AS hjelper små og mellomstore bedrifter med IT og telecom. Vi jobber på stedet i Viken og digitalt i hele Norge." />
 
       <section className="section-pad">
         <div className="container-shell grid gap-12 lg:grid-cols-[.85fr_1.15fr] lg:gap-16">

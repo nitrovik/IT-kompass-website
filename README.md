@@ -65,7 +65,6 @@ Nettsiden publiseres på Railway. Steg for steg står i `PUBLISHING.md`.
 ## Mangler fra eier før lansering
 
 - Telefon, e-post og adresse (`config/site.ts`)
-- Dekningsområde (`config/site.ts` → `coverageArea`)
 - Ekte bilde til «Leverandøruavhengig»-seksjonen og eventuelle prosjekter
 - Gjennomgang av personvernerklæringen
 - Kontoer og nøkler: Resend, Cloudflare Turnstile, og valgfritt Plausible, Cal.com og fjernhjelp

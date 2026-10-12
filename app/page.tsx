@@ -33,7 +33,7 @@ function JsonLd() {
         address: site.address
           ? { "@type": "PostalAddress", streetAddress: site.address, postalCode: site.postalCode || undefined, addressLocality: site.city || undefined, addressCountry: site.country }
           : undefined,
-        areaServed: site.coverageArea || undefined,
+        areaServed: site.areaServed,
         knowsAbout: ["WiFi", "Fiber", "Telecom", "IT support", "Nettsider"],
       },
       { "@type": "WebSite", "@id": `${base}/#nettsted`, url: base, name: site.name, inLanguage: "nb-NO", publisher: { "@id": `${base}/#organisasjon` } },

@@ -11,8 +11,10 @@ export const site = {
   postalCode: "",
   city: "",
   country: "NO",
-  coverageArea: "",
-  description: "IT og telecom for små og mellomstore bedrifter. Vi sammenligner leverandørene, og du har én kontakt.",
+  // Bekreftet av eier (oktober 2026): fysisk arbeid i Viken, digitalt i hele Norge
+  coverageArea: "På stedet i Viken. Digitalt i hele Norge.",
+  areaServed: ["Viken", "Norge"],
+  description: "IT og telecom for bedrifter i Viken og hele Norge. Vi sammenligner leverandørene, og du får en fast kontaktperson.",
   bookingUrl: process.env.NEXT_PUBLIC_CAL_URL || "",
   remoteHelpUrl: process.env.REMOTE_HELP_URL || "",
   plausibleDomain: process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN || "",

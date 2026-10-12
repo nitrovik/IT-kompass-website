@@ -9,7 +9,7 @@ The site owner is not a developer. Explain important changes in simple Norwegian
 The current approved visual direction is documented in:
 - `HANDOFF.md`
 - `design/reference-homepage-preview.html`
-- `design/design-reference-user.png` (owner's original inspiration; it contains invented details such as "Viken" and partner logos that must NOT be copied)
+- `design/design-reference-user.png` (owner's original inspiration; its partner logos and other invented details must NOT be copied. Viken is now the confirmed area, see Content rules)
 - `public/brand/it-kompass-logo.png`
 - `public/brand/it-kompass-logo-web.png`
 
@@ -94,7 +94,7 @@ Never invent:
 - project statistics
 - pricing
 
-No references to Viken.
+Coverage area (confirmed by the owner, October 2026): physical work in Viken, digital work in all of Norway (`config/site.ts`). Do not invent other areas or cities.
 No lorem ipsum.
 All content should be Norwegian Bokmål and concise.
 

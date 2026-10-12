@@ -26,7 +26,7 @@ export function SiteFooter() {
             <Link href="/" className="inline-block" aria-label={`${site.name}, til forsiden`}>
               <Image src="/brand/it-kompass-logo-web-inverse-opt.png" alt={site.name} width={414} height={148} unoptimized className="h-auto w-[196px]" />
             </Link>
-            <p className="mt-6 max-w-xs text-[15px] leading-7">IT og telecom for små og mellomstore bedrifter.</p>
+            <p className="mt-6 max-w-xs text-[15px] leading-7">IT og telecom for bedrifter i Viken og hele Norge.</p>
             <Link href="/finn-riktig-losning" className="group mt-7 inline-flex items-center gap-2 text-[15px] font-semibold text-white">
               <span className="link-underline">Finn riktig løsning</span> <Arrow />
             </Link>
