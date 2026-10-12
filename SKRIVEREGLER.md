@@ -13,8 +13,8 @@ Kjernebudskapet er: vi sammenligner leverandører, og du har én kontaktperson. 
 
 Målgruppen er daglige ledere og eiere av små og mellomstore bedrifter. De har dårlig tid og er ikke teknisk interessert. De vil vite hva det koster, hva de får og hvem de skal ringe.
 
-[Viken: område dere dekker, f.eks. by/region]
-[vi er lokale, Vi er unge sultne drivene karer, Vi er ute etter å skape tillit: hva som gjør dere annerledes, med konkrete eksempler]
+Område: vi jobber fysisk i Viken og digitalt over hele Norge.
+Det som gjør oss annerledes: personlig oppfølging med en tildelt kontaktperson.
 
 ## Hovedregel: kort
 - Teksten skal være så kort som mulig. Kutt heller for mye enn for lite.

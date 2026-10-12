@@ -16,10 +16,10 @@ export const homeHero = {
   quickLinksLabel: "Fire tjenesteområder",
   // Vises i glassbåndet nederst i heroen
   reasons: [
+    { title: "Fast kontaktperson", text: "Samme person følger dere opp hver gang." },
     { title: "Uavhengig", text: "Ingen leverandør bestemmer hva vi anbefaler." },
+    { title: "Viken og hele Norge", text: "På stedet i Viken. Digitalt i resten av landet." },
     { title: "Uten fagprat", text: "Du får valgene forklart med vanlige ord." },
-    { title: "Lokalt til stede", text: "Rask oppfølging når noe skjer." },
-    { title: "Oppfølging etterpå", text: "Hjelp med drift og endringer etter levering." },
   ],
 };
 

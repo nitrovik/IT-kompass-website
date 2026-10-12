@@ -54,7 +54,7 @@ export const services: Service[] = [
     title: "IT-hjelp når noe ikke virker",
     shortTitle: "IT support",
     description: "Hjelp til de ansatte, drift av PC-er og nettverk, sikkerhet og backup.",
-    intro: "Vi hjelper både én ansatt med et problem og hele bedriften med drift.",
+    intro: "Vi hjelper både én ansatt med et problem og hele bedriften med drift. På stedet i Viken, digitalt i hele Norge.",
     bullets: ["Hjelp til ansatte", "Drift og overvåking", "Sikkerhet og backup"],
     detailed: [
       { title: "Hjelp til ansatte", body: "PC, e-post eller skriver som ikke virker. Meld saken, så tar vi den." },
