@@ -65,7 +65,7 @@ export function SiteHeader() {
     <>
     <header ref={headerRef} data-scrolled="false" className="site-header fixed inset-x-0 top-0 z-50">
       <div className="container-shell flex h-full items-center gap-10">
-        <Link href="/" className="relative z-10 flex shrink-0 items-center" aria-label={`${site.name} – til forsiden`}>
+        <Link href="/" className="relative z-10 flex shrink-0 items-center" aria-label={`${site.name}, til forsiden`}>
           <Image src="/brand/it-kompass-logo-web-opt.png" alt={site.name} width={414} height={148} loading="eager" fetchPriority="high" unoptimized className="brand-logo h-auto" />
         </Link>
 

@@ -25,7 +25,7 @@ export function SupportForm() {
         <SelectField label="Kategori" name="category" required options={["WiFi", "Fiber og telecom", "IT support", "Utstyr", "Nettsider", "Annet"]} />
         <SelectField label="Prioritet" name="priority" required options={["Lav", "Normal", "Høy", "Kritisk"]} />
       </div>
-      <TextareaField label="Beskrivelse" name="description" required placeholder="Hva har skjedd, hvem gjelder det, og hva er viktigst å få løst?" />
+      <TextareaField label="Beskrivelse" name="description" required placeholder="Hva har skjedd, og hvem gjelder det?" />
       <label className="grid gap-1.5 text-[13px] font-bold text-[#38536f]">
         <span>Vedlegg <span className="font-medium text-muted">(valgfritt)</span></span>
         <input className="form-control text-sm file:mr-3 file:rounded-full file:border-0 file:bg-tile file:px-3 file:py-1.5 file:text-[13px] file:font-bold file:text-brand" type="file" name="attachment" accept="image/png,image/jpeg,application/pdf,text/plain" aria-describedby="vedlegg-hjelp" />

@@ -13,7 +13,7 @@ export default function PrivacyPage() {
   const sections = privacySections.filter((section) => !section.onlyWithAnalytics || site.plausibleDomain);
   return (
     <main id="main" tabIndex={-1} className="outline-none">
-      <PageHero crumbs={[{ href: "/personvern", label: "Personvern" }]} eyebrow="Personvern" title="Personvern skal være forståelig." body="Her forklarer vi hvilke opplysninger vi behandler når du bruker nettstedet, og hvorfor." />
+      <PageHero crumbs={[{ href: "/personvern", label: "Personvern" }]} eyebrow="Personvern" title="Slik behandler vi opplysningene dine." body="Hvilke opplysninger vi samler inn, hvorfor, og hvilke rettigheter du har." />
       <section className="section-pad">
         <div className="container-shell grid gap-12 lg:grid-cols-[240px_1fr] lg:gap-20">
           <nav aria-label="Innhold på siden" className="lg:sticky lg:top-28 lg:self-start">

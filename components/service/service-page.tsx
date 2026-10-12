@@ -53,7 +53,7 @@ export function ServicePage({ service }: { service: Service }) {
 
       <section className="section-pad bg-soft">
         <div className="container-shell grid gap-10 lg:grid-cols-[.85fr_1.15fr] lg:gap-16">
-          <SectionHeading eyebrow="Leveransen" title="Dette kan vi hjelpe deg med." align="left" />
+          <SectionHeading eyebrow="Leveransen" title="Dette får dere." align="left" />
           <ul className="grid content-start gap-3 self-end">
             {service.bullets.map((item, index) => (
               <li key={item} data-reveal style={{ ["--d" as string]: `${index * 0.07}s` }} className="flex items-center gap-4 rounded-2xl border border-line bg-white px-5 py-4 text-[16px] font-medium text-ink shadow-[0_1px_2px_rgba(14,39,71,.04)]">
@@ -69,7 +69,7 @@ export function ServicePage({ service }: { service: Service }) {
 
       <section className="section-pad">
         <div className="container-shell">
-          <SectionHeading eyebrow="Slik jobber vi" title="Fra behov til en løsning som er i drift." align="left" />
+          <SectionHeading eyebrow="Slik jobber vi" title="Fra første prat til alt virker." align="left" />
           <ProcessTrack steps={service.process.map((step, i) => ({ number: `0${i + 1}`, title: step }))} />
         </div>
       </section>

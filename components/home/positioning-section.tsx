@@ -91,7 +91,7 @@ function RouteDiagram() {
           const chosen = i === diagram.chosen;
           return (
             <span key={option} className="absolute -translate-y-[10px] pl-4 leading-5" style={{ left: pct(OPTION_X, W), top: pct(optionY(i, n), H) }}>
-              <span className={chosen ? "block text-[12px] font-semibold whitespace-nowrap text-white sm:text-[13px]" : "block text-[12px] whitespace-nowrap text-on-navy-muted sm:text-[13px]"}>{option}{chosen ? <span className="sr-only"> – {diagram.result}</span> : null}</span>
+              <span className={chosen ? "block text-[12px] font-semibold whitespace-nowrap text-white sm:text-[13px]" : "block text-[12px] whitespace-nowrap text-on-navy-muted sm:text-[13px]"}>{option}{chosen ? <span className="sr-only">: {diagram.result}</span> : null}</span>
               {chosen ? <span className="route-badge mt-1.5 hidden items-center gap-1.5 rounded-full whitespace-nowrap sm:inline-flex bg-[#2aa6ff]/15 px-2 py-0.5 text-[11px] font-semibold text-[#9fdcff] ring-1 ring-[#2aa6ff]/40"><svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="m1.5 5.2 2.2 2.2L8.5 2.6" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>{diagram.result}</span> : null}
             </span>
           );

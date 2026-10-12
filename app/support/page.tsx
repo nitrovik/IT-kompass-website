@@ -12,16 +12,16 @@ import { getStatusServices } from "@/lib/status";
 export const metadata: Metadata = pageMetadata({ title: "Support", description: "Meld inn en IT-supportsak til IT Kompass AS.", path: "/support" });
 
 const steps = [
-  "Vi mottar saken og ser på prioriteten du har valgt.",
-  "Vi tar kontakt hvis vi trenger mer informasjon.",
-  "Vi løser saken eller avtaler videre oppfølging.",
+  "Vi ser på saken og prioriteten du valgte.",
+  "Trenger vi mer informasjon, tar vi kontakt.",
+  "Vi løser saken eller avtaler neste steg.",
 ];
 
 export default async function SupportPage() {
   const status = await getStatusServices();
   return (
     <main id="main" tabIndex={-1} className="outline-none">
-      <PageHero crumbs={[{ href: "/support", label: "Support" }]} eyebrow="Support" title="Når noe stopper, skal veien videre være kort." body="Meld inn saken med kategori, prioritet og beskrivelse. Legg gjerne ved et skjermbilde, så går det raskere å finne ut av det." />
+      <PageHero crumbs={[{ href: "/support", label: "Support" }]} eyebrow="Support" title="Hjelp når noe stopper." body="Beskriv hva som har skjedd. Et skjermbilde hjelper oss å finne feilen raskere." />
 
       <section className="section-pad">
         <div className="container-shell grid gap-5 lg:grid-cols-[1.25fr_.75fr]">
@@ -33,7 +33,7 @@ export default async function SupportPage() {
           <div className="grid content-start gap-5">
             {site.phone ? (
               <div data-reveal className="navy-slab on-dark rounded-[24px] p-7">
-                <h2 className="card-title text-[20px] text-white">Haster det?</h2>
+                <h2 className="card-title text-[20px] text-white">Når det haster</h2>
                 <p className="mt-2 text-[15px] leading-6 text-on-navy">Ved kritiske feil kan du ringe oss direkte.</p>
                 <a href={`tel:${site.phone.replace(/\s/g, "")}`} className={`${buttonVariants({ variant: "light" })} mt-6`}>{site.phone} <Arrow /></a>
               </div>
@@ -41,12 +41,12 @@ export default async function SupportPage() {
             {site.remoteHelpUrl ? (
               <div data-reveal className="surface-card p-7">
                 <h2 className="card-title text-[20px] text-ink">Fjernhjelp</h2>
-                <p className="mt-2 text-[15px] leading-6 text-muted">Når vi skal hjelpe deg på skjermen, laster du ned verktøyet her og gir oss koden som vises.</p>
+                <p className="mt-2 text-[15px] leading-6 text-muted">Last ned verktøyet og gi oss koden som vises. Da kan vi hjelpe deg på skjermen.</p>
                 <a href={site.remoteHelpUrl} target="_blank" rel="noreferrer" className={`${buttonVariants()} mt-6`}>Last ned fjernhjelp <Arrow /></a>
               </div>
             ) : null}
             <div data-reveal style={{ ["--d" as string]: ".1s" }} className="surface-card p-7">
-              <h2 className="card-title text-[20px] text-ink">Slik behandler vi saken</h2>
+              <h2 className="card-title text-[20px] text-ink">Dette skjer med saken</h2>
               <ol className="relative mt-6 grid gap-6">
                 <span aria-hidden="true" className="absolute top-3 bottom-3 left-[13px] w-px bg-line" />
                 {steps.map((step, i) => (

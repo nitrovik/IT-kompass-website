@@ -4,7 +4,7 @@ import { SectionHeading } from "@/components/site/section-heading";
 import { DeviceMockup } from "@/components/site/device-mockup";
 import { Arrow } from "@/components/ui/arrow";
 
-const capabilities = ["Design", "Utvikling", "Hosting", "SEO", "Innhold"];
+const capabilities = ["Design", "Utvikling", "Drift", "Synlig i Google", "Innhold"];
 
 export function WebsitesSection() {
   return (

@@ -28,8 +28,8 @@ export function ContactDetails() {
 }
 
 const shortcuts = [
-  { href: "/finn-riktig-losning", label: "Usikker på hva du trenger?", cta: "Bruk veiviseren" },
-  { href: "/support", label: "Har du en driftssak?", cta: "Meld inn supportsak" },
+  { href: "/finn-riktig-losning", label: "Hjelp til å velge", cta: "Bruk veiviseren" },
+  { href: "/support", label: "Noe som ikke virker", cta: "Meld inn supportsak" },
 ];
 
 export function ContactSection() {

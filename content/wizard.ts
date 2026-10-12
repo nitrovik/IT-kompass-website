@@ -5,9 +5,9 @@ export const wizardSteps = [
 ] as const;
 
 export function getRecommendation(need?: string, employees?: string) {
-  if (need === "Nettsider") return employees === "1–5" ? "Nettsider – Start" : "Nettsider – Pro";
-  if (need === "WiFi") return "WiFi – kartlegging og prosjektering";
-  if (need === "Fiber og telecom") return "Fiber og telecom – behovskartlegging";
-  if (need === "IT support") return "IT support – drift og brukerstøtte";
-  return "Et avklaringsmøte om IT og telecom";
+  if (need === "Nettsider") return employees === "1–5" ? "Nettsider: Start-pakken" : "Nettsider: Pro-pakken";
+  if (need === "WiFi") return "WiFi: kartlegging og planlegging";
+  if (need === "Fiber og telecom") return "Fiber og telecom: sjekk av adressen og behovet";
+  if (need === "IT support") return "IT support: drift og hjelp til ansatte";
+  return "En prat om hva dere trenger";
 }
