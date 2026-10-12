@@ -12,8 +12,7 @@ export const site = {
   city: "",
   country: "NO",
   coverageArea: "",
-  description:
-    "Nøytral partner innen IT og telecom for små og mellomstore bedrifter. Vi finner riktig løsning uavhengig av leverandør, og kunden har én kontakt for alt.",
+  description: "IT og telecom for små og mellomstore bedrifter. Vi sammenligner leverandørene, og du har én kontakt.",
   bookingUrl: process.env.NEXT_PUBLIC_CAL_URL || "",
   remoteHelpUrl: process.env.REMOTE_HELP_URL || "",
   plausibleDomain: process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN || "",

@@ -23,10 +23,10 @@ export function SiteFooter() {
       <div className="container-shell relative pt-20 pb-8">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-[1.5fr_.75fr_.85fr_1fr]">
           <div>
-            <Link href="/" className="inline-block" aria-label={`${site.name} – til forsiden`}>
+            <Link href="/" className="inline-block" aria-label={`${site.name}, til forsiden`}>
               <Image src="/brand/it-kompass-logo-web-inverse-opt.png" alt={site.name} width={414} height={148} unoptimized className="h-auto w-[196px]" />
             </Link>
-            <p className="mt-6 max-w-xs text-[15px] leading-7">IT og telecom i riktig retning. Én partner, uavhengig av leverandør.</p>
+            <p className="mt-6 max-w-xs text-[15px] leading-7">IT og telecom for små og mellomstore bedrifter.</p>
             <Link href="/finn-riktig-losning" className="group mt-7 inline-flex items-center gap-2 text-[15px] font-semibold text-white">
               <span className="link-underline">Finn riktig løsning</span> <Arrow />
             </Link>
@@ -50,7 +50,7 @@ export function SiteFooter() {
               {site.phone ? <li><a href={`tel:${site.phone.replace(/\s/g, "")}`} className={linkClass}>{site.phone}</a></li> : null}
               {site.email ? <li><a href={`mailto:${site.email}`} className={linkClass}>{site.email}</a></li> : null}
               {address ? <li>{address}</li> : null}
-              <li><Link href="/kontakt" className={linkClass}>Send oss en henvendelse</Link></li>
+              <li><Link href="/kontakt" className={linkClass}>Send en melding</Link></li>
               <li><Link href="/support" className={linkClass}>Meld inn supportsak</Link></li>
             </ul>
           </div>

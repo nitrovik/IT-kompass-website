@@ -24,9 +24,9 @@ export default function NotFound() {
             <svg viewBox="0 0 18 70" className="absolute inset-0 size-full"><path d="M9 0 L17 35 L1 35 Z" fill="#0e2747" /><path d="M1 35 L17 35 L9 70 Z" fill="#2a8aa8" /><circle cx="9" cy="35" r="4.4" fill="#fff" stroke="#0e2747" strokeWidth="2" /></svg>
           </span>
         </div>
-        <p className="eyebrow mt-10 justify-center">404 – feil retning</p>
-        <h1 className="page-title mt-5 text-ink">Du har tatt en annen vei.</h1>
-        <p className="lead mt-5">Siden du leter etter finnes ikke. Kompasset peker deg tilbake.</p>
+        <p className="eyebrow mt-10 justify-center">404: feil retning</p>
+        <h1 className="page-title mt-5 text-ink">Siden finnes ikke.</h1>
+        <p className="lead mt-5">Gå til forsiden, eller velg en av sidene under.</p>
         <div className="mt-9 flex flex-wrap justify-center gap-3">
           <Link href="/" className={buttonVariants({ size: "lg" })}><Arrow className="rotate-180" /> Til forsiden</Link>
         </div>

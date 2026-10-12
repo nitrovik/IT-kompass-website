@@ -12,7 +12,7 @@ import { WizardCta } from "@/components/home/wizard-cta";
 import { ContactSection } from "@/components/home/contact-section";
 import { SectionHeading } from "@/components/site/section-heading";
 
-export const metadata: Metadata = pageMetadata({ title: "IT Kompass AS | IT og telecom. Én partner.", description: site.description, path: "/", absoluteTitle: true });
+export const metadata: Metadata = pageMetadata({ title: "IT Kompass AS | IT og telecom med én kontakt", description: site.description, path: "/", absoluteTitle: true });
 
 function JsonLd() {
   const base = site.url.replace(/\/$/, "");

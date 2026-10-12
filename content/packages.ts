@@ -20,23 +20,26 @@ export const vatNote = "eks. mva";
 export const websitePackages: WebsitePackage[] = [
   {
     name: "Start",
-    description: "En tydelig og profesjonell nettside for virksomheter som trenger et solid fundament.",
-    features: ["Design og utvikling", "Responsivt nettsted", "Grunnleggende SEO", "Hosting klar for drift"],
+    description: "For bedrifter som trenger en enkel og ryddig nettside.",
+    features: ["Design og utvikling", "Fungerer på mobil", "Grunnleggende synlighet i Google", "Drift av siden"],
     featured: false,
     price: { setup: "4 990,-", monthly: "390,-", terms: "12 måneders binding" },
   },
   {
     name: "Pro",
-    description: "For virksomheter som trenger mer innhold, flere sider og større fleksibilitet.",
-    features: ["Alt i Start", "Flere innholdstyper", "Utvidet SEO", "Innholdsstruktur for vekst"],
+    description: "For bedrifter som trenger flere sider og jevnlige endringer.",
+    features: ["Alt i Start", "Flere sider og typer innhold", "Mer arbeid med synlighet i Google", "Lett å legge til nye sider"],
     featured: true,
     price: { setup: "9 990,-", monthly: "690,-", terms: "Inkludert 5 timer endringstid i måneden" },
   },
   {
     name: "Premium",
-    description: "For virksomheter som ønsker en komplett digital profil og høy grad av tilpasning.",
-    features: ["Alt i Pro", "Skreddersydde komponenter", "Avanserte interaksjoner", "Prioritert videreutvikling"],
+    description: "For bedrifter som trenger mer enn en standard nettside.",
+    features: ["Alt i Pro", "Egne funksjoner etter behov", "Animasjoner og effekter", "Raskere hjelp med nye funksjoner"],
     featured: false,
     price: { custom: "Pris ut fra behov" },
   },
 ];
+
+/** Laveste etableringspris, brukes i korte tekster om nettsidene (f.eks. «Pakker fra …»). */
+export const startSetupPrice = websitePackages[0].price.setup ?? "";

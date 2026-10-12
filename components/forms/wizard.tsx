@@ -68,9 +68,9 @@ export function SolutionWizard({ initialNeed }: { initialNeed?: string }) {
         <form action={action} className="relative grid gap-4 p-6 sm:p-10">
           <div>
             <p className="eyebrow">Siste steg</p>
-            <h2 ref={headingRef} tabIndex={-1} className="card-title mt-4 text-[30px] leading-tight text-ink outline-none">Hvor kan vi kontakte deg?</h2>
+            <h2 ref={headingRef} tabIndex={-1} className="card-title mt-4 text-[30px] leading-tight text-ink outline-none">Hvor vi kan nå deg</h2>
             <p className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-2xl border border-brand/20 bg-tile px-4 py-3.5 text-sm text-body">
-              <span className="font-medium">Anbefalt retning:</span> <strong className="font-semibold text-ink">{getRecommendation(values.need, values.employees)}</strong>
+              <span className="font-medium">Anbefaling:</span> <strong className="font-semibold text-ink">{getRecommendation(values.need, values.employees)}</strong>
             </p>
           </div>
           {wizardSteps.map((item) => <input key={item.key} type="hidden" name={item.key} value={values[item.key] ?? ""} />)}

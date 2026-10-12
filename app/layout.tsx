@@ -18,13 +18,13 @@ const schibsted = localFont({ src: "./fonts/schibsted-grotesk-latin-wght.woff2",
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: "IT Kompass AS | IT og telecom. Én partner.",
+    default: "IT Kompass AS | IT og telecom med én kontakt",
     template: "%s | IT Kompass AS",
   },
   description: site.description,
   applicationName: site.name,
   openGraph: {
-    title: "IT Kompass AS | IT og telecom. Én partner.",
+    title: "IT Kompass AS | IT og telecom med én kontakt",
     description: site.description,
     url: site.url,
     siteName: site.name,
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [{ url: "/brand/it-kompass-logo.png", width: 640, height: 180, alt: site.name }],
   },
-  twitter: { card: "summary", title: "IT Kompass AS | IT og telecom. Én partner.", description: site.description },
+  twitter: { card: "summary", title: "IT Kompass AS | IT og telecom med én kontakt", description: site.description },
   robots: { index: true, follow: true },
   formatDetection: { telephone: false },
 };

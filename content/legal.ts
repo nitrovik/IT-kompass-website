@@ -14,15 +14,15 @@ export const privacySections: PrivacySection[] = [
   {
     title: "Hvilke opplysninger vi behandler",
     body: [
-      "Når du sender inn kontaktskjema, supportsak eller bruker veiviseren, behandler vi opplysningene du selv oppgir: navn, virksomhet, e-postadresse, eventuelt telefonnummer og adresse, og det du skriver i meldingen. Legger du ved en fil i en supportsak, behandler vi også den.",
+      "Vi behandler det du selv fyller inn i kontaktskjemaet, supportskjemaet og veiviseren. Det er navn, virksomhet, e-postadresse, eventuelt telefonnummer og adresse, og meldingen din. Legger du ved en fil i en supportsak, behandler vi også den.",
       "Vi bruker ikke informasjonskapsler (cookies) til markedsføring eller sporing.",
     ],
   },
   {
     title: "Hvorfor vi behandler dem",
     body: [
-      "Opplysningene brukes til å svare på henvendelsen din, følge opp supportsaker og gi deg tilbud eller tjenester du ber om.",
-      "Grunnlaget er at behandlingen er nødvendig for å gjennomføre tiltak du ber om før en eventuell avtale, eller for å oppfylle en avtale med deg eller virksomheten du representerer (personvernforordningen art. 6 nr. 1 bokstav b og f).",
+      "Vi bruker opplysningene til å svare deg, følge opp supportsaker og gi deg tilbud eller tjenester du ber om.",
+      "Grunnlaget er at behandlingen er nødvendig for det du ber om før en eventuell avtale, eller for å oppfylle en avtale med deg eller virksomheten din. Se personvernforordningen art. 6 nr. 1 bokstav b og f.",
     ],
   },
   {
@@ -38,13 +38,13 @@ export const privacySections: PrivacySection[] = [
   },
   {
     title: "Hvor lenge vi lagrer opplysningene",
-    body: ["Vi lagrer henvendelser så lenge det er nødvendig for å følge opp saken eller kundeforholdet, og sletter dem når de ikke lenger trengs, med mindre lovpålagte krav tilsier noe annet."],
+    body: ["Vi lagrer henvendelser så lenge vi trenger dem for å følge opp saken eller kundeforholdet. Deretter sletter vi dem, med mindre loven krever at vi lagrer dem lenger."],
   },
   {
     title: "Dine rettigheter",
     body: [
       "Du har rett til innsyn i opplysningene vi har om deg, og til å be om retting eller sletting. Du kan også protestere mot behandlingen eller be om at den begrenses.",
-      "Ta kontakt med oss via kontaktskjemaet hvis du vil bruke rettighetene dine. Mener du at vi behandler opplysninger i strid med regelverket, kan du klage til Datatilsynet.",
+      "Bruk kontaktskjemaet hvis du vil bruke rettighetene dine. Mener du at vi bryter regelverket, kan du klage til Datatilsynet.",
     ],
   },
 ];

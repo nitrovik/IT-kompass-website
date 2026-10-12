@@ -7,13 +7,13 @@ import { CoverageMap } from "@/components/site/coverage-map";
 import { homeContact } from "@/content/home";
 import { site } from "@/config/site";
 
-export const metadata: Metadata = pageMetadata({ title: "Kontakt", description: "Kontakt IT Kompass AS om fiber, WiFi, mobil, IT support, utstyr, installasjoner og nettsider.", path: "/kontakt" });
+export const metadata: Metadata = pageMetadata({ title: "Kontakt", description: "Kontakt IT Kompass AS om fiber, WiFi, mobil, IT-hjelp og nettsider.", path: "/kontakt" });
 
 export default function ContactPage() {
   const hasDetails = Boolean(site.phone || site.email || site.address);
   return (
     <main id="main" tabIndex={-1} className="outline-none">
-      <PageHero crumbs={[{ href: "/kontakt", label: "Kontakt" }]} eyebrow="Kontakt" title="Fortell oss hva du skal få på plass." body="Velg tema og beskriv kort hva du trenger. Vi tar kontakt for å finne riktig vei videre." />
+      <PageHero crumbs={[{ href: "/kontakt", label: "Kontakt" }]} eyebrow="Kontakt" title="Fortell oss hva dere trenger." body="Velg tema og skriv noen ord. Vi tar kontakt." />
       <section className="section-pad">
         <div className="container-shell grid gap-5 lg:grid-cols-[1.25fr_.75fr]">
           <div data-reveal className="surface-card p-6 sm:p-10">
