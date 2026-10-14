@@ -9,7 +9,7 @@ import { startSetupPrice } from "@/content/packages";
 
 export const homeHero = {
   eyebrow: "IT Kompass AS",
-  title: ["IT og telecom.", "Én kontakt."],
+  title: ["Din lokale", "IT partner."],
   body: "Vi ordner fiber, mobil, WiFi, IT-hjelp og nettsider for bedriften din.",
   primaryCta: { label: "Finn riktig løsning", href: "/finn-riktig-losning" },
   secondaryCta: { label: "Ta kontakt", href: "/kontakt" },
