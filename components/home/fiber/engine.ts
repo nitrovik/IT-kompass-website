@@ -349,6 +349,9 @@ function smoothstep(a: number, b: number, x: number) {
   Bred layout: fibrene samles i et punkt på høyre side der kompasset står (70 %, 46 %).
   Smal layout: fibrene feier fra nede til venstre mot oppe til høyre bak/under teksten.
 */
+// Antall kabler: 3 = 200 % flere enn den opprinnelige komposisjonen (ønsket av eier, oktober 2026)
+const CABLES = 3;
+
 export const HUB = { x: 0.7, y: 0.46 };
 // På 1024–1279 px står kompasset litt lenger til høyre, så det aldri kommer for nær teksten
 export const hubX = (width: number) => (width < 1280 ? 0.75 : HUB.x);
@@ -363,7 +366,7 @@ function compose(W: number, H: number, tier: FiberTier): FiberDef[] {
   const hub: Vec3 = wide ? [W * (hubX(W) - 0.5), H * (HUB.y - 0.5), 0] : [W * 0.46, H * 0.12, 0];
 
   // Bakgrunn: mange tynne, uskarpe fibre som fyller hele flaten
-  const bgCount = Math.round((wide ? 28 : 16) * dense);
+  const bgCount = Math.round((wide ? 28 : 16) * dense * CABLES);
   for (let i = 0; i < bgCount; i++) {
     const t = i / (bgCount - 1);
     const z = r(-650, -320);
@@ -383,7 +386,7 @@ function compose(W: number, H: number, tier: FiberTier): FiberDef[] {
   }
 
   // Midt: hovednettverket – samles i kompasset
-  const trunk = Math.round((wide ? 15 : 11) * (tier === "low" ? 0.8 : 1));
+  const trunk = Math.round((wide ? 15 : 11) * (tier === "low" ? 0.8 : 1) * CABLES);
   for (let i = 0; i < trunk; i++) {
     const t = trunk > 1 ? i / (trunk - 1) - 0.5 : 0;
     const zStart = r(-140, 120);
@@ -411,8 +414,9 @@ function compose(W: number, H: number, tier: FiberTier): FiberDef[] {
 
   if (wide) {
     // Kryssende fibre gjennom kompasset (ovenfra og ned mot høyre)
-    for (let i = 0; i < 3; i++) {
-      const t = i / 2 - 0.5;
+    const crossing = 3 * CABLES;
+    for (let i = 0; i < crossing; i++) {
+      const t = i / (crossing - 1) - 0.5;
       const pinch: Vec3 = [hub[0] + t * 8, hub[1] - t * 6, 10];
       const pts: Vec3[] = [
         [hub[0] - W * (0.42 - t * 0.1), -H * 0.6, r(-120, 0)],
@@ -424,7 +428,7 @@ function compose(W: number, H: number, tier: FiberTier): FiberDef[] {
       fibers.push({ points: pts, core: r(1.1, 1.6), halo: 7, layer: 1, speedPx: r(90, 190), activity: r(0.4, 0.8), brightness: r(0.6, 0.9), sway: r(4, 8), pinch });
     }
     // Frie buer på høyre side som ikke går gjennom kompasset
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 5 * CABLES; i++) {
       const y = H * r(0.15, 0.62);
       const pts: Vec3[] = [
         [W * r(-0.05, 0.12), H * 0.62, r(-200, -60)],
@@ -437,7 +441,7 @@ function compose(W: number, H: number, tier: FiberTier): FiberDef[] {
   }
 
   // Forgrunn: få, tykke og tydelige fibre med sterkere lys
-  const fg = wide ? 4 : 2;
+  const fg = (wide ? 4 : 2) * CABLES;
   for (let i = 0; i < fg; i++) {
     const z = r(140, 260);
     const s = FOCAL_INV(z);
