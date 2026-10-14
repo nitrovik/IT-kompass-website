@@ -3,15 +3,16 @@
   og mens WebGL-scenen lastes. Linjene følger samme komposisjon som WebGL-scenen:
   fibrene samles der kompasset står (70 %, 46 %).
 */
-const trunk = Array.from({ length: 11 }, (_, i) => {
-  const t = i / 10 - 0.5;
+// 3 × så mange kabler som opprinnelig (samme som WebGL-scenen, se CABLES i engine.ts)
+const trunk = Array.from({ length: 33 }, (_, i) => {
+  const t = i / 32 - 0.5;
   const sy = 640 + t * 330;
   const ey = 30 - t * 420;
   return `M-40 ${sy.toFixed(0)} C 260 ${(560 + t * 160).toFixed(0)}, 520 ${(355 + t * 40).toFixed(0)}, 700 ${(322 + t * 6).toFixed(0)} S 880 ${(250 + t * 60).toFixed(0)}, 1040 ${ey.toFixed(0)}`;
 });
 
-const background = Array.from({ length: 9 }, (_, i) => {
-  const y = 760 - i * 70;
+const background = Array.from({ length: 27 }, (_, i) => {
+  const y = Math.round(760 - i * (560 / 26));
   return `M-40 ${y} C 300 ${y - 120}, 600 ${y - 260 + (i % 3) * 40}, 1040 ${y - 470}`;
 });
 
