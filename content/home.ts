@@ -12,12 +12,12 @@ export const homeHero = {
 };
 
 export const homePositioning = {
-  eyebrow: "Uavhengig av leverandør",
-  title: ["Behovet ditt først.", "Leverandøren etterpå."],
-  body: "Vi sammenligner alternativene og anbefaler det som passer dere. Dere bestemmer selv.",
+  eyebrow: "Behovet avgjør",
+  title: ["Riktig valg", "for bedriften din."],
+  body: "Vi ser på alternativene og anbefaler det som passer dere best. Dere bestemmer selv.",
   points: [
     { title: "Objektive råd", text: "Anbefalingen bygger på behovet deres, ikke på én leverandør." },
-    { title: "Mindre å følge opp", text: "Vi tar praten med leverandørene for dere." },
+    { title: "Mindre å følge opp", text: "Du slipper å ta kontakten selv. Vi gjør det for dere." },
     { title: "Samlet oversikt", text: "Fiber, mobil og IT-avtaler på ett sted." },
     { title: "Nye behov", text: "Endrer behovet seg, ser vi på alternativene igjen." },
   ],
