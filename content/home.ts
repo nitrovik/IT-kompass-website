@@ -1,6 +1,3 @@
-import type { ServiceCardData } from "@/content/types";
-import { startSetupPrice } from "@/content/packages";
-
 /*
   Alt synlig innhold på forsiden. Kan flyttes til et CMS (f.eks. Sanity) senere
   uten at komponentene må skrives om. Ikke legg inn oppdiktede kunder, tall,
@@ -11,42 +8,8 @@ export const homeHero = {
   eyebrow: "IT Kompass AS",
   title: ["Din lokale", "IT partner."],
   body: "Vi drifter. Du driver.",
-  primaryCta: { label: "Finn riktig løsning", href: "/finn-riktig-losning" },
-  secondaryCta: { label: "Ta kontakt", href: "/kontakt" },
+  cta: { label: "Ta kontakt", href: "/kontakt" },
 };
-
-export const homeServicesIntro = {
-  eyebrow: "Tjenester",
-  title: ["Fire tjenester", "for bedriften din."],
-  body: "Velg én tjeneste eller alle fire.",
-};
-
-export const homeServices: ServiceCardData[] = [
-  {
-    title: "WiFi",
-    href: "/tjenester/wifi",
-    description: "Vi planlegger, installerer og drifter trådløst nett. For bedrifter, hoteller, skoler og offentlige bygg.",
-    icon: "wifi",
-  },
-  {
-    title: "Fiber og telecom",
-    href: "/tjenester/fiber-og-telecom",
-    description: "Fiber, mobil og sentralbord. Vi sjekker adressen og finner leverandøren som passer.",
-    icon: "fiber-og-telecom",
-  },
-  {
-    title: "IT support",
-    href: "/tjenester/it-support",
-    description: "Hjelp når PC-en eller nettverket stopper. Drift, sikkerhet og backup.",
-    icon: "it-support",
-  },
-  {
-    title: "Nettsider og drift",
-    href: "/tjenester/nettsider",
-    description: `En nettside som viser hva dere gjør. Pakker fra ${startSetupPrice} eks. mva.`,
-    icon: "nettsider",
-  },
-];
 
 export const homePositioning = {
   eyebrow: "Uavhengig av leverandør",

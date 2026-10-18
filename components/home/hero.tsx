@@ -36,8 +36,7 @@ export function Hero() {
           </h1>
           <p className="lead hero-fade mt-7 max-w-[560px] sm:text-[1.2rem]" style={{ ["--d" as string]: ".55s" }}>{homeHero.body}</p>
           <div className="hero-fade mt-9 flex flex-wrap gap-3" style={{ ["--d" as string]: ".7s" }}>
-            <MagneticLink href={homeHero.primaryCta.href}>{homeHero.primaryCta.label} <Arrow /></MagneticLink>
-            <MagneticLink href={homeHero.secondaryCta.href} variant="secondary">{homeHero.secondaryCta.label}</MagneticLink>
+            <MagneticLink href={homeHero.cta.href}>{homeHero.cta.label} <Arrow /></MagneticLink>
           </div>
         </div>
       </div>

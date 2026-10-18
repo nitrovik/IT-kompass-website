@@ -1,16 +1,13 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/metadata";
 import { site } from "@/config/site";
-import { homeServices, homeServicesIntro } from "@/content/home";
 import { Hero } from "@/components/home/hero";
-import { ServiceCard } from "@/components/home/service-card";
 import { PositioningSection } from "@/components/home/positioning-section";
 import { ProcessSection } from "@/components/home/process-section";
 import { WebsitesSection } from "@/components/home/websites-section";
 import { PartnersSection } from "@/components/home/partners-section";
 import { WizardCta } from "@/components/home/wizard-cta";
 import { ContactSection } from "@/components/home/contact-section";
-import { SectionHeading } from "@/components/site/section-heading";
 
 export const metadata: Metadata = pageMetadata({ title: "IT Kompass AS | IT og telecom med én kontakt", description: site.description, path: "/", absoluteTitle: true });
 
@@ -47,15 +44,6 @@ export default function HomePage() {
     <main id="main" tabIndex={-1} className="outline-none">
       <JsonLd />
       <Hero />
-
-      <section className="section-pad" aria-labelledby="tjenester-heading">
-        <div className="container-shell">
-          <SectionHeading id="tjenester-heading" eyebrow={homeServicesIntro.eyebrow} title={homeServicesIntro.title} body={homeServicesIntro.body} />
-          <div className="mt-14 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            {homeServices.map((service, index) => <ServiceCard key={service.href} service={service} index={index} />)}
-          </div>
-        </div>
-      </section>
 
       <PositioningSection />
       <ProcessSection />
