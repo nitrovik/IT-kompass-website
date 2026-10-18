@@ -13,14 +13,6 @@ export const homeHero = {
   body: "Vi drifter. Du driver.",
   primaryCta: { label: "Finn riktig løsning", href: "/finn-riktig-losning" },
   secondaryCta: { label: "Ta kontakt", href: "/kontakt" },
-  quickLinksLabel: "Fire tjenesteområder",
-  // Vises i glassbåndet nederst i heroen
-  reasons: [
-    { title: "Fast kontaktperson", text: "Samme person følger dere opp hver gang." },
-    { title: "Uavhengig", text: "Ingen leverandør bestemmer hva vi anbefaler." },
-    { title: "Viken og hele Norge", text: "På stedet i Viken. Digitalt i resten av landet." },
-    { title: "Uten fagprat", text: "Du får valgene forklart med vanlige ord." },
-  ],
 };
 
 export const homeServicesIntro = {

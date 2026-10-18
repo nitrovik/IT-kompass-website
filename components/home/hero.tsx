@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { homeHero, homeServices } from "@/content/home";
+import { homeHero } from "@/content/home";
 import { HeroFiber } from "@/components/home/fiber/hero-fiber";
 import { MagneticLink } from "@/components/ui/magnetic-link";
 import { Arrow } from "@/components/ui/arrow";
@@ -40,32 +39,7 @@ export function Hero() {
             <MagneticLink href={homeHero.primaryCta.href}>{homeHero.primaryCta.label} <Arrow /></MagneticLink>
             <MagneticLink href={homeHero.secondaryCta.href} variant="secondary">{homeHero.secondaryCta.label}</MagneticLink>
           </div>
-          <nav aria-label={homeHero.quickLinksLabel} className="hero-fade mt-9" style={{ ["--d" as string]: ".85s" }}>
-            <ul className="flex flex-wrap gap-2">
-              {homeServices.map((service) => (
-                <li key={service.href}>
-                  <Link href={service.href} className="group inline-flex h-9 items-center gap-2 rounded-full border border-white/80 bg-white/55 pr-3.5 pl-2.5 text-[13px] font-medium text-body backdrop-blur transition hover:border-[#bcd6ee] hover:bg-white hover:text-ink">
-                    <span className="relative grid size-2 place-items-center" aria-hidden="true">
-                      <span className="absolute size-2 rounded-full bg-brand-bright/30 transition-transform duration-500 group-hover:scale-[2.2]" />
-                      <span className="relative size-1.5 rounded-full bg-brand" />
-                    </span>
-                    {service.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
         </div>
-
-        <ul className="glass hero-fade grid grid-cols-2 overflow-hidden rounded-[22px] lg:grid-cols-4" style={{ ["--d" as string]: "1s" }} aria-label="Derfor IT Kompass">
-          {homeHero.reasons.map((reason, index) => (
-            <li key={reason.title} className="relative px-4 py-4 sm:px-6 sm:py-5 [&:nth-child(n+3)]:border-t [&:nth-child(n+3)]:border-white/70 lg:[&:nth-child(n+3)]:border-t-0 [&:not(:first-child)]:before:absolute [&:not(:first-child)]:before:inset-y-5 [&:not(:first-child)]:before:left-0 [&:not(:first-child)]:before:w-px [&:not(:first-child)]:before:bg-[#c9dcee] [&:nth-child(3)]:before:hidden lg:[&:nth-child(3)]:before:block">
-              <span className="tabular text-[11px] font-semibold tracking-[.14em] text-brand">0{index + 1}</span>
-              <p className="card-title mt-1.5 text-[15px] text-ink sm:text-base">{reason.title}</p>
-              <p className="mt-1 text-[12.5px] leading-[1.5] text-muted sm:text-[13px]">{reason.text}</p>
-            </li>
-          ))}
-        </ul>
       </div>
     </section>
   );
