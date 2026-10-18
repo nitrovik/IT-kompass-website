@@ -349,8 +349,9 @@ function smoothstep(a: number, b: number, x: number) {
   Bred layout: fibrene samles i et punkt på høyre side der kompasset står (70 %, 46 %).
   Smal layout: fibrene feier fra nede til venstre mot oppe til høyre bak/under teksten.
 */
-// Antall kabler: 3 = 200 % flere enn den opprinnelige komposisjonen (ønsket av eier, oktober 2026)
-const CABLES = 3;
+// Antall kabler. Satt ned fra 3 (oktober 2026): alle fibre møtes nå i kompasset som
+// én hub, så et roligere antall leser tydeligere enn mange tynne streker over hele flaten.
+const CABLES = 1;
 
 export const HUB = { x: 0.7, y: 0.46 };
 // På 1024–1279 px står kompasset litt lenger til høyre, så det aldri kommer for nær teksten
@@ -365,24 +366,28 @@ function compose(W: number, H: number, tier: FiberTier): FiberDef[] {
 
   const hub: Vec3 = wide ? [W * (hubX(W) - 0.5), H * (HUB.y - 0.5), 0] : [W * 0.46, H * 0.12, 0];
 
-  // Bakgrunn: mange tynne, uskarpe fibre som fyller hele flaten
-  const bgCount = Math.round((wide ? 28 : 16) * dense * CABLES);
+  // Bakgrunn: mange tynne, uskarpe fibre som strømmer inn mot kompasset fra ulike kanter
+  const bgCount = Math.round((wide ? 16 : 12) * dense * CABLES);
   for (let i = 0; i < bgCount; i++) {
-    const t = i / (bgCount - 1);
     const z = r(-650, -320);
     const spread = FOCAL_INV(z);
-    const y0 = (r(0.15, 0.85) * H) * spread;
-    const y1 = (r(-0.85, -0.05) * H) * spread;
-    const x0 = -W * 0.75 * spread;
-    const x1 = W * 0.75 * spread;
-    const wobble = r(-0.25, 0.25) * H * spread;
+    const hx = hub[0] * spread;
+    const hy = hub[1] * spread;
+    const fromTop = rnd() < (wide ? 0.3 : 0.5);
+    const start: Vec3 = fromTop
+      ? [r(-0.6, 0.6) * W * spread, -H * r(0.7, 0.95) * spread, z]
+      : [-W * r(0.65, 0.8) * spread, r(-0.8, 0.85) * H * spread, z];
+    const end: Vec3 = wide
+      ? [W * r(0.62, 0.85) * spread, r(-0.75, 0.55) * H * spread, z]
+      : [W * r(0.55, 0.85) * spread, r(-0.3, 0.75) * H * spread, z];
+    const wobble = r(-0.15, 0.15) * H * spread;
     const pts: Vec3[] = [
-      [x0, y0 * 0.6 + (t - 0.5) * H * 0.4 * spread, z],
-      [x0 * 0.35, lerp(y0, y1, 0.3) + wobble, z + r(-40, 40)],
-      [x1 * 0.2, lerp(y0, y1, 0.62) - wobble * 0.6, z + r(-40, 40)],
-      [x1, y1 * 0.6 + (t - 0.5) * H * 0.4 * spread, z],
+      start,
+      [lerp(start[0], hx, 0.45), lerp(start[1], hy, 0.45) + wobble, z + r(-40, 40)],
+      [lerp(hx, end[0], 0.3), lerp(hy, end[1], 0.3) - wobble * 0.5, z + r(-40, 40)],
+      end,
     ];
-    fibers.push({ points: pts, core: r(0.7, 1.3), halo: 6, layer: 0, speedPx: r(55, 120), activity: r(0.25, 0.7), brightness: r(0.5, 0.9), sway: r(6, 12), nodes: rnd() > 0.72 ? [r(0.3, 0.7)] : undefined });
+    fibers.push({ points: pts, core: r(0.7, 1.3), halo: 6, layer: 0, speedPx: r(55, 120), activity: r(0.25, 0.7), brightness: r(0.5, 0.9), sway: r(6, 12), pinch: [hx, hy, z], nodes: rnd() > 0.72 ? [r(0.3, 0.7)] : undefined });
   }
 
   // Midt: hovednettverket – samles i kompasset
@@ -426,17 +431,6 @@ function compose(W: number, H: number, tier: FiberTier): FiberDef[] {
         [W * 0.72, H * (0.42 + t * 0.2), r(-40, 120)],
       ];
       fibers.push({ points: pts, core: r(1.1, 1.6), halo: 7, layer: 1, speedPx: r(90, 190), activity: r(0.4, 0.8), brightness: r(0.6, 0.9), sway: r(4, 8), pinch });
-    }
-    // Frie buer på høyre side som ikke går gjennom kompasset
-    for (let i = 0; i < 5 * CABLES; i++) {
-      const y = H * r(0.15, 0.62);
-      const pts: Vec3[] = [
-        [W * r(-0.05, 0.12), H * 0.62, r(-200, -60)],
-        [W * r(0.12, 0.22), y, r(-160, -40)],
-        [W * r(0.3, 0.4), y - H * r(0.25, 0.45), r(-160, 0)],
-        [W * 0.62, -H * r(0.05, 0.5), r(-200, -40)],
-      ];
-      fibers.push({ points: pts, core: r(0.9, 1.4), halo: 7, layer: 1, speedPx: r(80, 200), activity: r(0.3, 0.75), brightness: r(0.55, 0.85), sway: r(6, 10), nodes: [r(0.3, 0.7)] });
     }
   }
 
