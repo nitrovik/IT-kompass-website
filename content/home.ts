@@ -11,6 +11,27 @@ export const homeHero = {
   cta: { label: "Ta kontakt", href: "/#kontakt" },
 };
 
+export const homePositioning = {
+  eyebrow: "Uavhengig av leverandør",
+  title: ["Behovet ditt først.", "Leverandøren etterpå."],
+  body: "Vi sammenligner alternativene og anbefaler det som passer dere. Dere bestemmer selv.",
+  points: [
+    { title: "Objektive råd", text: "Anbefalingen bygger på behovet deres, ikke på én leverandør." },
+    { title: "Mindre å følge opp", text: "Vi tar praten med leverandørene for dere." },
+    { title: "Samlet oversikt", text: "Fiber, mobil og IT-avtaler på ett sted." },
+    { title: "Nye behov", text: "Endrer behovet seg, ser vi på alternativene igjen." },
+  ],
+  // Illustrasjonen viser prinsippet. Leverandørene er bevisst anonyme, ikke bytt inn navn uten avtale.
+  diagram: {
+    need: "Behovet ditt",
+    hub: "IT Kompass",
+    options: ["Alternativ A", "Alternativ B", "Alternativ C", "Alternativ D"],
+    chosen: 2,
+    result: "Riktig valg",
+    caption: "Behovet avgjør hvilket alternativ du får anbefalt.",
+  },
+};
+
 export const homeContact = {
   eyebrow: "Kontakt",
   title: "Fortell oss hva dere trenger.",

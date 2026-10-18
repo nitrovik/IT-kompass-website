@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/metadata";
 import { site } from "@/config/site";
 import { Hero } from "@/components/home/hero";
+import { PositioningSection } from "@/components/home/positioning-section";
 import { ContactSection } from "@/components/home/contact-section";
 
 export const metadata: Metadata = pageMetadata({ title: "IT Kompass AS | IT og telecom med én kontakt", description: site.description, path: "/", absoluteTitle: true });
@@ -39,6 +40,7 @@ export default function HomePage() {
     <main id="main" tabIndex={-1} className="outline-none">
       <JsonLd />
       <Hero />
+      <PositioningSection />
       <ContactSection />
     </main>
   );
