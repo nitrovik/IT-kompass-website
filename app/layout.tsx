@@ -7,7 +7,6 @@ import { SmoothScroll } from "@/components/layout/smooth-scroll";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { RevealObserver } from "@/components/ui/reveal-observer";
-import { CompassToTop } from "@/components/layout/compass-to-top";
 import { ChatWidget } from "@/components/layout/chat-widget";
 import { site } from "@/config/site";
 
@@ -67,7 +66,6 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <SiteHeader />
         {children}
         <SiteFooter />
-        <CompassToTop />
         <script dangerouslySetInnerHTML={{ __html: revealVisibleNow }} />
         {site.plausibleDomain ? <Script defer data-domain={site.plausibleDomain} src="https://plausible.io/js/script.js" /> : null}
         <ChatWidget />
