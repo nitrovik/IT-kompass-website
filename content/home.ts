@@ -8,7 +8,7 @@ export const homeHero = {
   eyebrow: "IT Kompass AS",
   title: ["Din lokale", "IT partner."],
   body: "Vi drifter. Du driver.",
-  cta: { label: "Ta kontakt", href: "/kontakt" },
+  cta: { label: "Ta kontakt", href: "/#kontakt" },
 };
 
 export const homePositioning = {

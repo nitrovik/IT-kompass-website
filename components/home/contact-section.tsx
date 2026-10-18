@@ -30,7 +30,7 @@ const shortcuts = [{ href: "/support", label: "Noe som ikke virker", cta: "Meld 
 
 export function ContactSection() {
   return (
-    <section className="section-pad" aria-labelledby="kontakt-heading">
+    <section id="kontakt" className="section-pad scroll-mt-24" aria-labelledby="kontakt-heading">
       <div className="container-shell grid gap-5 lg:grid-cols-[1fr_1.1fr]">
         <div className="flex flex-col lg:pr-6">
           <p className="eyebrow" data-reveal="fade">{homeContact.eyebrow}</p>
