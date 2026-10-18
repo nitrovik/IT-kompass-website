@@ -10,10 +10,6 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
   },
-  experimental: {
-    // Gir plass til vedlegg i supportskjemaet (maks 4 MB, se lib/limits.ts).
-    serverActions: { bodySizeLimit: "5mb" },
-  },
   async redirects() {
     return [
       {

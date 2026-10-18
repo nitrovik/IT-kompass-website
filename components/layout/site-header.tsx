@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { navItems, site } from "@/config/site";
+import { site } from "@/config/site";
 import { buttonVariants } from "@/components/ui/button";
 import { Arrow } from "@/components/ui/arrow";
 import { cn } from "@/lib/utils";
@@ -59,8 +59,6 @@ export function SiteHeader() {
     };
   }, [open]);
 
-  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
-
   return (
     <>
     <header ref={headerRef} data-scrolled="false" className="site-header fixed inset-x-0 top-0 z-50">
@@ -69,17 +67,8 @@ export function SiteHeader() {
           <Image src="/brand/it-kompass-logo-web-opt.png" alt={site.name} width={414} height={148} loading="eager" fetchPriority="high" unoptimized className="brand-logo h-auto" />
         </Link>
 
-        <nav className="ml-auto hidden items-center gap-9 lg:flex" aria-label="Hovednavigasjon">
-          {navItems.map((item) => (
-            <Link key={item.href} href={item.href} aria-current={isActive(item.href) ? "page" : undefined}
-              className={cn("nav-link text-[14.5px] font-medium text-[#2a4566] transition-colors hover:text-ink", isActive(item.href) && "text-ink")}>
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
         <div className="relative z-10 ml-auto flex items-center gap-3 lg:ml-2">
-          <Link href="/kontakt" className={cn(buttonVariants({ size: "sm" }), "hidden sm:inline-flex")}>
+          <Link href="/#kontakt" className={cn(buttonVariants({ size: "sm" }), "hidden sm:inline-flex")}>
             Ta kontakt <Arrow size={14} />
           </Link>
           <button ref={menuButton} type="button" onClick={() => setOpen((value) => !value)} aria-expanded={open} aria-controls="mobilmeny" aria-label={open ? "Lukk meny" : "Åpne meny"}
@@ -97,19 +86,16 @@ export function SiteHeader() {
       <div id="mobilmeny" hidden={!open} className="fixed inset-0 z-40 overflow-y-auto bg-[#f8fbff]/[.97] backdrop-blur-xl lg:hidden" data-lenis-prevent>
         <nav aria-label="Mobilnavigasjon" className="container-shell flex min-h-full flex-col pt-[calc(var(--header-h)+1.5rem)] pb-8">
           <ul className="grid">
-            {[{ href: "/", label: "Forside" }, ...navItems].map((item, index) => (
-              <li key={item.href} className="border-b border-line" style={{ animation: open ? `hero-fade-in .6s var(--ease-out-soft) both ${index * 45}ms` : undefined }}>
-                <Link ref={index === 0 ? firstLink : undefined} href={item.href} aria-current={pathname === item.href ? "page" : undefined}
-                  className="group flex items-center justify-between py-4 font-display text-[28px] font-semibold tracking-[-.02em] text-ink">
-                  {item.label}
-                  <Arrow size={20} className={cn("text-faint", pathname === item.href && "text-brand")} />
-                </Link>
-              </li>
-            ))}
+            <li className="border-b border-line" style={{ animation: open ? "hero-fade-in .6s var(--ease-out-soft) both" : undefined }}>
+              <Link ref={firstLink} href="/" aria-current={pathname === "/" ? "page" : undefined}
+                className="group flex items-center justify-between py-4 font-display text-[28px] font-semibold tracking-[-.02em] text-ink">
+                Forside
+                <Arrow size={20} className={cn("text-faint", pathname === "/" && "text-brand")} />
+              </Link>
+            </li>
           </ul>
           <div className="mt-auto grid gap-3 pt-10">
-            <Link href="/finn-riktig-losning" className={cn(buttonVariants({ size: "lg" }), "w-full")}>Finn riktig løsning <Arrow /></Link>
-            <Link href="/kontakt" className={cn(buttonVariants({ variant: "secondary", size: "lg" }), "w-full")}>Ta kontakt</Link>
+            <Link href="/#kontakt" className={cn(buttonVariants({ size: "lg" }), "w-full")}>Ta kontakt <Arrow /></Link>
             <p className="mt-3 text-center text-xs text-muted">{site.legalName} · Org.nr. {site.orgNumber}</p>
           </div>
         </nav>

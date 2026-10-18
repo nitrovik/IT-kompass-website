@@ -3,9 +3,8 @@ import { buttonVariants } from "@/components/ui/button";
 import { Arrow } from "@/components/ui/arrow";
 
 const shortcuts = [
-  { href: "/tjenester", label: "Tjenester" },
-  { href: "/finn-riktig-losning", label: "Finn riktig løsning" },
-  { href: "/kontakt", label: "Kontakt" },
+  { href: "/#kontakt", label: "Kontakt" },
+  { href: "/personvern", label: "Personvern" },
 ];
 
 export default function NotFound() {

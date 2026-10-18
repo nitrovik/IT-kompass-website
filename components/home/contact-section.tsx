@@ -1,9 +1,7 @@
-import Link from "next/link";
 import { homeContact } from "@/content/home";
 import { site } from "@/config/site";
 import { ContactForm } from "@/components/forms/contact-form";
 import { SplitWords } from "@/components/ui/split-words";
-import { Arrow } from "@/components/ui/arrow";
 
 export function ContactDetails() {
   const address = [site.address, [site.postalCode, site.city].filter(Boolean).join(" ")].filter(Boolean).join(", ");
@@ -26,8 +24,6 @@ export function ContactDetails() {
   );
 }
 
-const shortcuts = [{ href: "/support", label: "Noe som ikke virker", cta: "Meld inn supportsak" }];
-
 export function ContactSection() {
   return (
     <section id="kontakt" className="section-pad scroll-mt-24" aria-labelledby="kontakt-heading">
@@ -37,37 +33,11 @@ export function ContactSection() {
           <h2 id="kontakt-heading" data-split className="section-title mt-5 text-[clamp(2.1rem,3.4vw,2.9rem)] text-ink"><SplitWords text={homeContact.title} /></h2>
           <p data-reveal className="lead mt-5">{homeContact.body}</p>
           <div data-reveal className="mt-8"><ContactDetails /></div>
-          <ul data-reveal className="mt-auto hidden gap-3 pt-10 lg:grid">
-            {shortcuts.map((item) => (
-              <li key={item.href}>
-                <Link href={item.href} className="group flex items-center justify-between gap-4 rounded-2xl border border-line bg-soft px-4 py-3.5 transition hover:border-[#bcd6ee] hover:bg-white">
-                  <span>
-                    <span className="block text-[13px] text-muted">{item.label}</span>
-                    <span className="block text-[15px] font-semibold text-ink">{item.cta}</span>
-                  </span>
-                  <Arrow className="text-brand" />
-                </Link>
-              </li>
-            ))}
-          </ul>
         </div>
         <div data-reveal style={{ ["--d" as string]: ".1s" }} className="surface-card p-6 sm:p-8">
           <h3 className="card-title text-[22px] text-ink">{homeContact.formTitle}</h3>
           <div className="mt-6"><ContactForm compact /></div>
         </div>
-        <ul className="grid gap-3 lg:hidden">
-          {shortcuts.map((item) => (
-            <li key={item.href}>
-              <Link href={item.href} className="group flex items-center justify-between gap-4 rounded-2xl border border-line bg-soft px-4 py-3.5">
-                <span>
-                  <span className="block text-[13px] text-muted">{item.label}</span>
-                  <span className="block text-[15px] font-semibold text-ink">{item.cta}</span>
-                </span>
-                <Arrow className="text-brand" />
-              </Link>
-            </li>
-          ))}
-        </ul>
       </div>
     </section>
   );

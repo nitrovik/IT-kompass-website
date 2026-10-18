@@ -1,8 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { navItems, site } from "@/config/site";
-import { services } from "@/content/services";
-import { Arrow } from "@/components/ui/arrow";
+import { site } from "@/config/site";
 
 const titleClass = "text-[11px] font-semibold uppercase tracking-[.18em] text-[#8fd0ff]";
 const linkClass = "link-underline text-[15px] text-on-navy transition-colors hover:text-white";
@@ -21,28 +19,12 @@ export function SiteFooter() {
       <div className="grid-lines-dark pointer-events-none absolute inset-0 [mask-image:radial-gradient(60%_80%_at_85%_0%,#000,transparent)]" aria-hidden="true" />
 
       <div className="container-shell relative pt-20 pb-8">
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-[1.5fr_.75fr_.85fr_1fr]">
+        <div className="grid gap-12 md:grid-cols-2">
           <div>
             <Link href="/" className="inline-block" aria-label={`${site.name}, til forsiden`}>
               <Image src="/brand/it-kompass-logo-web-inverse-opt.png" alt={site.name} width={414} height={148} unoptimized className="h-auto w-[196px]" />
             </Link>
             <p className="mt-6 max-w-xs text-[15px] leading-7">IT og telecom for bedrifter i Viken og hele Norge.</p>
-            <Link href="/finn-riktig-losning" className="group mt-7 inline-flex items-center gap-2 text-[15px] font-semibold text-white">
-              <span className="link-underline">Finn riktig løsning</span> <Arrow />
-            </Link>
-          </div>
-          <nav aria-label="Bunnmeny">
-            <h2 className={titleClass}>Navigasjon</h2>
-            <ul className="mt-5 grid gap-2.5">
-              <li><Link href="/" className={linkClass}>Forside</Link></li>
-              {navItems.map((item) => <li key={item.href}><Link href={item.href} className={linkClass}>{item.label}</Link></li>)}
-            </ul>
-          </nav>
-          <div>
-            <h2 className={titleClass}>Tjenester</h2>
-            <ul className="mt-5 grid gap-2.5">
-              {services.map((service) => <li key={service.slug}><Link href={`/tjenester/${service.slug}`} className={linkClass}>{service.shortTitle}</Link></li>)}
-            </ul>
           </div>
           <div>
             <h2 className={titleClass}>Kontakt</h2>
@@ -50,8 +32,7 @@ export function SiteFooter() {
               {site.phone ? <li><a href={`tel:${site.phone.replace(/\s/g, "")}`} className={linkClass}>{site.phone}</a></li> : null}
               {site.email ? <li><a href={`mailto:${site.email}`} className={linkClass}>{site.email}</a></li> : null}
               {address ? <li>{address}</li> : null}
-              <li><Link href="/kontakt" className={linkClass}>Send en melding</Link></li>
-              <li><Link href="/support" className={linkClass}>Meld inn supportsak</Link></li>
+              <li><Link href="/#kontakt" className={linkClass}>Send en melding</Link></li>
             </ul>
           </div>
         </div>

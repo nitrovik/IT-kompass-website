@@ -12,20 +12,7 @@ export const site = {
   city: "",
   country: "NO",
   // Bekreftet av eier (oktober 2026): fysisk arbeid i Viken, digitalt i hele Norge
-  coverageArea: "På stedet i Viken. Digitalt i hele Norge.",
   areaServed: ["Viken", "Norge"],
   description: "IT og telecom for bedrifter i Viken og hele Norge. Vi sammenligner leverandørene, og du får en fast kontaktperson.",
-  bookingUrl: process.env.NEXT_PUBLIC_CAL_URL || "",
-  remoteHelpUrl: process.env.REMOTE_HELP_URL || "",
   plausibleDomain: process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN || "",
 };
-
-export const navItems = [
-  { href: "/tjenester", label: "Tjenester" },
-  { href: "/prosjekter", label: "Prosjekter" },
-  { href: "/om-oss", label: "Om oss" },
-  { href: "/support", label: "Support" },
-  { href: "/kontakt", label: "Kontakt" },
-] as const;
-
-export const socialLinks = [] as const;

@@ -61,10 +61,9 @@ Vil dere heller bruke adressen uten www senere, må DNS flyttes til en leverand�
 
 ## 4. Test etter publisering
 
-- [ ] Forsiden, menyen og mobilmenyen
-- [ ] Kontaktskjema på forsiden og på `/kontakt`: e-posten kommer frem
-- [ ] Supportskjema med og uten vedlegg
-- [ ] Veiviseren `/finn-riktig-losning` hele veien
+- [ ] Forsiden og mobilmenyen
+- [ ] «Ta kontakt» i heroen skroller ned til kontaktskjemaet
+- [ ] Kontaktskjema på forsiden: e-posten kommer frem
 - [ ] `https://www.itkompass.no/sitemap.xml` og `/robots.txt`
 - [ ] En side som ikke finnes, så du ser 404-siden
 - [ ] `itkompass.no` sender deg videre til `https://www.itkompass.no`
@@ -76,6 +75,3 @@ Endringer gjøres på en egen gren og samles i en «pull request» mot `main` p�
 ## Valgfritt senere
 
 - **Plausible** (besøksstatistikk uten informasjonskapsler): sett `NEXT_PUBLIC_PLAUSIBLE_DOMAIN`. Personvernsiden får da et avsnitt om statistikk automatisk.
-- **Møtebooking**: sett `NEXT_PUBLIC_CAL_URL`.
-- **Fjernhjelp**: sett `REMOTE_HELP_URL`.
-- **Driftsstatus**: sett `STATUS_API_URL`.

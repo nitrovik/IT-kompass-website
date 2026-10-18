@@ -4,30 +4,21 @@ Nettsiden til IT Kompass AS, bygget med Next.js. Designet følger den godkjente 
 
 ## Sider
 
+Nettsiden er bevisst holdt til én side, pluss personvernsiden som loven krever. Eieren fjernet tjenestesidene, prosjekter, om oss, support og veiviseren i oktober 2026 for å gjøre siden enklere.
+
 | Adresse | Innhold |
 | --- | --- |
-| `/` | Forside: hero med fiberanimasjon, tjenester, leverandøruavhengig, prosess, nettsider, veiviser og kontakt |
-| `/tjenester` og `/tjenester/[tjeneste]` | Oversikt og egen side for WiFi, fiber og telecom, IT support og nettsider. Siden «Nettsider og drift» (`/tjenester/nettsider`) viser nettsidepakkene Start / Pro / Premium med priser |
-| `/prosjekter` | Prosjekter (vises når ekte prosjekter er lagt inn) |
-| `/om-oss` | Om IT Kompass |
-| `/support` | Supportskjema med vedlegg. Fjernhjelp og driftsstatus vises når de er koblet til |
-| `/kontakt` | Kontaktskjema, kontaktinfo, møtebooking (når lenke er satt) og kartplassholder |
-| `/finn-riktig-losning` | Veiviser med tre spørsmål som gir en anbefaling og sender en forespørsel |
+| `/` | Forside: hero med fiberanimasjon og kontaktskjema (ankeret `/#kontakt`) |
 | `/personvern` | Personvernerklæring (utkast, må gjennomgås) |
 
 ## Hvor endrer jeg tekst og informasjon?
 
 - **Kontaktinfo, org.nr., dekningsområde:** `config/site.ts`
 - **Tekster på forsiden:** `content/home.ts`
-- **Tjenestene:** `content/services.ts`
-- **Prosjekter:** `content/projects.ts`
-- **Nettsidepakker og priser:** `content/packages.ts`
-- **Partnere (vises bare når listen ikke er tom):** `content/partners.ts`
-- **Veiviseren:** `content/wizard.ts`
 - **Personvern:** `content/legal.ts`
 - **Bilder:** legg dem i `public/media/` (se README der)
 
-Felt som står tomme (telefon, e-post, adresse, booking, fjernhjelp) blir ikke vist på nettsiden. Det står altså aldri «settes inn senere» eller lignende ute på siden.
+Felt som står tomme (telefon, e-post, adresse) blir ikke vist på nettsiden. Det står altså aldri «settes inn senere» eller lignende ute på siden.
 
 ## Kjøre lokalt
 
@@ -56,7 +47,7 @@ Fiberscenen i heroen er en egen, lett WebGL-renderer (`components/home/fiber/`).
 
 Alt som beveger seg med scroll eller mus går i én felles bildeløkke (`lib/frame.ts`), slik at nettleseren slipper å måle siden på nytt i hvert bilde.
 
-Lighthouse (5. oktober 2026, lokal måling, mobil): forsiden ytelse 94–95, undersidene 95–99. PC: 100. Tilgjengelighet, beste praksis og SEO: 100 på alle sider.
+Lighthouse (5. oktober 2026, lokal måling, mobil, før siden ble forenklet): forsiden ytelse 94–95, undersidene 95–99. PC: 100. Tilgjengelighet, beste praksis og SEO: 100 på alle sider. Bør måles på nytt etter forenklingen.
 
 ## Publisering
 
@@ -65,6 +56,5 @@ Nettsiden publiseres på Railway. Steg for steg står i `PUBLISHING.md`.
 ## Mangler fra eier før lansering
 
 - Telefon, e-post og adresse (`config/site.ts`)
-- Ekte bilde til «Leverandøruavhengig»-seksjonen og eventuelle prosjekter
 - Gjennomgang av personvernerklæringen
-- Kontoer og nøkler: Resend, Cloudflare Turnstile, og valgfritt Plausible, Cal.com og fjernhjelp
+- Kontoer og nøkler: Resend, Cloudflare Turnstile, og valgfritt Plausible

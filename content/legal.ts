@@ -4,7 +4,7 @@
 */
 export type PrivacySection = { title: string; body: string[]; onlyWithAnalytics?: boolean };
 
-export const privacyUpdated = "2026-10-03";
+export const privacyUpdated = "2026-10-18";
 
 export const privacySections: PrivacySection[] = [
   {
@@ -14,14 +14,14 @@ export const privacySections: PrivacySection[] = [
   {
     title: "Hvilke opplysninger vi behandler",
     body: [
-      "Vi behandler det du selv fyller inn i kontaktskjemaet, supportskjemaet og veiviseren. Det er navn, virksomhet, e-postadresse, eventuelt telefonnummer og adresse, og meldingen din. Legger du ved en fil i en supportsak, behandler vi også den.",
+      "Vi behandler det du selv fyller inn i kontaktskjemaet. Det er navn, virksomhet, e-postadresse, eventuelt telefonnummer og adresse, og meldingen din.",
       "Vi bruker ikke informasjonskapsler (cookies) til markedsføring eller sporing.",
     ],
   },
   {
     title: "Hvorfor vi behandler dem",
     body: [
-      "Vi bruker opplysningene til å svare deg, følge opp supportsaker og gi deg tilbud eller tjenester du ber om.",
+      "Vi bruker opplysningene til å svare deg og gi deg tilbud eller tjenester du ber om.",
       "Grunnlaget er at behandlingen er nødvendig for det du ber om før en eventuell avtale, eller for å oppfylle en avtale med deg eller virksomheten din. Se personvernforordningen art. 6 nr. 1 bokstav b og f.",
     ],
   },
