@@ -8,6 +8,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { RevealObserver } from "@/components/ui/reveal-observer";
 import { CompassToTop } from "@/components/layout/compass-to-top";
+import { ChatWidget } from "@/components/layout/chat-widget";
 import { site } from "@/config/site";
 
 // Inter (brødtekst) og Schibsted Grotesk (overskrifter, norsk skrift). Begge SIL Open Font License, se app/fonts/.
@@ -69,6 +70,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <CompassToTop />
         <script dangerouslySetInnerHTML={{ __html: revealVisibleNow }} />
         {site.plausibleDomain ? <Script defer data-domain={site.plausibleDomain} src="https://plausible.io/js/script.js" /> : null}
+        <ChatWidget />
       </body>
     </html>
   );

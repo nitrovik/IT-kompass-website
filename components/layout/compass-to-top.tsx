@@ -1,12 +1,30 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { onScroll } from "@/lib/frame";
+import { onScroll, scrollState } from "@/lib/frame";
 
 /*
   Kompasset som scroll-indikator: ringen fylles etter hvor langt ned du har kommet,
-  nålen dreier med, og et klikk tar deg til toppen. Dukker opp etter første skjermhøyde.
+  nålen dreier med. Dukker opp etter første skjermhøyde, bare på store skjermer.
+
+  Når det er synlig, åpner et klikk chat-assistenten (itkompass-chat.js) i stedet for
+  å scrolle til toppen – kompasset ER chat-knappen der, så botens egen runde launcher
+  skjules mens dette er synlig (se syncChatLauncher). Før det (mobil, eller øverst på
+  siden på store skjermer) bruker chatten sin egen knapp, og klikk her scroller til topp.
 */
+function chatLauncher(): HTMLElement | null {
+  const root = document.getElementById("itk-chat-root") as (HTMLElement & { shadowRoot?: ShadowRoot }) | null;
+  return (root?.shadowRoot?.querySelector(".launcher") as HTMLElement | null) ?? null;
+}
+
+/* Kalles ved hver scroll-overgang og når chat-scriptet er ferdig lastet. */
+export function syncChatLauncher() {
+  const { y, vh, vw } = scrollState();
+  const visible = y > vh * 0.8 && vw >= 1024;
+  const launcher = chatLauncher();
+  if (launcher) launcher.style.display = visible ? "none" : "";
+}
+
 export function CompassToTop() {
   const ref = useRef<HTMLButtonElement>(null);
   const ringRef = useRef<SVGCircleElement>(null);
@@ -23,7 +41,7 @@ export function CompassToTop() {
     return onScroll({
       update: ({ y, vh, vw, max }) => {
         const show = y > vh * 0.8 ? "true" : "false";
-        if (show !== shown) el.dataset.show = shown = show;
+        if (show !== shown) { el.dataset.show = shown = show; syncChatLauncher(); }
         if (vw < 1024) return; // knappen vises bare på store skjermer
         const progress = (max > 0 ? Math.min(y / max, 1) : 0).toFixed(3);
         if (progress === last) return;
@@ -34,14 +52,16 @@ export function CompassToTop() {
     });
   }, []);
 
-  const toTop = () => {
+  const onClick = () => {
+    const openChat = (window as unknown as { ITKompassChatOpen?: () => void }).ITKompassChatOpen;
+    if (typeof openChat === "function") { openChat(); return; }
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
     document.getElementById("main")?.focus({ preventScroll: true });
   };
 
   return (
-    <button ref={ref} type="button" onClick={toTop} data-show="false" aria-label="Til toppen av siden"
+    <button ref={ref} type="button" onClick={onClick} data-show="false" aria-label="Åpne chat med IT Kompass"
       className="group fixed right-6 bottom-6 z-40 hidden size-14 place-items-center rounded-full border border-line bg-white/95 shadow-[0_18px_40px_-18px_rgba(14,39,71,.45)] transition-[opacity,transform] duration-500 ease-[var(--ease-out-soft)] data-[show=false]:pointer-events-none data-[show=false]:translate-y-3 data-[show=false]:opacity-0 hover:-translate-y-0.5 lg:grid">
       <svg viewBox="0 0 56 56" className="absolute inset-0 size-full -rotate-90" aria-hidden="true">
         <circle cx="28" cy="28" r="25" fill="none" stroke="#e0eaf4" strokeWidth="2" />
