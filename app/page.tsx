@@ -3,10 +3,7 @@ import { pageMetadata } from "@/lib/metadata";
 import { site } from "@/config/site";
 import { Hero } from "@/components/home/hero";
 import { PositioningSection } from "@/components/home/positioning-section";
-import { ProcessSection } from "@/components/home/process-section";
-import { WebsitesSection } from "@/components/home/websites-section";
 import { PartnersSection } from "@/components/home/partners-section";
-import { WizardCta } from "@/components/home/wizard-cta";
 import { ContactSection } from "@/components/home/contact-section";
 
 export const metadata: Metadata = pageMetadata({ title: "IT Kompass AS | IT og telecom med én kontakt", description: site.description, path: "/", absoluteTitle: true });
@@ -46,10 +43,7 @@ export default function HomePage() {
       <Hero />
 
       <PositioningSection />
-      <ProcessSection />
-      <WebsitesSection />
       <PartnersSection />
-      <WizardCta />
       <ContactSection />
     </main>
   );

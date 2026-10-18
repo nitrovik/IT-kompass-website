@@ -44,13 +44,6 @@ export const homeProcess = {
   ],
 };
 
-export const homeWebsites = {
-  eyebrow: "Nettsider",
-  title: ["En nettside kundene", "finner fram i."],
-  body: "Kundene skal finne det de leter etter, også på mobil. Slik kan siden deres se ut.",
-  growth: { title: "Dette får dere", text: "Én leveranse, fra første utkast til drift." },
-};
-
 export const homeWizardCta = {
   eyebrow: "Veiviser",
   title: "Finn riktig løsning.",
