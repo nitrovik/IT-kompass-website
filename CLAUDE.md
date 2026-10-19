@@ -136,14 +136,11 @@ Cloudflare Turnstile
 Fonts: Schibsted Grotesk (headings, Norwegian typeface) and Inter (body), self-hosted in `app/fonts/` via `next/font/local`.
 
 ### Hero fiber scene
-`components/home/fiber/engine.ts` is a small custom WebGL renderer (no library): three depth layers with perspective, glass-tube cable shading, shader-driven light pulses (varied speed, brightness, occasional strong pulses, near-silent fibers), network nodes, pointer repulsion/parallax, and adaptive quality. All fibers are one draw call, nodes another.
-- `hero-fiber.tsx` loads the engine after `load` + idle, pauses it off-screen and in hidden tabs.
-- Quality tiers HIGH / MID / LOW (`TIERS` in `engine.ts`: DPR cap 1.5 / 1 / 0.75, fiber density, fps 60 / 60 / 30). Start tier: HIGH on desktop with a mouse, MID on capable touch devices, LOW otherwise. The engine keeps measuring frame times and steps down a tier when it cannot keep up; below LOW the last frame stays still.
-- Max 60 fps (also on 120 Hz screens), half rate while the page scrolls. No MSAA (edges are smoothed in the shader). Per-fiber pulse values are computed in the vertex shader; keep per-pixel work in the fragment shader minimal.
-- Static SVG fallback (`fiber-fallback.tsx`) is server-rendered and stays for weak devices, Save-Data, no WebGL, and software-rendered WebGL (no GPU). Reduced motion renders one still frame.
-- `?fiber=1` forces the scene on software renderers – for visual QA only.
-- The compass (`hero-compass.tsx`) sits where the fibers converge; its needle points toward the pointer.
-GSAP, React Three Fiber and Motion are not used (the magnetic CTAs use a small spring in `magnetic-link.tsx`). Add libraries back only with a concrete reason.
+`components/home/fiber/fiber-scene.tsx` is a server component: pure SVG/CSS, no WebGL, no canvas, no client JS for the animation itself (replaced the earlier custom WebGL engine in November 2026 because device-tiered quality degradation looked neon/heavy on phones). The static line art (background + trunk paths, same composition as before) never moves; only 7 of the 33 trunk paths carry a small soft-glow dot that travels along the path via SVG `<animateMotion>`/`<mpath>`, each with its own speed and start offset so they never move in sync. Same markup renders identically on mobile and desktop – the viewBox just stretches non-uniformly to the container, no device/tier detection of any kind.
+- Reduced motion: a pure CSS rule (`.fiber-static-dots` / `.fiber-motion-dots` in `globals.css`) swaps the moving dots for frozen stand-ins under `prefers-reduced-motion: reduce` – no JavaScript involved.
+- `hero-pointer.tsx` is the only client piece: it rotates the compass needle (`hero-compass.tsx`) toward the pointer on desktop (`pointer: fine` + `min-width: 1024px`). It reuses the shared frame loop (`lib/frame.ts`) to measure the hero's position only when the page size changes, never per pointer event.
+- The compass (`hero-compass.tsx`) sits where the fibers converge, desktop only (`lg:block`); its needle points toward the pointer via `hero-pointer.tsx`.
+GSAP, React Three Fiber, Motion and WebGL are not used (the magnetic CTAs use a small spring in `magnetic-link.tsx`). Add libraries or a canvas/WebGL scene back only with a concrete reason – the SVG/CSS approach above is deliberately chosen for being identical on every device and effectively free to run.
 
 ### Motion system
 - Scroll reveals: add `data-reveal` (`fade`, `scale`, `clip`) or `data-split` (word-by-word headings via `SplitWords`). One shared IntersectionObserver (`components/ui/reveal-observer.tsx`) sets `data-inview`. Content is only hidden when JS runs (`js-reveal` class), and anything visible at load is shown instantly.

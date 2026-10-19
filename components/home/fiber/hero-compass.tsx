@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 
 /*
   Kompasset der fibrene møtes. Samme formspråk som logoen: ring med fire merker,
-  nål i marine (nord) og turkis (sør). Nålens rotasjon styres av hero-fiber.tsx.
+  nål i marine (nord) og turkis (sør). Nålens rotasjon styres av hero-pointer.tsx.
 */
 export const HeroCompass = forwardRef<HTMLSpanElement>(function HeroCompass(_, needleRef) {
   return (

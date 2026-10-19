@@ -43,7 +43,7 @@ npm run build
 
 Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Lenis, Zod, Resend og Cloudflare Turnstile. Skriftene Schibsted Grotesk (overskrifter) og Inter (brødtekst) ligger lokalt i `app/fonts/` (SIL Open Font License).
 
-Fiberscenen i heroen er en egen, lett WebGL-renderer (`components/home/fiber/`). Den lastes etter at siden er vist, pauser når den ikke er synlig, og viser et statisk bilde på svake enheter, uten skjermkort og ved «redusert bevegelse». Se CLAUDE.md for detaljer.
+Fiberscenen i heroen (`components/home/fiber/`) er ren SVG/CSS – samme tegning og noen få glødende lyspunkter på både mobil og desktop, ingen WebGL. Ved «redusert bevegelse» vises et stillestående bilde. Se CLAUDE.md for detaljer.
 
 Alt som beveger seg med scroll eller mus går i én felles bildeløkke (`lib/frame.ts`), slik at nettleseren slipper å måle siden på nytt i hvert bilde.
 

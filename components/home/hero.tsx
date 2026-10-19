@@ -1,5 +1,6 @@
 import { homeHero } from "@/content/home";
-import { HeroFiber } from "@/components/home/fiber/hero-fiber";
+import { FiberScene } from "@/components/home/fiber/fiber-scene";
+import { HeroPointer } from "@/components/home/fiber/hero-pointer";
 import { MagneticLink } from "@/components/ui/magnetic-link";
 import { Arrow } from "@/components/ui/arrow";
 
@@ -26,7 +27,8 @@ export function Hero() {
   return (
     <section data-hero data-observe="toggle" className="hero-surface relative isolate overflow-hidden" aria-labelledby="hero-heading">
       <div className="grid-lines pointer-events-none absolute inset-0 [mask-image:radial-gradient(70%_60%_at_70%_45%,#000,transparent)]" aria-hidden="true" />
-      <HeroFiber />
+      <FiberScene />
+      <HeroPointer />
 
       <div className="container-shell relative z-10 flex min-h-[100svh] flex-col pt-[calc(var(--header-h)+2rem)] pb-6 lg:min-h-[max(780px,min(100svh,960px))] lg:pb-10">
         <div className="my-auto max-w-[640px] py-10 lg:py-16">

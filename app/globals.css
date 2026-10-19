@@ -337,6 +337,13 @@ html.lenis, html.lenis body { height: auto; }
 [data-inview="true"] .fiber-flow, .fiber-flow.always { animation-play-state: running; }
 @keyframes fiber-flow { to { stroke-dashoffset: -480; } }
 
+/* Heroens fiberscene: glødepunktene beveger seg (SMIL), de frosne står stille til vanlig */
+.fiber-static-dots { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .fiber-motion-dots { display: none; }
+  .fiber-static-dots { display: block; }
+}
+
 /* Kompassring som sender ut en rolig puls */
 .compass-ping { animation: compass-ping 3.6s var(--ease-out-soft) infinite; animation-play-state: paused; will-change: transform, opacity; }
 [data-inview="true"] .compass-ping { animation-play-state: running; }
