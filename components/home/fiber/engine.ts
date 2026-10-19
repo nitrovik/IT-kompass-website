@@ -304,6 +304,7 @@ type FiberDef = {
   sway: number;      // bølgeamplitude i px
   pinch?: Vec3;      // punkt der bølgen dempes (kompasset)
   nodes?: number[];  // u-posisjoner for nettverkspunkter
+  thin?: number;     // tykkelsesfaktor for nettverkspunktenes størrelse (smal layout)
 };
 
 function mulberry32(seed: number) {
@@ -363,6 +364,9 @@ function compose(W: number, H: number, tier: FiberTier): FiberDef[] {
   const wide = W >= 1024;
   const fibers: FiberDef[] = [];
   const dense = TIERS[tier].density;
+  // På smal skjerm er det få fibre igjen i hvert lag (CABLES=1), så de tykkeste blir
+  // lett dominerende og virker neon-aktige på en liten flate. Gjør dem tynnere og roligere.
+  const thin = wide ? 1 : 0.6;
 
   const hub: Vec3 = wide ? [W * (hubX(W) - 0.5), H * (HUB.y - 0.5), 0] : [W * 0.46, H * 0.12, 0];
 
@@ -387,7 +391,7 @@ function compose(W: number, H: number, tier: FiberTier): FiberDef[] {
       [lerp(hx, end[0], 0.3), lerp(hy, end[1], 0.3) - wobble * 0.5, z + r(-40, 40)],
       end,
     ];
-    fibers.push({ points: pts, core: r(0.7, 1.3), halo: 6, layer: 0, speedPx: r(55, 120), activity: r(0.25, 0.7), brightness: r(0.5, 0.9), sway: r(6, 12), pinch: [hx, hy, z], nodes: rnd() > 0.72 ? [r(0.3, 0.7)] : undefined });
+    fibers.push({ points: pts, core: r(0.7, 1.3) * thin, halo: 6, layer: 0, speedPx: r(55, 120), activity: r(0.25, 0.7), brightness: r(0.5, 0.9), sway: r(6, 12), pinch: [hx, hy, z], nodes: rnd() > 0.72 ? [r(0.3, 0.7)] : undefined, thin });
   }
 
   // Midt: hovednettverket – samles i kompasset
@@ -411,9 +415,9 @@ function compose(W: number, H: number, tier: FiberTier): FiberDef[] {
     ];
     const quiet = rnd() < 0.18;
     fibers.push({
-      points: pts, core: r(1.3, 2.1), halo: 7, layer: 1,
+      points: pts, core: r(1.3, 2.1) * thin, halo: 7, layer: 1,
       speedPx: quiet ? r(40, 70) : r(130, 280), activity: quiet ? 0.12 : r(0.55, 0.95), brightness: r(0.75, 1.1),
-      sway: r(5, 9), pinch, nodes: rnd() > 0.55 ? [r(0.12, 0.3), r(0.72, 0.9)] : [r(0.15, 0.35)],
+      sway: r(5, 9), pinch, nodes: rnd() > 0.55 ? [r(0.12, 0.3), r(0.72, 0.9)] : [r(0.15, 0.35)], thin,
     });
   }
 
@@ -452,7 +456,7 @@ function compose(W: number, H: number, tier: FiberTier): FiberDef[] {
           [W * 0.3, H * r(0.05, 0.25), z],
           [W * 0.7, -H * r(0.0, 0.2), z],
         ];
-    fibers.push({ points: pts, core: r(2.6, 3.8), halo: 6, layer: 2, speedPx: r(220, 380), activity: r(0.55, 0.9), brightness: 1.15, sway: r(8, 14), nodes: rnd() > 0.5 ? [r(0.25, 0.75)] : undefined });
+    fibers.push({ points: pts, core: r(2.6, 3.8) * thin, halo: 6, layer: 2, speedPx: r(220, 380), activity: r(0.55, 0.9), brightness: wide ? 1.15 : 0.95, sway: r(8, 14), nodes: rnd() > 0.5 ? [r(0.25, 0.75)] : undefined, thin });
   }
 
   return fibers;
@@ -518,7 +522,7 @@ function build(fibers: FiberDef[], samples: number): Built {
     for (const nu of fiber.nodes ?? []) {
       const i = Math.round(nu * (pts.length - 1));
       const p = pts[i];
-      const size = fiber.layer === 0 ? 2.2 : fiber.layer === 1 ? 3.4 : 5;
+      const size = (fiber.layer === 0 ? 2.2 : fiber.layer === 1 ? 3.4 : 5) * (fiber.thin ?? 1);
       nodeData.push(p[0], p[1], p[2], lengths[i] / total, seed, swayAt(p), fiber.layer, size, f * 1.7, 0.8 + (f % 5) * 0.25, fiber.brightness);
     }
   });
