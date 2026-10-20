@@ -37,11 +37,9 @@ Use the real logo in header and footer. Keep proportions correct.
 ## Required signature interactions
 These are important parts of the experience, not optional decoration:
 
-1. Hero fiber animation
-- continuous, calm fiber-optic cable motion
-- light impulses should travel through the cable paths continuously
-- subtle glow/pulse around light points
-- pointer interaction can softly influence the fiber scene on capable desktop devices
+1. Hero fiber scene
+- a calm, static fiber-optic line drawing behind the hero text (no continuous motion – the owner explicitly dropped moving light impulses in November 2026 after they made the whole site feel laggy; see Technical stack → Hero fiber scene)
+- the compass (desktop) sits where the fibers converge; its needle can softly follow the pointer on capable desktop devices
 - do not make it look like neon or a game
 
 2. Service-card pointer spotlight
@@ -56,7 +54,7 @@ These are important parts of the experience, not optional decoration:
 - prefer transform and opacity
 - keep animation durations coherent
 - use reduced-motion fallbacks
-- avoid excessive continuous animations outside the fiber scene
+- avoid excessive continuous animations (the hero fiber scene is static now – see Hero fiber scene above)
 
 4. Compass signature
 - the compass should appear as a subtle recurring motif
@@ -136,11 +134,10 @@ Cloudflare Turnstile
 Fonts: Schibsted Grotesk (headings, Norwegian typeface) and Inter (body), self-hosted in `app/fonts/` via `next/font/local`.
 
 ### Hero fiber scene
-`components/home/fiber/fiber-scene.tsx` is a server component: pure SVG/CSS, no WebGL, no canvas, no client JS for the animation itself (replaced the earlier custom WebGL engine in November 2026 because device-tiered quality degradation looked neon/heavy on phones). The static line art (background + trunk paths, same composition as before) never moves; only 7 of the 33 trunk paths carry a small soft-glow dot that travels along the path via SVG `<animateMotion>`/`<mpath>`, each with its own speed and start offset so they never move in sync. Same markup renders identically on mobile and desktop – the viewBox just stretches non-uniformly to the container, no device/tier detection of any kind.
-- Reduced motion: a pure CSS rule (`.fiber-static-dots` / `.fiber-motion-dots` in `globals.css`) swaps the moving dots for frozen stand-ins under `prefers-reduced-motion: reduce` – no JavaScript involved.
-- `hero-pointer.tsx` is the only client piece: it rotates the compass needle (`hero-compass.tsx`) toward the pointer on desktop (`pointer: fine` + `min-width: 1024px`). It reuses the shared frame loop (`lib/frame.ts`) to measure the hero's position only when the page size changes, never per pointer event.
-- The compass (`hero-compass.tsx`) sits where the fibers converge, desktop only (`lg:block`); its needle points toward the pointer via `hero-pointer.tsx`.
-GSAP, React Three Fiber, Motion and WebGL are not used (the magnetic CTAs use a small spring in `magnetic-link.tsx`). Add libraries or a canvas/WebGL scene back only with a concrete reason – the SVG/CSS approach above is deliberately chosen for being identical on every device and effectively free to run.
+`components/home/fiber/fiber-scene.tsx` is a server component: a fully static SVG line drawing (background + trunk paths), no WebGL, no canvas, no client JS, no animation at all. It briefly (same November 2026 change) had 7 small glow dots travelling along the lines via SVG `<animateMotion>` + a blur filter, but the owner reported this made the whole site feel laggy (continuous filter repaint is expensive) and asked to drop it – do not re-add moving light impulses to this scene without checking with the owner first. Same markup renders identically on mobile and desktop – the viewBox just stretches non-uniformly to the container, no device/tier detection of any kind.
+- `hero-pointer.tsx` is the only client piece in the hero: it rotates the compass needle (`hero-compass.tsx`) toward the pointer on desktop (`pointer: fine` + `min-width: 1024px`). It reuses the shared frame loop (`lib/frame.ts`) to measure the hero's position only when the page size changes, never per pointer event.
+- The compass (`hero-compass.tsx`) sits where the fibers converge, desktop only (`lg:block`); its needle points toward the pointer via `hero-pointer.tsx`. Keep this – it is the project's one remaining hero motion/interaction.
+GSAP, React Three Fiber, Motion and WebGL are not used (the magnetic CTAs use a small spring in `magnetic-link.tsx`). Add libraries, a canvas/WebGL scene, or continuous animation back only with a concrete reason and the owner's go-ahead.
 
 ### Motion system
 - Scroll reveals: add `data-reveal` (`fade`, `scale`, `clip`) or `data-split` (word-by-word headings via `SplitWords`). One shared IntersectionObserver (`components/ui/reveal-observer.tsx`) sets `data-inview`. Content is only hidden when JS runs (`js-reveal` class), and anything visible at load is shown instantly.
