@@ -30,7 +30,7 @@ function HeroHeadline({ lines }: { lines: string[] }) {
 export function Hero() {
   return (
     <section data-hero data-observe="toggle" className="hero-surface hero-surface-home relative isolate overflow-hidden" aria-labelledby="hero-heading">
-      <div className="grid-lines pointer-events-none absolute inset-0 [mask-image:radial-gradient(60%_42%_at_68%_24%,#000,transparent)] lg:[mask-image:radial-gradient(52%_60%_at_70%_46%,#000,transparent)]" aria-hidden="true" />
+      <div className="grid-lines pointer-events-none absolute inset-0 [mask-image:radial-gradient(60%_42%_at_42%_24%,#000,transparent)] lg:[mask-image:radial-gradient(52%_60%_at_70%_46%,#000,transparent)]" aria-hidden="true" />
 
       <div className="container-shell relative z-10 flex min-h-[min(100svh,760px)] flex-col pt-[var(--header-h)] pb-8 lg:min-h-[max(780px,min(100svh,960px))] lg:pt-[calc(var(--header-h)+2rem)] lg:pb-10">
         <div className="pointer-events-none relative h-[clamp(170px,30svh,250px)] shrink-0 lg:static lg:h-auto">

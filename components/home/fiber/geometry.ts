@@ -49,6 +49,26 @@ function walk(segments: readonly Segment[]) {
   };
 }
 
+/** Rammen rundt banene (med marg), for små SVG-lag som bare dekker sin egen bane. */
+export function bounds(segments: readonly Segment[], pad = 10) {
+  const points = segments.flatMap((segment) => Array.from({ length: 25 }, (_, i) => bezier(segment, i / 24)));
+  const xs = points.map((p) => p[0]);
+  const ys = points.map((p) => p[1]);
+  const x = Math.floor(Math.min(...xs) - pad);
+  const y = Math.floor(Math.min(...ys) - pad);
+  return { x, y, w: Math.ceil(Math.max(...xs) + pad) - x, h: Math.ceil(Math.max(...ys) + pad) - y };
+}
+
+/**
+  Kort blink på et bestemt tidspunkt i syklusen (andel 0–1): opacity opp raskt og ned rolig,
+  valgfritt med skalering (ringen rundt kompasset). Ellers usynlig.
+*/
+export function flashKeyframes(name: string, at: number, { rise = 0.01, fall = 0.12, max = 1, scale }: { rise?: number; fall?: number; max?: number; scale?: [number, number] } = {}) {
+  const pct = (n: number) => `${Math.round(Math.min(Math.max(n, 0), 1) * 100000) / 1000}%`;
+  const tf = (s?: number) => (scale && s !== undefined ? `transform:scale(${s});` : "");
+  return `@keyframes ${name}{0%,${pct(at - rise)}{opacity:0;${tf(scale?.[0])}}${pct(at)}{opacity:${max};${tf(1)}animation-timing-function:cubic-bezier(.22,1,.36,1)}${pct(at + fall)},100%{opacity:0;${tf(scale?.[1])}}}`;
+}
+
 /** Rolig start og rolig ankomst. */
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 

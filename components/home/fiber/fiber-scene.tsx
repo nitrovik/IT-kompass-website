@@ -1,112 +1,132 @@
-import type { ReactNode } from "react";
-import { pathData, pulseKeyframes, type Point, type Segment } from "@/components/home/fiber/geometry";
+import type { CSSProperties, ReactNode } from "react";
+import { bounds, pathData, type Point, type Segment } from "@/components/home/fiber/geometry";
+import { HERO_PULSES, type Prefix } from "@/components/home/fiber/motion";
+import { BRANCH_ANGLES, DESKTOP, MOBILE, chosenOf, type Fiber, type Scene } from "@/components/home/fiber/scene";
+import { MOTION_CSS_URL } from "@/components/home/motion-css";
 
 /*
-  Fiberscenen i heroen. Få, gjennomtegnede fibre som samles i kompasset og fortsetter
-  videre mot høyre: behov og teknologi inn, riktig retning ut.
+  Fiberscenen i heroen. Samme historie som diagrammet «Behovet avgjør», tegnet lyst og stille:
+  behovet kommer inn fra venstre, samles i kompasset, grener seg ut til noen få alternativer,
+  og én retning er tydeligere og fortsetter videre. Tegningen ligger i scene.ts.
 
-  Alt er tegnet rundt ett punkt, kompassets sentrum (0, 0). Ankeret (.fiber-anchor) står
-  der kompasset skal stå, og SVG-en, lysimpulsene og kompasset er plassert ut fra det.
-  Linjene treffer derfor alltid kompasset, og proporsjonene er like på alle skjermer.
+  Alt er plassert rundt ett punkt, kompassets sentrum (ankeret .fiber-anchor), så banene
+  alltid treffer kompasset og har samme proporsjoner på alle skjermer.
 
-  - Fibrene er en statisk SVG som tegnes én gang. Ingen filter, ingen blur.
-  - Lysimpulsene er små elementer som flyttes med transform-keyframes langs banene
-    (se geometry.ts). Skjermkortet gjør jobben alene: ingen JavaScript, ingen ny maling.
-  - Impulsene starter først når siden er ferdig lastet (data-fiber-live, se hero-pointer.tsx),
-    står stille når heroen ikke er synlig, og vises ikke ved «redusert bevegelse».
-  - Mobil har færre fibre og en egen, enklere komposisjon (fibre inn fra venstre).
+  - Fibrene og nodene er en statisk SVG som tegnes én gang. Ingen filter, ingen blur.
+  - Fortellingen (én syklus): en impuls kommer inn → ringen markerer at den er fremme →
+    svake impulser sjekker alternativene etter tur (nodene blinker) → den riktige retningen
+    lyser opp og impulsen fortsetter ut. Støttefibrene får en impuls hver 2. eller 3. syklus,
+    så rytmen varierer uten at ting langt fra hverandre beveger seg samtidig.
+  - Alt som beveger seg er transform- og opacity-keyframes (motion.ts), så skjermkortet gjør
+    jobben alene: ingen JavaScript, ingen layout, ingen ny maling. Keyframes ligger i en egen
+    fil (/motion.css) som hero-pointer.tsx laster etter at siden er ferdig. Uten den står alt stille.
+  - Starter etter lasting (data-fiber-live), står stille utenfor skjermen, skjules ved
+    «redusert bevegelse».
+  - PC: peker du mot et alternativ, lyser grenen svakt opp og nålen peker dit (hero-pointer.tsx).
 */
 
-type Fiber = { id: string; segments: Segment[]; width: number; color: string; opacity: number; halo?: boolean; fade: "in" | "out" };
-
-/* Retningen fibrene har når de går inn i kompasset (svakt stigende mot høyre) */
-const IN: Point = [0.941, -0.339];
-const NORMAL: Point = [0.339, 0.941];
-
-/* Siste del før kompasset: fibrene ligger tett og parallelt, som en samlet kabel */
-function intoHub(from: Segment, offset: number): Segment[] {
-  const [, , c2, end] = from;
-  const handle: Point = [end[0] + (end[0] - c2[0]) * 0.6, end[1] + (end[1] - c2[1]) * 0.6];
-  const approach: Point = [-IN[0] * 150 + NORMAL[0] * offset, -IN[1] * 150 + NORMAL[1] * offset];
-  const hub: Point = [NORMAL[0] * offset * 0.3, NORMAL[1] * offset * 0.3];
-  return [from, [end, handle, approach, hub]];
-}
-
-const DESKTOP: Fiber[] = [
-  // Hovedfiberen: inn fra nede til venstre, under teksten, opp til kompasset
-  { id: "d-main", segments: intoHub([[-1250, 560], [-900, 560], [-560, 470], [-330, 300]], 0), width: 1.6, color: "#1d6fc4", opacity: 0.9, halo: true, fade: "in" },
-  // Støttefibre som samles i samme bunt
-  { id: "d-low", segments: intoHub([[-1000, 720], [-760, 700], [-470, 520], [-290, 330]], 7), width: 1, color: "#4b8fd6", opacity: 0.6, fade: "in" },
-  { id: "d-steep", segments: intoHub([[-640, 760], [-520, 640], [-350, 420], [-240, 290]], 14), width: 0.9, color: "#2a8aa8", opacity: 0.55, fade: "in" },
-  { id: "d-far", segments: intoHub([[-1750, 430], [-1200, 425], [-700, 400], [-420, 300]], -7), width: 1, color: "#6ea6dd", opacity: 0.55, fade: "in" },
-  // Ut av kompasset: retningen videre (nålen peker samme vei)
-  { id: "d-out", segments: [[[0, 0], [113, -41], [260, -110], [430, -170]], [[430, -170], [600, -230], [760, -262], [980, -280]]], width: 1.4, color: "#1d6fc4", opacity: 0.75, halo: true, fade: "out" },
-  { id: "d-out-2", segments: [[[0.3, 0.9], [140, -30], [400, -60], [900, -40]]], width: 0.9, color: "#4b8fd6", opacity: 0.45, fade: "out" },
-];
-
-const MOBILE: Fiber[] = [
-  { id: "m-main", segments: [[[-440, 62], [-260, 62], [-130, 22], [0, 0]]], width: 1.4, color: "#1d6fc4", opacity: 0.9, halo: true, fade: "in" },
-  { id: "m-high", segments: [[[-440, -40], [-280, -40], [-140, -8], [0, 0]]], width: 0.9, color: "#4b8fd6", opacity: 0.6, fade: "in" },
-  { id: "m-low", segments: [[[-440, 112], [-300, 104], [-150, 34], [0, 0]]], width: 0.8, color: "#2a8aa8", opacity: 0.5, fade: "in" },
-  { id: "m-out", segments: [[[0, 0], [90, -16], [170, -60], [260, -140]]], width: 1.2, color: "#1d6fc4", opacity: 0.7, fade: "out" },
-];
-
-const fiber = (set: Fiber[], id: string) => set.find((f) => f.id === id)!.segments;
-
-/* Lysimpulsene: én går gjennom kompasset og videre ut, de andre stopper i det */
-const KEYFRAMES = [
-  pulseKeyframes("fp-d-main", [{ segments: fiber(DESKTOP, "d-main"), from: 0, to: 0.42 }, { segments: fiber(DESKTOP, "d-out"), from: 0.46, to: 0.7 }]),
-  pulseKeyframes("fp-d-steep", [{ segments: fiber(DESKTOP, "d-steep"), from: 0, to: 0.36 }]),
-  pulseKeyframes("fp-d-far", [{ segments: fiber(DESKTOP, "d-far"), from: 0, to: 0.46 }]),
-  pulseKeyframes("fp-m-main", [{ segments: fiber(MOBILE, "m-main"), from: 0, to: 0.4 }, { segments: fiber(MOBILE, "m-out"), from: 0.45, to: 0.66 }]),
-  pulseKeyframes("fp-m-high", [{ segments: fiber(MOBILE, "m-high"), from: 0, to: 0.4 }]),
-].join("");
-
 const VIEW = { x: -2400, y: -1100, w: 3600, h: 2200 };
+const end = (segments: Segment[]) => segments[segments.length - 1][3];
 
-function Fibers({ set, className }: { set: Fiber[]; className: string }) {
+/* Statisk tegning: fibre inn, grener ut, noder. Tegnes én gang. */
+function Drawing({ scene, p, className }: { scene: Scene; p: Prefix; className: string }) {
+  const chosen = chosenOf(scene);
+  const small = p === "m";
+  const grad = (id: string, [x1, y1]: [number, number], [x2, y2]: [number, number], color: string, from: number, mid: number, to: number) => (
+    <linearGradient key={id} id={id} gradientUnits="userSpaceOnUse" x1={x1} y1={y1} x2={x2} y2={y2}>
+      <stop offset="0" stopColor={color} stopOpacity={from} />
+      <stop offset=".55" stopColor={color} stopOpacity={mid} />
+      <stop offset="1" stopColor={color} stopOpacity={to} />
+    </linearGradient>
+  );
+  const halo = (key: string, f: Fiber, d: string, stroke: string) => <path key={key} d={d} stroke={stroke} strokeWidth={f.width * 4.5} strokeOpacity={0.09} />;
+  const inbound = (f: Fiber) => `url(#g-${f.id})`;
+  const onwardEnd = end(scene.onward);
+
   return (
     <svg className={`fiber-svg ${className}`} style={{ left: VIEW.x, top: VIEW.y }} width={VIEW.w} height={VIEW.h} viewBox={`${VIEW.x} ${VIEW.y} ${VIEW.w} ${VIEW.h}`} aria-hidden="true" focusable="false">
       <defs>
-        {set.map(({ id, segments, color, opacity, fade }) => {
-          const start = segments[0][0];
-          const end = segments[segments.length - 1][3];
-          // Inn: svak ute ved kanten, sterkest ved kompasset. Ut: motsatt.
-          const [x1, y1, x2, y2] = fade === "in" ? [start[0] * 0.7, start[1] * 0.7, -60, 0] : [40, 0, end[0], end[1]];
-          return (
-            <linearGradient key={id} id={`fg-${id}`} gradientUnits="userSpaceOnUse" x1={x1} y1={y1} x2={x2} y2={y2}>
-              <stop offset="0" stopColor={color} stopOpacity={fade === "in" ? 0 : opacity} />
-              <stop offset={fade === "in" ? 0.55 : 0.45} stopColor={color} stopOpacity={opacity * 0.75} />
-              <stop offset="1" stopColor={color} stopOpacity={fade === "in" ? opacity : 0} />
-            </linearGradient>
-          );
-        })}
+        {/* Inn: svak ved kanten, sterkest ved kompasset */}
+        {scene.incoming.map((f) => { const s = f.segments[0][0]; return grad(`g-${f.id}`, [s[0] * 0.7, s[1] * 0.7], [-60, 0], f.color, 0, f.opacity * 0.75, f.opacity); })}
+        {/* Grener: sterkest ved kompasset, litt svakere ved noden */}
+        {scene.branches.map((b) => grad(`g-${b.id}`, [0, 0], [b.node[0], b.node[1]], b.color, b.opacity, b.opacity * 0.85, b.opacity * (b.chosen ? 1 : 0.7)))}
+        {/* Videre i riktig retning: toner ut mot kanten */}
+        {grad(`g-${p}-onward`, [chosen.node[0], chosen.node[1]], [onwardEnd[0], onwardEnd[1]], chosen.color, chosen.opacity, chosen.opacity * 0.55, 0)}
+        <radialGradient id={`g-${p}-node`}><stop offset="0" stopColor="#2aa6ff" stopOpacity=".45" /><stop offset="1" stopColor="#2aa6ff" stopOpacity="0" /></radialGradient>
       </defs>
       <g fill="none" strokeLinecap="round">
-        {/* Myk dybde rundt de viktigste fibrene: en bred, svak strek (ikke blur) */}
-        {set.filter((f) => f.halo).map((f) => <path key={`h-${f.id}`} d={pathData(f.segments)} stroke={`url(#fg-${f.id})`} strokeWidth={f.width * 4.5} strokeOpacity={0.09} />)}
-        {set.map((f) => <path key={f.id} d={pathData(f.segments)} stroke={`url(#fg-${f.id})`} strokeWidth={f.width} />)}
-        {/* Diskré refleks i glasset langs hovedfibrene */}
-        {set.filter((f) => f.halo).map((f) => <path key={`r-${f.id}`} d={pathData(f.segments)} transform="translate(0 -0.6)" stroke="#fff" strokeOpacity={0.55} strokeWidth={0.5} />)}
+        {/* Myk dybde rundt hovedbanen: en bred, svak strek (ikke blur) */}
+        {scene.incoming.filter((f) => f.main).map((f) => halo(`h-${f.id}`, f, pathData(f.segments), inbound(f)))}
+        {halo("h-chosen", chosen, pathData(chosen.segments), `url(#g-${chosen.id})`)}
+        {halo("h-onward", chosen, pathData(scene.onward), `url(#g-${p}-onward)`)}
+        {scene.incoming.map((f) => <path key={f.id} d={pathData(f.segments)} stroke={inbound(f)} strokeWidth={f.width} />)}
+        {scene.branches.map((b) => <path key={b.id} d={pathData(b.segments)} stroke={`url(#g-${b.id})`} strokeWidth={b.width} />)}
+        <path d={pathData(scene.onward)} stroke={`url(#g-${p}-onward)`} strokeWidth={chosen.width} />
+        {/* Diskré refleks i glasset langs hovedbanen */}
+        {scene.incoming.filter((f) => f.main).map((f) => <path key={`r-${f.id}`} d={pathData(f.segments)} transform="translate(0 -0.6)" stroke="#fff" strokeOpacity={0.55} strokeWidth={0.5} />)}
+        <path d={pathData(chosen.segments)} transform="translate(0 -0.6)" stroke="#fff" strokeOpacity={0.5} strokeWidth={0.5} />
       </g>
+      {/* Knutepunktene: alternativene som ringer, det riktige valget fylt og med et mykt lys */}
+      {scene.branches.map((b) =>
+        b.chosen ? (
+          <g key={`n-${b.id}`}>
+            <circle cx={b.node[0]} cy={b.node[1]} r={small ? 13 : 17} fill={`url(#g-${p}-node)`} />
+            <circle cx={b.node[0]} cy={b.node[1]} r={small ? 5.2 : 6.5} fill="#1d6fc4" stroke="#d6ecff" strokeWidth={1.8} />
+            <circle cx={b.node[0]} cy={b.node[1]} r={small ? 1.7 : 2.1} fill="#fff" />
+          </g>
+        ) : (
+          <g key={`n-${b.id}`}>
+            <circle cx={b.node[0]} cy={b.node[1]} r={small ? 3.8 : 4.5} fill="#f5f9fd" stroke={b.color} strokeWidth={1.3} />
+            <circle cx={b.node[0]} cy={b.node[1]} r={1.5} fill={b.color} />
+          </g>
+        ),
+      )}
     </svg>
+  );
+}
+
+/* Lite SVG-lag som bare dekker sin egen bane, så opacity kan endres uten å male scenen på nytt */
+function Overlay({ segments, node, className, style, branch }: { segments: Segment[]; node?: Point; className: string; style?: CSSProperties; branch?: number }) {
+  const box = bounds(segments, 14);
+  return (
+    <svg className={className} data-branch={branch} style={{ left: box.x, top: box.y, ...style }} width={box.w} height={box.h} viewBox={`${box.x} ${box.y} ${box.w} ${box.h}`} aria-hidden="true" focusable="false">
+      <g fill="none" strokeLinecap="round">
+        <path d={pathData(segments)} stroke="#2aa6ff" strokeOpacity=".16" strokeWidth="7" />
+        <path d={pathData(segments)} stroke="#2aa6ff" strokeWidth="1.8" />
+      </g>
+      {node ? <circle cx={node[0]} cy={node[1]} r="8.5" fill="none" stroke="#2aa6ff" strokeOpacity=".7" strokeWidth="1.4" /> : null}
+    </svg>
+  );
+}
+
+function Motion({ scene, p, className }: { scene: Scene; p: Prefix; className: string }) {
+  const chosen = chosenOf(scene);
+  const cycle = `${scene.cycle}s`;
+  return (
+    <>
+      {/* Grenen til det riktige valget lyser opp når impulsen går ut i den (bare grenen: lite lag å tegne) */}
+      <Overlay segments={chosen.segments} className={`fiber-overlay ${className}`} style={{ animationName: `fo-${p}`, animationDuration: cycle }} />
+      {HERO_PULSES[p].map((pulse) => (
+        <span key={pulse.name} className={`fiber-pulse ${pulse.scan ? "is-scan " : ""}${className}`} style={{ animationName: pulse.name, animationDuration: `${pulse.cycle}s` }}><span /></span>
+      ))}
+      {scene.branches.map((b, i) => <span key={`glow-${b.id}`} className={`fiber-node-glow ${className}`} style={{ left: b.node[0], top: b.node[1], animationName: `fn-${p}-${i}`, animationDuration: cycle }} />)}
+      <span className={`fiber-node-glow is-chosen ${className}`} style={{ left: chosen.node[0], top: chosen.node[1], animationName: `fn-${p}-c`, animationDuration: cycle }} />
+      <span className={`fiber-ring ${className}`} style={{ animationName: `fr-${p}`, animationDuration: cycle }} />
+    </>
   );
 }
 
 export function FiberScene({ children }: { children: ReactNode }) {
   return (
-    <div className="fiber-anchor" aria-hidden="true">
-      <style>{KEYFRAMES}</style>
+    <div className="fiber-anchor" aria-hidden="true" data-branches={JSON.stringify(BRANCH_ANGLES)} data-motion-css={MOTION_CSS_URL} style={{ ["--needle-rest-d" as string]: `${chosenOf(DESKTOP).angle}deg`, ["--needle-rest-m" as string]: `${chosenOf(MOBILE).angle}deg` }}>
       {/* Lyset i bakgrunnen står bak kompasset (statisk, tegnes én gang) */}
       <span className="fiber-glow" />
-      <Fibers set={DESKTOP} className="hidden lg:block" />
-      <Fibers set={MOBILE} className="lg:hidden" />
-      <span className="fiber-pulse hidden lg:block" style={{ animationName: "fp-d-main" }}><span /></span>
-      <span className="fiber-pulse hidden lg:block" style={{ animationName: "fp-d-steep", animationDelay: "4s" }}><span /></span>
-      <span className="fiber-pulse hidden lg:block" style={{ animationName: "fp-d-far", animationDelay: "8s" }}><span /></span>
-      <span className="fiber-pulse lg:hidden" style={{ animationName: "fp-m-main" }}><span /></span>
-      <span className="fiber-pulse lg:hidden" style={{ animationName: "fp-m-high", animationDelay: "5s" }}><span /></span>
-      <span className="fiber-ring" />
+      <Drawing scene={DESKTOP} p="d" className="hidden lg:block" />
+      <Drawing scene={MOBILE} p="m" className="lg:hidden" />
+      {/* PC: grenen du peker mot lyser svakt opp (data-focus settes av hero-pointer.tsx) */}
+      {DESKTOP.branches.map((b, i) => <Overlay key={`focus-${b.id}`} branch={i} segments={b.chosen ? [...b.segments, ...DESKTOP.onward] : b.segments} node={b.node} className="fiber-focus hidden lg:block" />)}
+      <Motion scene={DESKTOP} p="d" className="hidden lg:block" />
+      <Motion scene={MOBILE} p="m" className="lg:hidden" />
       {children}
     </div>
   );
