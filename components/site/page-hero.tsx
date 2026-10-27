@@ -30,7 +30,7 @@ function HeroFibers() {
   );
 }
 
-function Breadcrumbs({ items }: { items: Crumb[] }) {
+export function Breadcrumbs({ items }: { items: Crumb[] }) {
   const base = site.url.replace(/\/$/, "");
   const all = [{ href: "/", label: "Forside" }, ...items];
   const jsonLd = {

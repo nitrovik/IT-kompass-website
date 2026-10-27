@@ -8,7 +8,9 @@ Nettsiden er bevisst holdt til én side, pluss personvernsiden som loven krever.
 
 | Adresse | Innhold |
 | --- | --- |
-| `/` | Forside: hero med kompass og fibre, kort oppsummering, «Hvorfor IT Kompass» (`/#hvorfor`), tjenester (`/#tjenester`) og kontaktskjema (`/#kontakt`) |
+| `/` | Forside: hero med kompass og fibre, kort oppsummering, «Hvorfor IT Kompass» (`/#hvorfor`) og kontaktskjema (`/#kontakt`) |
+| `/tjenester` | Oversikt over tjenestene, med lenke til hver tjenesteside og kontaktskjema |
+| `/tjenester/it-support`, `/wifi`, `/fiber-og-bredband`, `/telefoni-og-sentralbord`, `/nettsider` | Én side per tjeneste. Innholdet står i `content/services.ts` |
 | `/personvern` | Personvernerklæring (utkast, må gjennomgås) |
 
 ## Hvor endrer jeg tekst og informasjon?
@@ -43,7 +45,7 @@ npm run build
 
 Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Zod, Resend og Cloudflare Turnstile. Skriften Inter ligger lokalt i `app/fonts/` (SIL Open Font License). De kursive aksentordene bruker en serif fra maskinen (Iowan Old Style, Palatino eller Georgia), som i designet.
 
-Tegningen i heroen er kompasset fra logoen med fiberbaner som går helt ut til kanten av skjermen. En lyskule kommer inn langs en bane og trekkes inn i kompasset. Nålen snur seg mot en ny bane, og kula sendes ut der. Med musa i nærheten peker nålen mot pekeren. Koden ligger i `components/home/`: `hero-art.tsx` (tegningen), `hero-fibers.ts` (banene), `fiber-controller.ts` (kulene og nålen) og `hero-fiber-system.tsx`. Kulene flyttes bare med transform, og alt stopper når heroen ikke vises. Ved «redusert bevegelse» står alt stille.
+Tegningen i heroen er kompasset fra logoen med fiberbaner som kommer inn fra venstre kant, går gjennom kompasset og ut til høyre. En lyskule kommer inn langs en bane og trekkes inn i kompasset. Nålen snur seg mot en ny bane, og kula sendes ut der. Med musa i nærheten peker nålen mot pekeren. Koden ligger i `components/home/`: `hero-art.tsx` (tegningen), `hero-fibers.ts` (banene), `fiber-controller.ts` (kulene og nålen) og `hero-fiber-system.tsx`. Kulene flyttes bare med transform, og alt stopper når heroen ikke vises. Ved «redusert bevegelse» står alt stille.
 
 Scrollingen er nettleserens egen. Ingenting kjører i JavaScript mens siden scroller.
 

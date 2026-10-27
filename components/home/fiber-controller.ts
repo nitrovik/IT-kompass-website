@@ -27,6 +27,7 @@ export type ControllerElements = {
 export type NeedleState = { angle: number; rest: number };
 
 const wrap180 = (a: number) => ((((a + 180) % 360) + 360) % 360) - 180;
+const mod360 = (a: number) => ((a % 360) + 360) % 360;
 const smooth = (a: number, b: number, x: number) => {
   const t = Math.min(Math.max((x - a) / (b - a), 0), 1);
   return t * t * (3 - 2 * t);
@@ -41,9 +42,16 @@ function random() {
 }
 
 /*
-  Nålen som en dempet fjær: følger et mål jevnt, med et lite naturlig overslag, og stopper
-  helt når den er fremme. Skriver bare transform på sitt eget lag, og bare mens den beveger seg.
+  Nålen som en dempet fjær, med to drivmåter som bruker samme fysikk:
+  - glide: når kompasset retter seg inn mot en utgang er målet kjent, så hele bevegelsen regnes
+    ut på forhånd og spilles av med Web Animations. Da går den på skjermkortet og holder seg jevn
+    selv om hovedtråden er opptatt.
+  - aim: når nålen følger musepekeren endres målet hele tiden, så fjæren regnes per bilde
+    (requestAnimationFrame), men bare mens nålen faktisk beveger seg.
+  Den ene tar over der den andre slapp, med samme vinkel og fart.
 */
+const STEP = 1 / 60;
+
 class Needle {
   angle: number;
   private vel = 0;
@@ -52,6 +60,8 @@ class Needle {
   private zeta = 0.8;
   private raf = 0;
   private last = 0;
+  private glideAnim: Animation | null = null;
+  private glidePath: { angles: number[]; vels: number[] } | null = null;
   private waiters: (() => void)[] = [];
 
   constructor(private el: HTMLElement, start: number) {
@@ -61,14 +71,58 @@ class Needle {
   }
 
   aim(bearing: number, omega: number, zeta: number) {
+    this.takeOver();
     this.omega = omega;
     this.zeta = zeta;
     // Korteste vei rundt, så nålen aldri snurrer en ekstra runde
     this.target = this.angle + wrap180(bearing - this.angle);
-    if (!this.raf && Math.abs(this.target - this.angle) > 0.05) {
+    if (!this.raf && (Math.abs(this.target - this.angle) > 0.05 || Math.abs(this.vel) > 3)) {
       this.last = performance.now();
       this.raf = requestAnimationFrame(this.tick);
     }
+  }
+
+  glide(bearing: number, omega: number, zeta: number) {
+    const target = this.angle + wrap180(bearing - this.angle);
+    if (this.glideAnim && Math.abs(target - this.target) < 0.05) return;
+    this.takeOver();
+    this.target = this.angle + wrap180(bearing - this.angle);
+    if (Math.abs(this.target - this.angle) < 0.2 && Math.abs(this.vel) < 3) return;
+    // Samme fjær som i tick, regnet ut i forkant med 60 steg i sekundet
+    const angles = [this.angle];
+    const vels = [this.vel];
+    let angle = this.angle;
+    let vel = this.vel;
+    for (let i = 0; i < 600; i++) {
+      vel += (omega * omega * (this.target - angle) - 2 * zeta * omega * vel) * STEP;
+      angle += vel * STEP;
+      angles.push(angle);
+      vels.push(vel);
+      if (Math.abs(this.target - angle) < 0.2 && Math.abs(vel) < 3) break;
+    }
+    angles[angles.length - 1] = this.target;
+    vels[vels.length - 1] = 0;
+    const n = angles.length - 1;
+    const anim = this.el.animate(
+      angles.map((x, i) => ({ offset: i / n, transform: `rotate(${x.toFixed(2)}deg)` })),
+      { duration: n * STEP * 1000, easing: "linear", fill: "forwards" },
+    );
+    this.glideAnim = anim;
+    this.glidePath = { angles, vels };
+    anim.finished.then(
+      () => {
+        if (this.glideAnim !== anim) return;
+        this.glideAnim = null;
+        this.glidePath = null;
+        this.angle = mod360(this.target);
+        this.target = this.angle;
+        this.vel = 0;
+        this.write();
+        anim.cancel();
+        this.flush();
+      },
+      () => {},
+    );
   }
 
   hold() {
@@ -76,14 +130,32 @@ class Needle {
   }
 
   settled(): Promise<void> {
-    return this.raf ? new Promise((resolve) => this.waiters.push(resolve)) : Promise.resolve();
+    return this.raf || this.glideAnim ? new Promise((resolve) => this.waiters.push(resolve)) : Promise.resolve();
   }
 
   stop() {
-    cancelAnimationFrame(this.raf);
-    this.raf = 0;
+    this.takeOver();
     this.vel = 0;
+    this.target = this.angle;
     this.flush();
+  }
+
+  /* Stopper den bevegelsen som pågår og overtar vinkelen og farten den hadde */
+  private takeOver() {
+    if (this.raf) {
+      cancelAnimationFrame(this.raf);
+      this.raf = 0;
+    }
+    const anim = this.glideAnim;
+    const path = this.glidePath;
+    if (!anim || !path) return;
+    const i = Math.min(path.angles.length - 1, Math.max(0, Math.round(Number(anim.currentTime ?? 0) / 1000 / STEP)));
+    this.angle = path.angles[i];
+    this.vel = path.vels[i];
+    this.glideAnim = null;
+    this.glidePath = null;
+    this.write();
+    anim.cancel();
   }
 
   private tick = (now: number) => {
@@ -93,7 +165,7 @@ class Needle {
     this.vel += acc * dt;
     this.angle += this.vel * dt;
     if (Math.abs(this.target - this.angle) < 0.2 && Math.abs(this.vel) < 3) {
-      this.angle = ((this.target % 360) + 360) % 360;
+      this.angle = mod360(this.target);
       this.target = this.angle;
       this.vel = 0;
       this.raf = 0;
@@ -156,6 +228,9 @@ function outgoing(fiber: Fiber, v: number, r: number) {
   return { frames, total, timeAt };
 }
 
+type Route = { frames: Keyframe[]; total: number; timeAt: (s: number) => number };
+type Flight = { source: Fiber; inbound: Route & { cruise: number }; arrival: Animation; rimAt: number };
+
 function sample(total: number, at: (t: number) => { p: { x: number; y: number }; scale: number; opacity: number }): Keyframe[] {
   const n = Math.min(120, Math.max(24, Math.round(total / 40)));
   return Array.from({ length: n + 1 }, (_, i) => {
@@ -207,6 +282,10 @@ export class FiberController {
   private hover: number | null = null;
   private sources: Deck;
   private targets: Deck;
+  // Banenes keyframes regnes ut én gang, og hver kombinasjon av kule og bane lages som animasjon én gang
+  private routes = new Map<string, Route>();
+  private anims = new Map<string, Animation>();
+  private glow: Animation | null = null;
 
   constructor(private els: ControllerElements, fibers: Fiber[], private opts: { speed: number; r: number }, state: NeedleState) {
     this.sources = new Deck(fibers.filter((f) => f.valid && f.kind === "in"));
@@ -243,7 +322,10 @@ export class FiberController {
     });
     this.timers.clear();
     for (const el of [...this.els.pulses, this.els.core]) el.getAnimations().forEach((a) => a.cancel());
-    this.setPhase("idle");
+    // Nålen fryses der den er; den skal ikke bevege seg mens heroen ikke vises
+    this.phase = "idle";
+    this.els.host.dataset.fiberPhase = "idle";
+    this.needle.stop();
   }
 
   destroy() {
@@ -252,49 +334,59 @@ export class FiberController {
   }
 
   private async loop(token: number) {
-    while (token === this.token) {
-      if (!(await this.cycle(token))) return;
-    }
+    let flight: Flight | null = this.launch(this.sources.draw(), token);
+    while (flight && token === this.token) flight = await this.cycle(token, flight);
   }
 
-  /* Ett signal: inn langs en bane, absorberes, nålen retter seg inn, ut langs en ny bane */
-  private async cycle(token: number): Promise<boolean> {
-    const v = this.opts.speed;
-    const source = this.sources.draw();
-    const inbound = incoming(source, v);
-    const carrier = this.freePulse();
-    const arrival = this.play(carrier, inbound.frames, inbound.total);
+  /* En kule startes fra kanten langs en bane inn */
+  private launch(source: Fiber, token: number): Flight {
+    const inbound = this.route(source, () => incoming(source, this.opts.speed));
+    const arrival = this.play(this.freePulse(), source.id, inbound.frames, inbound.total);
     if (source.node) this.later(inbound.timeAt(source.node.at), token, () => this.flash(this.els.nodes.get(source.id)));
+    return { source, inbound, arrival, rimAt: performance.now() + inbound.cruise };
+  }
 
+  /*
+    Ett signal: kula når skiven, absorberes, nålen retter seg inn, kula sendes ut langs en ny bane.
+    Neste kule startes fra kanten allerede mens denne sendes ut, beregnet slik at den kommer fram
+    etter en kort pause. Kompasset tar fortsatt imot bare én kule om gangen.
+  */
+  private async cycle(token: number, { source, inbound, arrival, rimAt }: Flight): Promise<Flight | null> {
     // Fase B: kula når skiven og trekkes inn i sentrum
-    if (!(await this.wait(inbound.cruise, token))) return false;
+    if (!(await this.wait(Math.max(0, rimAt - performance.now()), token))) return null;
     this.setPhase("absorbing");
     this.flash(this.els.ports.get(source.id));
     this.later((inbound.total - inbound.cruise) * 0.42, token, () => this.charge());
-    if (!(await this.finished(arrival, token))) return false;
+    if (!(await this.finished(arrival, token))) return null;
 
     // Fase C og D: ny retning velges, og nålen roterer til banens faktiske retning
     const target = this.targets.draw();
     this.aimBearing = target.bearing;
     this.setPhase("aiming");
-    if (!(await Promise.race([this.needle.settled().then(() => true), this.wait(1800, token)]))) return false;
-    if (token !== this.token || !(await this.wait(140, token))) return false;
+    if (!(await Promise.race([this.needle.settled().then(() => true), this.wait(1800, token)]))) return null;
+    if (token !== this.token || !(await this.wait(140, token))) return null;
 
     // Fase E: kula sendes ut fra sentrum langs den valgte banen
     this.setPhase("emitting");
     this.rest = target.bearing;
     this.els.host.dataset.fiberOut = target.id;
-    const outbound = outgoing(target, v, this.opts.r);
-    this.play(this.freePulse(), outbound.frames, outbound.total);
+    const outbound = this.route(target, () => outgoing(target, this.opts.speed, this.opts.r));
+    this.play(this.freePulse(), target.id, outbound.frames, outbound.total);
     this.release();
     const leaves = outbound.timeAt(target.rimAt);
     this.later(leaves, token, () => this.flash(this.els.ports.get(target.id)));
     if (target.node) this.later(outbound.timeAt(target.node.at), token, () => this.flash(this.els.nodes.get(target.id)));
-    if (!(await this.wait(leaves + 220, token))) return false;
+
+    // Neste kule: når fram tidligst etter at denne er ute av skiven og en kort pause
+    const nextSource = this.sources.draw();
+    const nextRoute = this.route(nextSource, () => incoming(nextSource, this.opts.speed));
+    const pause = leaves + 220 + 650 + random() * 950;
+    const next = this.wait(Math.max(0, pause - nextRoute.cruise), token).then((ok) => (ok ? this.launch(nextSource, token) : null));
+    if (!(await this.wait(leaves + 220, token))) return null;
 
     // Fase F: kompasset er ledig og klart for neste signal
     this.setPhase("idle");
-    return this.wait(650 + random() * 950, token);
+    return next;
   }
 
   private setPhase(phase: Phase) {
@@ -306,7 +398,7 @@ export class FiberController {
   /* Den eneste stedet som bestemmer hvor nålen skal peke */
   private steer() {
     if (this.phase === "absorbing") this.needle.hold();
-    else if (this.phase === "aiming" || this.phase === "emitting") this.needle.aim(this.aimBearing, 10.5, 0.74);
+    else if (this.phase === "aiming" || this.phase === "emitting") this.needle.glide(this.aimBearing, 10.5, 0.74);
     else this.needle.aim(this.hover ?? this.rest, 8.5, 0.82);
   }
 
@@ -314,15 +406,29 @@ export class FiberController {
     return this.els.pulses.find((el) => !el.getAnimations().some((a) => a.playState === "running")) ?? this.els.pulses[0];
   }
 
-  private play(el: HTMLElement, frames: Keyframe[], duration: number) {
+  private route<T extends Route>(fiber: Fiber, make: () => T): T {
+    let route = this.routes.get(fiber.id) as T | undefined;
+    if (!route) this.routes.set(fiber.id, (route = make()));
+    return route;
+  }
+
+  private play(el: HTMLElement, fiberId: string, frames: Keyframe[], duration: number) {
     el.getAnimations().forEach((a) => a.cancel());
-    return el.animate(frames, { duration, easing: "linear", fill: "forwards" });
+    const key = `${this.els.pulses.indexOf(el)}:${fiberId}`;
+    let anim = this.anims.get(key);
+    if (!anim) {
+      anim = new Animation(new KeyframeEffect(el, frames, { duration, easing: "linear", fill: "forwards" }), document.timeline);
+      this.anims.set(key, anim);
+    }
+    anim.currentTime = 0;
+    anim.play();
+    return anim;
   }
 
   /* Lyset i sentrum: tennes når kula absorberes, ligger svakt mens nålen snur, og følger kula ut */
   private charge() {
-    this.els.core.getAnimations().forEach((a) => a.cancel());
-    this.els.core.animate(
+    this.glow?.cancel();
+    this.glow = this.els.core.animate(
       [
         { opacity: 0, transform: "scale(.5)" },
         { opacity: 0.88, transform: "scale(1)", offset: 0.38 },
@@ -333,9 +439,11 @@ export class FiberController {
   }
 
   private release() {
-    const from = Number(getComputedStyle(this.els.core).opacity) || 0.46;
-    this.els.core.getAnimations().forEach((a) => a.cancel());
-    this.els.core.animate(
+    // Fra lysstyrken ladingen har nå, regnet ut fra animasjonens tid (uten å lese stilen)
+    const p = this.glow?.effect?.getComputedTiming().progress;
+    const from = p == null ? 0 : p < 0.38 ? (p / 0.38) * 0.88 : 0.88 - ((p - 0.38) / 0.62) * 0.42;
+    this.glow?.cancel();
+    this.glow = this.els.core.animate(
       [
         { opacity: from, transform: "scale(.9)" },
         { opacity: 0, transform: "scale(1.14)" },

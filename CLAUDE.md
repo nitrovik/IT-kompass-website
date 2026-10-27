@@ -31,20 +31,33 @@ The logo and the compass are primary brand assets. The owner asked in October 20
 - The favicon (`app/icon.png`) and the 404 page also use the compass.
 
 ## Signature interactions (from the HTML file)
-1. Hero drawing: fibers from the screen edges to the compass over a dotted orbit grid; light balls run in along a fiber, are absorbed by the compass, the needle turns to a new fiber and the ball is sent out along it (see «Hero drawing» below). The needle follows a nearby mouse when the compass is idle.
-2. Service index rows: white background fades in, padding widens, the round arrow turns blue and rotates −35°.
+1. Hero drawing: fibers run from the left screen edge, through the compass and out to the right edge over a dotted orbit grid; light balls run in along a fiber, are absorbed by the compass, the needle turns to a new fiber and the ball is sent out along it (see «Hero drawing» below). The needle follows a nearby mouse when the compass is idle.
+2. Service index rows (/tjenester): white background fades in, the content slides 10 px in from both sides (transform, not padding), the round arrow turns blue and rotates −35°.
 3. Buttons lift 3 px; arrows (↗) move up-right; nav links get an underline that grows.
 4. Scroll reveals: fade + 19 px rise, 0.75 s, delays 0.08 s / 0.16 s.
 5. Reduced motion: no light balls, the needle stands still, everything visible at once.
 
+## Header and navigation (October 2026)
+- `components/layout/site-header.tsx`: logo with the menu right next to it (Tjenester, Hvorfor IT Kompass, Kontakt) and «La oss snakke» on the right, on one line.
+- «Tjenester» is a disclosure button (WAI-ARIA «disclosure navigation») with a panel listing every service page plus «Alle tjenester». Mouse: opens on hover with a 70 ms delay and closes 180 ms after leaving (an invisible bridge keeps it open on the way down); a click pins it open. Keyboard: Enter/Space toggles, Arrow Down enters the list, arrows/Home/End move, Escape closes and returns focus, focus leaving closes it. The panel animates with opacity/transform only.
+- ≤ 760 px: the menu is a panel under the header; Tjenester expands as an accordion (tap, never hover); the CTA sits at the bottom of the panel. Touch targets ≥ 44 px.
+- The service list comes from `servicesNav` in `content/services.ts`, passed from `app/layout.tsx` as props so the service texts stay out of the client bundle. `content/navigation.ts` holds the other links.
+- Active page: `aria-current="page"` in the panel, and Tjenester is marked on all `/tjenester` pages. On pages with their own contact form (home and /tjenester…), Kontakt and «La oss snakke» link to `#kontakt` on the same page.
+
 ## Homepage structure
-- header: logo, Tjenester (`#tjenester`), Hvorfor IT Kompass (`#hvorfor`), Kontakt (`#kontakt`), «La oss snakke»; on ≤760 px a dropdown menu
-- hero (`components/home/hero.tsx`)
+- header (above)
+- hero (`components/home/hero.tsx`); «Se hva vi gjør» goes to `/tjenester`
 - proof bar (`proof-bar.tsx`)
 - intro, `#hvorfor` (`intro-section.tsx`)
-- services index, `#tjenester` (`services-section.tsx`); every row goes to the contact form
-- contact, `#kontakt` (`contact-section.tsx`): the card holds the real contact form (`#kontaktskjema`) where the HTML file had a link to itkompass.no
+- contact, `#kontakt` (`contact-section.tsx`): the card holds the real contact form (`#kontaktskjema`) where the HTML file had a link to itkompass.no; «Utforsk tjenestene» goes to `/tjenester`
 - footer: logo, «IT og telecom for bedrifter.», org.nr., personvern, «Til toppen»
+The services list is no longer on the homepage (owner's request, October 2026): it lives on `/tjenester` and in the menu.
+
+## Service pages (October 2026)
+- `/tjenester` (`app/tjenester/page.tsx`): the editorial services index from the homepage design (`components/service/services-index.tsx`), each row linking to its page, plus the contact section.
+- `/tjenester/[slug]` (`app/tjenester/[slug]/page.tsx`, static with `generateStaticParams`, `dynamicParams = false` so unknown slugs 404): `it-support`, `wifi`, `fiber-og-bredband`, `telefoni-og-sentralbord`, `nettsider`. Old slugs are kept where they existed; old URLs from the previous site redirect in `next.config.ts`.
+- Content in `content/services.ts` (built on the site's earlier approved service texts, written per `SKRIVEREGLER.md`; no prices, guarantees, platforms or customers). Each page: hero with breadcrumbs and its own line drawing (`components/service/service-art.tsx`), «Dette gjør vi» in one of two layouts (`index`: numbered nodes along a fiber line; `split`: sticky heading and list), «Dette får dere», «Typiske behov» with its own heading, the contact section with the form's category preselected, and related services. Service JSON-LD and breadcrumbs JSON-LD; every page in the sitemap.
+- Mobile/fixed-line telephony and the switchboard are one page, as the services are described today. Split them only if the owner provides content.
 
 ## Content rules
 Never invent:
@@ -65,7 +78,7 @@ No lorem ipsum.
 All content should be Norwegian Bokmål and concise.
 
 ## Content architecture
-Website content belongs in `content/` data files whenever practical: `content/home.ts` (all homepage text, headings as `TitleLine` with an optional italic accent), `content/navigation.ts` (menu), `content/legal.ts` (personvern).
+Website content belongs in `content/` data files whenever practical: `content/home.ts` (all homepage text, headings as `TitleLine` with an optional italic accent), `content/services.ts` (service pages and the services menu), `content/navigation.ts` (menu), `content/contact.ts` (form categories), `content/legal.ts` (personvern).
 Keep components reusable so future migration to a headless CMS such as Sanity is possible without rewriting the UI.
 
 ## Performance
@@ -102,15 +115,16 @@ Fonts: Inter, self-hosted in `app/fonts/` via `next/font/local`. `inter-arrow-wg
 
 ### Hero drawing (fibers and compass)
 - `components/home/hero-art.tsx` (server component): the static parts inside `.hero-figure`: grid circles, axes and the caption (`.hero-caption`), the compass disc with ring, marks and N/S/W/E (`.hero-compass-core`, viewBox `250 160 200 200`), the centre glow (`.hero-core-glow`) and the needle as its own SVG (`.hero-needle`, rotated with `transform`). The compass does not drift, so the fibers stay attached to it.
-- `components/home/hero-fibers.ts`: the geometry in hero pixels. Fibers run from just outside the screen edges (top/right/bottom on PC; left/right/bottom when the text sits above the compass) to the disc, as a cubic Bézier plus a straight radial segment under the disc. Each fiber's bearing is measured on the path itself at the disc rim. A fiber is valid only if its visible part stays clear of the hero text (+16 px) and the caption (+18 px). If not, small adjustments are tried in order (end moved toward the corner, heading turned up to 18°, end moved around the corner); otherwise it is left out.
+- `components/home/hero-fibers.ts`: the geometry in hero pixels. The direction is always left → compass → right (owner, October 2026). PC: two fibers come in from the left edge (one above the text, the main one with the light highlight below it) and one from the top; four go out over the right edge. Mobile (text above the compass): in from the left below the text, out to the right. Seven fibers on PC, five on mobile; do not add more. Each fiber is a cubic Bézier plus a straight radial segment under the disc; its bearing is measured on the path itself at the disc rim. A fiber is valid only if its visible part stays clear of the hero text (+16 px) and the caption (+18 px). If not, the smallest working adjustment is chosen (end moved along the edge, heading turned up to ±18°, curve tightened), then a backup edge; otherwise it is left out.
 - `components/home/hero-fiber-system.tsx` (client): measures hero, compass, text and caption on resize only (ResizeObserver, `document.fonts.ready`), draws the fibers (`.hero-fibers`), ports, nodes and three reusable light balls, and starts the controller after `load` + idle, never with reduced motion or Save-Data.
 - `components/home/fiber-controller.ts`: one signal at a time, as a state machine `idle → absorbing → aiming → emitting → idle` (`data-fiber-phase` on the hero; `data-fiber-out` is the chosen exit):
   1. A ball arrives along an incoming fiber, slows down inside the disc and shrinks and fades into the centre, which glows briefly.
   2. The exit is drawn from a shuffled deck: every valid exit once per round in random order, and a round never starts with the last exit.
-  3. The needle (a damped spring, rAF only while it moves) turns the shortest way to the exit's measured bearing. The ball leaves only when the needle has settled (at most 1.8 s).
-  4. The ball leaves from the centre, reaches full size at the rim and runs out over the screen edge.
-  Balls move with the Web Animations API on transform/opacity (precomputed keyframes); JavaScript runs only at phase changes.
-- Hover (mouse only, `(hover: hover) and (pointer: fine)`): while idle the needle turns toward a pointer within 3.5 × the disc radius (released at 4.1 ×) and returns to the last exit when the pointer leaves. While absorbing, aiming or emitting, the signal direction wins. Pointer handling uses cached coordinates, with no layout reads per move.
+  3. The needle turns the shortest way to the exit's measured bearing. For this it uses `glide`: the damped spring is simulated ahead of time and played with the Web Animations API, so it runs on the compositor. The ball leaves only when the needle has settled (at most 1.8 s).
+  4. The ball leaves from the centre, reaches full size at the rim and runs out over the screen edge. The next ball is launched from the edge during the emission, timed to arrive after a short pause, so the long fibers keep the old rhythm; the compass still takes one ball at a time.
+  Balls move with the Web Animations API on transform/opacity. Keyframes are computed once per fiber and each ball/fiber animation is created once and replayed; JavaScript runs only at phase changes, and the centre glow is released from its computed timing (no style reads).
+- Layers: `.hero-copy` has no z-index, so it paints below the animated layers and is never promoted; the pulses layer is on top. The glows (`.hero-glow`, `.hero-core-glow`) have `will-change: transform, opacity` so starting an animation never re-layerizes or repaints the big layer (measured: paint per phase change went from ~8 ms to ~3 ms).
+- Hover (mouse only, `(hover: hover) and (pointer: fine)`): while idle the needle turns toward a pointer within 3.5 × the disc radius (released at 4.1 ×) and returns to the last exit when the pointer leaves. While absorbing, aiming or emitting, the signal direction wins. Following the pointer is the only per-frame JavaScript (the spring in requestAnimationFrame, only while the needle moves). Pointer handling uses cached coordinates, with no layout reads per move.
 - Everything stops while the hero is off-screen (IntersectionObserver) or the tab is hidden, and resumes when visible.
 - Use longhand `animation-*` properties when an animation has no name in the rule: the CSS minifier turns a nameless `animation:` shorthand into `animation: none`.
 
@@ -128,7 +142,7 @@ GSAP, React Three Fiber, Motion, Lenis and WebGL are not used. Add libraries, ca
 - Nothing runs in JavaScript while the page scrolls. The header is `position: sticky`.
 - Moving light uses transform/opacity keyframes, never `stroke-dashoffset`, SMIL, `offset-path` or animated `filter`. Static SVG filters (glow) are fine inside layers that only move.
 - No `backdrop-filter` on the header (it would be recomputed on every scroll frame): it uses an almost opaque white (`#fffffff5`) instead of the HTML file's blur. The small note top right in the hero keeps the design's blur (nothing moves beneath it).
-- The services row hover changes padding as in the HTML file; it is hover-only on four rows.
+- The services row hover (on /tjenester) and the header underlines use transforms, never padding or width, so hovering never triggers layout.
 - Turnstile mounts when the contact form is within 800 px of the viewport; the chat script loads with `lazyOnload`. The footer content keeps 64 px free on the right below 1440 px so the chat button never covers its links.
 
 ## Commands

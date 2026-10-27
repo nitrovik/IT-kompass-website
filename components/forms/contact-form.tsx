@@ -6,9 +6,9 @@ import { submitContact, type ContactState } from "@/app/actions/contact";
 import { Honeypot, SelectMenu, TextAreaField, TextField } from "@/components/forms/field";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { TurnstileField } from "@/components/ui/turnstile";
+import { contactCategories, type ContactCategory } from "@/content/contact";
 
 const initial: ContactState = { ok: false, message: "" };
-export const contactCategories = ["Fiber/WiFi", "Mobil", "IT support", "Utstyr", "Installasjoner", "Nettsider"] as const;
 
 type Name = "category" | "name" | "email" | "message";
 type Values = Record<Name, string>;
@@ -35,9 +35,9 @@ function focusFirst(form: HTMLFormElement | null, errors: Errors) {
   Feltene sjekkes før sending; feil vises ved feltet og fokus flyttes til den første.
   Kvitteringen vises bare når serveren har bekreftet at meldingen er sendt.
 */
-export function ContactForm() {
+export function ContactForm({ defaultCategory }: { defaultCategory?: ContactCategory }) {
   const [state, action, pending] = useActionState(submitContact, initial);
-  const [values, setValues] = useState<Values>({ category: "", name: "", email: "", message: "" });
+  const [values, setValues] = useState<Values>({ category: defaultCategory ?? "", name: "", email: "", message: "" });
   const [errors, setErrors] = useState<Errors>({});
   const [tried, setTried] = useState(false);
   const [seen, setSeen] = useState(state);

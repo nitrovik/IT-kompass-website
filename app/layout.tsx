@@ -8,6 +8,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { RevealObserver } from "@/components/ui/reveal-observer";
 import { ChatWidget } from "@/components/layout/chat-widget";
 import { site } from "@/config/site";
+import { servicesNav } from "@/content/services";
 
 // Inter for all tekst (SIL Open Font License, se app/fonts/). Reserveskriften er målt for normal og
 // fet vekt og definert i globals.css (ingen tekst som hopper når skriften lastes).
@@ -62,7 +63,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       <body>
         <a className="skip-link" href="#main">Hopp til hovedinnhold</a>
         <RevealObserver />
-        <SiteHeader />
+        <SiteHeader servicesNav={servicesNav} />
         {children}
         <SiteFooter />
         <script dangerouslySetInnerHTML={{ __html: revealVisibleNow }} />

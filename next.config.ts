@@ -12,6 +12,13 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      // Adresser fra den forrige versjonen av nettsiden (fjernet oktober 2026), så gamle lenker ikke gir 404
+      { source: "/tjenester/fiber-og-telecom", destination: "/tjenester/fiber-og-bredband", permanent: true },
+      { source: "/support", destination: "/tjenester/it-support", permanent: true },
+      { source: "/kontakt", destination: "/#kontakt", permanent: true },
+      { source: "/om-oss", destination: "/#hvorfor", permanent: true },
+      { source: "/finn-riktig-losning", destination: "/#kontakt", permanent: true },
+      { source: "/prosjekter", destination: "/", permanent: true },
       {
         source: "/:path*",
         has: [{ type: "host", value: alternateHost.replace(/\./g, "\\.") }],

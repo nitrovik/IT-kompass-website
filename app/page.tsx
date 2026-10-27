@@ -4,7 +4,6 @@ import { site } from "@/config/site";
 import { Hero } from "@/components/home/hero";
 import { ProofBar } from "@/components/home/proof-bar";
 import { IntroSection } from "@/components/home/intro-section";
-import { ServicesSection } from "@/components/home/services-section";
 import { ContactSection } from "@/components/home/contact-section";
 
 export const metadata: Metadata = pageMetadata({ title: "IT Kompass AS | IT og telecom med én kontakt", description: site.description, path: "/", absoluteTitle: true });
@@ -44,7 +43,6 @@ export default function HomePage() {
       <Hero />
       <ProofBar />
       <IntroSection />
-      <ServicesSection />
       <ContactSection />
     </main>
   );
