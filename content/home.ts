@@ -8,12 +8,12 @@
 export type TitleLine = { text?: string; em?: string };
 
 export const homeHero = {
-  kicker: "En nøytral partner innen IT og telekom",
+  kicker: "En trygg partner innen IT og telekom",
   title: ["Vi drifter.", "Du driver."],
   body: "Vi hjelper bedrifter med IT og telecom. Vi finner løsninger som passer behovet ditt – uavhengig av leverandør.",
   primary: { label: "La oss snakke", href: "#kontakt" },
   secondary: { label: "Se hva vi gjør", href: "#tjenester" },
-  assurance: "Ett kontaktpunkt. Et klarere bilde. En bedre vei videre.",
+  assurance: "En kontaktperson, trygg drift slik at du kan drive det dere skal uten bekymringer",
   art: {
     label: "Spesialtegnet kompass med fiberoptiske baner som møtes i et sentralt punkt",
     ring: "FORBINDELSER · MULIGHETER · RETNING",
@@ -35,12 +35,11 @@ export const homeProof = {
 export const homeIntro = {
   eyebrow: "Se helheten først",
   title: [{ text: "Vi hjelper deg" }, { text: "å velge ", em: "riktig." }] satisfies TitleLine[],
-  quote: "«Behovet avgjør.»",
+  quote: "«Behovet avgjør, IT Kompasset viser vei.»",
   lead: "Behovet avgjør.",
   paragraphs: [
-    "Vi hjelper deg å finne løsninger som passer for bedriften din, og som fungerer godt sammen.",
-    "IT Kompass er en nøytral partner innen IT og telecom. Vi tar utgangspunkt i behovene dine, ikke i én bestemt leverandør.",
-    "Du får hjelp til å vurdere alternativene og én kontakt å forholde deg til.",
+    "Vi hjelper deg å finne løsninger som passer for bedriften din, og som fungerer godt sammen uavhengig av hva behovet deres er.",
+    "Du får hjelp til å vurdere alternativene og en kontaktperson å forholde deg til.",
   ],
   link: { label: "Ta en prat med oss", href: "#kontakt" },
 };
@@ -48,12 +47,12 @@ export const homeIntro = {
 export const homeServices = {
   eyebrow: "Hva vi hjelper med",
   title: [{ text: "IT og telecom." }, { em: "Samlet på ett sted." }] satisfies TitleLine[],
-  body: "IT-støtte, WiFi, fiber og telefoni. Vi hjelper deg å finne løsninger som passer bedriften din.",
+  body: "IT-støtte, WiFi, fiber og telefoni. Vi hjelper deg å finne løsninger som passer bedriften din så kan dere samle løsning på et sted.",
   items: [
-    { num: "01 / IT", name: ["IT-støtte", "og drift"], detail: "Brukerstøtte, drift og oppfølging av IT-løsningene bedriften bruker hver dag." },
-    { num: "02 / WIFI", name: ["WiFi og", "nettverk"], detail: "Planlegging, prosjektering, installasjon og drift av trådløse nettverk tilpasset bygget og bruken." },
-    { num: "03 / FIBER", name: ["Fiber og", "bredbånd"], detail: "Vi vurderer fiber- og bredbåndsalternativer ut fra behovet og tilgjengeligheten der dere holder til." },
-    { num: "04 / TALE", name: ["Telefoni og", "sentralbord"], detail: "Mobil, fasttelefoni og sentralbord tilpasset måten bedriften jobber på." },
+    { num: "IT", name: ["IT-støtte", "og drift"], detail: "Brukerstøtte, drift og oppfølging av IT-løsningene bedriften bruker hver dag." },
+    { num: "WIFI", name: ["WiFi og", "nettverk"], detail: "Planlegging, prosjektering, installasjon og drift av trådløse nettverk tilpasset bygget og bruken." },
+    { num: "FIBER", name: ["Fiber og", "bredbånd"], detail: "Vi vurderer fiber- og bredbåndsalternativer ut fra behovet og tilgjengeligheten der dere holder til." },
+    { num: "TALE", name: ["Telefoni og", "sentralbord"], detail: "Mobil, fasttelefoni og sentralbord tilpasset måten bedriften jobber på." },
   ],
   // Hver rad går til kontaktskjemaet
   href: "#kontakt",

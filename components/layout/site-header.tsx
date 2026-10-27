@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { mainNav, navCta } from "@/content/navigation";
+import { mainNav } from "@/content/navigation";
 import { site } from "@/config/site";
 
 /*
@@ -55,7 +55,6 @@ export function SiteHeader() {
         <div className={open ? "nav-links open" : "nav-links"} id="hovedmeny" onClick={(event) => { if ((event.target as HTMLElement).closest("a")) setOpen(false); }}>
           {mainNav.map((item) => <SectionLink key={item.href} href={item.href} onHome={onHome}>{item.label}</SectionLink>)}
         </div>
-        <SectionLink className="btn btn-primary nav-action" href={navCta.href} onHome={onHome}>{navCta.label} <span className="btn-arrow" aria-hidden="true">↗</span></SectionLink>
         <button ref={menuButton} className="menu-toggle" type="button" onClick={() => setOpen((value) => !value)} aria-controls="hovedmeny" aria-expanded={open} aria-label={open ? "Lukk meny" : "Åpne meny"}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M3 7h18M3 12h18M3 17h18" /></svg>
         </button>

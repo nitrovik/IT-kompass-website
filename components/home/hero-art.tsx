@@ -78,9 +78,6 @@ export function HeroArt() {
 
         <HeroMotion href={MOTION_CSS_URL} />
       </div>
-      <div className="art-note"><b>{art.note.title}</b>{art.note.text}</div>
-      <div className="art-note-left"><span className="mini-compass" aria-hidden="true">↗</span><span>{art.badge[0]}<br />{art.badge[1]}</span></div>
-      <div className="art-caption"><span className="caption-line" aria-hidden="true" /> {art.caption}</div>
     </div>
   );
 }

@@ -11,7 +11,6 @@ export function ProofBar() {
   return (
     <div className="proof-bar">
       <div className="wrap proof-inner">
-        <p className="proof-intro">{homeProof.intro}</p>
         {homeProof.items.map((item) => (
           <p key={item.text} className="proof-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">{icons[item.icon]}</svg>
