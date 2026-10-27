@@ -26,7 +26,7 @@ export function ContactDetails() {
 }
 
 /*
-  Kontaktseksjonen fra designet. Kortet til høyre har fått kontaktskjemaet (sendes med Resend,
+  Kontaktseksjonen fra designet. Kortet til høyre har kontaktskjemaet (sendes med Resend,
   beskyttet av Turnstile) der designet hadde en lenke til itkompass.no.
 */
 export function ContactSection() {
@@ -38,15 +38,14 @@ export function ContactSection() {
           <p className="eyebrow">{homeContact.eyebrow}</p>
           <h2 id="kontakt-heading" className="section-heading"><TitleLines lines={homeContact.title} /></h2>
           <p className="body-copy">{homeContact.body}</p>
-          <a className="btn btn-primary" href={homeContact.cta.href}>{homeContact.cta.label} <span className="btn-arrow" aria-hidden="true">↗</span></a>
+          <a className="text-link" href={homeContact.link.href}>{homeContact.link.label} <span aria-hidden="true">↑</span></a>
           <ContactDetails />
         </div>
         <div className="contact-card" id="kontaktskjema" data-reveal style={{ ["--d" as string]: ".08s" }}>
           <div className="card-eyebrow">{card.eyebrow}</div>
           <h3>{card.title}</h3>
           <p>{card.body}</p>
-          <div className="contact-form"><ContactForm compact /></div>
-          <a className="card-link" href={card.link.href}>{card.link.label} <span aria-hidden="true">↓</span></a>
+          <ContactForm />
         </div>
       </div>
     </section>

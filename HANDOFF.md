@@ -11,7 +11,7 @@ The owner supplied a finished HTML design and asked for it to be implemented exa
 ## Sections
 Implemented, in this order:
 1. Header: logo, Tjenester, Hvorfor IT Kompass, Kontakt, «La oss snakke»
-2. Hero: «Vi drifter. / Du driver.», two buttons, assurance line, compass and fiber drawing with notes and caption
+2. Hero: «Vi drifter. / Du driver.», two buttons, assurance line, compass and fiber drawing with caption
 3. Proof bar: «En partner. Flere fagområder.» and three points
 4. Intro (`#hvorfor`): «Vi hjelper deg å velge riktig.»
 5. Services index (`#tjenester`): IT, WiFi, Fiber, Tale
@@ -31,7 +31,8 @@ The earlier partner logo banner (`content/partners.ts`, `/forhandsvisning/partne
 - **Contact card:** the HTML file linked to itkompass.no (this site) with «Gå til IT Kompass» and «Besøk itkompass.no». The card now holds the real contact form (Resend + Turnstile), and the button beside it says «Send oss en melding» and goes to the form. «Utforsk tjenestene» is kept.
 - **Footer:** also shows org.nr., a link to personvern, and phone/email/address when they are filled in `config/site.ts`.
 - **Header background:** almost opaque white instead of `backdrop-filter: blur`, so scrolling stays smooth. Looks the same.
-- **Hero motion:** same paths, timing and look, but the compass and the three signals are separate layers moved with transform instead of `offset-path` on SVG circles (which repainted the whole drawing every frame). The signals start after the page has loaded.
+- **Hero motion (further development, October 2026):** the fibers now run to the screen edges, and the compass absorbs a light ball, turns its needle to a new fiber and sends the ball out along it. The needle follows a nearby mouse when idle. The compass no longer drifts, so the fibers stay attached to it. Details in CLAUDE.md, «Hero drawing».
+- **Contact form (October 2026):** new visual design with permanent labels, inline errors and a custom dropdown with keyboard and screen-reader support. Same fields and the same sending (Resend, Turnstile).
 - **«Snakk med oss» under the services:** in the HTML file the decorative circles covered most of this link. It now sits above them.
 - **Chat button:** the chatbot's round button is not part of the HTML file. The footer leaves room on the right so it never covers links.
 

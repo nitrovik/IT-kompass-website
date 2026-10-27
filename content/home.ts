@@ -63,12 +63,10 @@ export const homeContact = {
   eyebrow: "La oss begynne her",
   title: [{ text: "La oss finne" }, { em: "riktig løsning." }] satisfies TitleLine[],
   body: "Har du et konkret behov, eller vil du bare se på mulighetene? Vi starter gjerne med en uforpliktende prat.",
-  // Designet lenket til itkompass.no (denne nettsiden). Her går knappen til skjemaet i kortet ved siden av.
-  cta: { label: "Send oss en melding", href: "#kontaktskjema" },
+  link: { label: "Utforsk tjenestene", href: "#tjenester" },
   card: {
     eyebrow: "Et enkelt første steg",
     title: "Hva trenger bedriften hjelp med?",
     body: "Fortell oss kort hva bedriften trenger hjelp med. Så finner vi ut av neste steg sammen.",
-    link: { label: "Utforsk tjenestene", href: "#tjenester" },
   },
 };
