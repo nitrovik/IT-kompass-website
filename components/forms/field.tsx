@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-const labelClass = "grid gap-1.5 text-[13px] font-bold text-[#38536f]";
+const labelClass = "grid gap-1.5 text-[.8rem] font-[650] text-[#435a73]";
 
 function LabelText({ label, required }: { label: string; required?: boolean }) {
   return (
@@ -16,7 +16,7 @@ export function Field({ label, name, type = "text", required = false, placeholde
   return (
     <label className={cn(labelClass, className)}>
       <LabelText label={label} required={required} />
-      <input className="form-control h-12" type={type} name={name} required={required} placeholder={placeholder} defaultValue={defaultValue} autoComplete={autoComplete} />
+      <input className="form-control h-[46px]" type={type} name={name} required={required} placeholder={placeholder} defaultValue={defaultValue} autoComplete={autoComplete} />
     </label>
   );
 }
@@ -25,7 +25,7 @@ export function TextareaField({ label, name, required = false, placeholder, rows
   return (
     <label className={labelClass}>
       <LabelText label={label} required={required} />
-      <textarea className="form-control min-h-[130px] resize-y" name={name} required={required} placeholder={placeholder} rows={rows} />
+      <textarea className="form-control min-h-[120px] resize-y" name={name} required={required} placeholder={placeholder} rows={rows} />
     </label>
   );
 }
@@ -34,7 +34,7 @@ export function SelectField({ label, name, options, required = false, placeholde
   return (
     <label className={labelClass}>
       <LabelText label={label} required={required} />
-      <select className="form-control h-12" name={name} required={required} defaultValue="">
+      <select className="form-control h-[46px]" name={name} required={required} defaultValue="">
         <option value="" disabled>{placeholder}</option>
         {options.map((option) => <option key={option} value={option}>{option}</option>)}
       </select>
@@ -52,5 +52,5 @@ export function Honeypot() {
 }
 
 export function FormMessage({ ok, children }: { ok: boolean; children: ReactNode }) {
-  return <p role="status" className={cn("rounded-xl px-4 py-3 text-sm font-medium", ok ? "bg-[#e7f6ee] text-success" : "bg-[#fdeceb] text-danger")}>{children}</p>;
+  return <p role="status" className={cn("rounded-[3px] px-4 py-3 text-sm leading-relaxed font-medium", ok ? "bg-[#e7f6ee] text-success" : "bg-[#fdeceb] text-danger")}>{children}</p>;
 }

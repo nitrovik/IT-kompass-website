@@ -3,115 +3,63 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { mainNav, navCta } from "@/content/navigation";
 import { site } from "@/config/site";
-import { buttonVariants } from "@/components/ui/button";
-import { Arrow } from "@/components/ui/arrow";
-import { cn } from "@/lib/utils";
-import { onScroll } from "@/lib/frame";
 
+/*
+  Lenke til en seksjon på forsiden. På forsiden er det en vanlig ankerlenke, så nettleseren
+  scroller dit hver gang (også når adressen allerede slutter på samme #). Fra andre sider
+  går den til forsiden og seksjonen.
+*/
+function SectionLink({ href, onHome, className, children }: { href: string; onHome: boolean; className?: string; children: ReactNode }) {
+  return onHome ? <a className={className} href={href.slice(1)}>{children}</a> : <Link className={className} href={href}>{children}</Link>;
+}
+
+/*
+  Headeren fra designet med logoen til IT Kompass: tre lenker og «La oss snakke». Står fast øverst når siden
+  scrolles (sticky, ren CSS). På mobil blir lenkene en nedtrekksmeny under headeren.
+*/
 export function SiteHeader() {
   const pathname = usePathname();
-  const headerRef = useRef<HTMLElement>(null);
-  const progressRef = useRef<HTMLDivElement>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
-  const firstLink = useRef<HTMLAnchorElement>(null);
   const [open, setOpen] = useState(false);
   const [lastPathname, setLastPathname] = useState(pathname);
+  const onHome = pathname === "/";
 
-  // Lukk mobilmenyen når brukeren navigerer til en ny side.
+  // Lukk menyen når brukeren går til en annen side
   if (pathname !== lastPathname) {
     setLastPathname(pathname);
     setOpen(false);
   }
 
-  // Krymp headeren når siden er scrollet litt. En passiv scroll-lytter som bare skriver når
-  // terskelen krysses – ingen bildeløkke, så hovedtråden har ingenting å gjøre mens siden scroller.
-  useEffect(() => {
-    const header = headerRef.current;
-    if (!header) return;
-    let scrolled = "";
-    const update = () => {
-      const next = window.scrollY > 12 ? "true" : "false";
-      if (next !== scrolled) header.dataset.scrolled = scrolled = next;
-    };
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-    return () => window.removeEventListener("scroll", update);
-  }, []);
-
-  // Framdriftslinjen er en ren CSS-animasjon koblet til scrollingen (globals.css), som skjermkortet
-  // driver alene. Bare nettlesere uten støtte for det får den samme linjen fra JavaScript.
-  useEffect(() => {
-    const bar = progressRef.current;
-    if (!bar || CSS.supports("animation-timeline: scroll()")) return;
-    let progress = "";
-    return onScroll({
-      update: ({ y, max }) => {
-        const next = max > 0 ? Math.min(y / max, 1).toFixed(3) : "0";
-        if (next !== progress) bar.style.transform = `scaleX(${(progress = next)})`;
-      },
-    });
-  }, []);
-
-  // Mobilmeny: lås scroll, Escape lukker, fokus flyttes inn og tilbake.
+  // Escape lukker menyen og setter fokus tilbake på menyknappen
   useEffect(() => {
     if (!open) return;
-    const html = document.documentElement;
-    html.style.overflow = "hidden";
-    firstLink.current?.focus();
-    const button = menuButton.current;
-    const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") setOpen(false); };
-    window.addEventListener("keydown", onKey);
-    return () => {
-      html.style.overflow = "";
-      window.removeEventListener("keydown", onKey);
-      button?.focus();
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      menuButton.current?.focus();
     };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
   return (
-    <>
-    <header ref={headerRef} data-scrolled="false" className="site-header fixed inset-x-0 top-0 z-50">
-      <div className="container-shell flex h-full items-center gap-10">
-        <Link href="/" className="relative z-10 flex shrink-0 items-center" aria-label={`${site.name}, til forsiden`}>
-          <Image src="/brand/it-kompass-logo-web-opt.png" alt={site.name} width={414} height={148} loading="eager" fetchPriority="high" unoptimized className="brand-logo h-auto" />
+    <header className="site-header">
+      <nav className="wrap site-nav" aria-label="Hovedmeny">
+        <Link className="brand" href="/" aria-label={`${site.name}, til forsiden`}>
+          <Image className="brand-logo" src="/brand/it-kompass-logo-web-opt.png" alt={site.name} width={414} height={148} loading="eager" fetchPriority="high" unoptimized />
         </Link>
-
-        <div className="relative z-10 ml-auto flex items-center gap-3">
-          <Link href="/#kontakt" className={cn(buttonVariants({ size: "sm" }), "hidden sm:inline-flex")}>
-            Ta kontakt <Arrow size={14} />
-          </Link>
-          <button ref={menuButton} type="button" onClick={() => setOpen((value) => !value)} aria-expanded={open} aria-controls="mobilmeny" aria-label={open ? "Lukk meny" : "Åpne meny"}
-            className="relative grid size-11 place-items-center rounded-full border border-line-strong bg-white/90 text-ink transition hover:border-[#9fc0e0] lg:hidden">
-            <span aria-hidden="true" className={cn("absolute h-[1.5px] w-[18px] rounded-full bg-current transition-transform duration-300", open ? "rotate-45" : "-translate-y-[4px]")} />
-            <span aria-hidden="true" className={cn("absolute h-[1.5px] w-[18px] rounded-full bg-current transition-transform duration-300", open ? "-rotate-45" : "translate-y-[4px]")} />
-          </button>
+        {/* Lukk ved valg: lenkene går til et anker på forsiden, og da endres ikke adressen */}
+        <div className={open ? "nav-links open" : "nav-links"} id="hovedmeny" onClick={(event) => { if ((event.target as HTMLElement).closest("a")) setOpen(false); }}>
+          {mainNav.map((item) => <SectionLink key={item.href} href={item.href} onHome={onHome}>{item.label}</SectionLink>)}
         </div>
-      </div>
-
-      <div ref={progressRef} className="scroll-progress pointer-events-none absolute inset-x-0 bottom-[-1px] h-[2px] rounded-r-full bg-[linear-gradient(90deg,rgba(72,185,255,.25),#48b9ff_40%,#0a6ed1)] opacity-0 transition-opacity duration-500 [[data-scrolled=true]_&]:opacity-100" aria-hidden="true" />
-
+        <SectionLink className="btn btn-primary nav-action" href={navCta.href} onHome={onHome}>{navCta.label} <span className="btn-arrow" aria-hidden="true">↗</span></SectionLink>
+        <button ref={menuButton} className="menu-toggle" type="button" onClick={() => setOpen((value) => !value)} aria-controls="hovedmeny" aria-expanded={open} aria-label={open ? "Lukk meny" : "Åpne meny"}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M3 7h18M3 12h18M3 17h18" /></svg>
+        </button>
+      </nav>
     </header>
-      {/* Mobilmeny */}
-      <div id="mobilmeny" hidden={!open} className="fixed inset-0 z-40 overflow-y-auto overscroll-contain bg-[#f8fbff] lg:hidden">
-        {/* Lukk ved valg: lenkene går ofte til et anker på samme side, og da endres ikke adressen */}
-        <nav aria-label="Mobilnavigasjon" onClick={(event) => { if ((event.target as HTMLElement).closest("a")) setOpen(false); }} className="container-shell flex min-h-full flex-col pt-[calc(var(--header-h)+1.5rem)] pb-8">
-          <ul className="grid">
-            <li className="border-b border-line" style={{ animation: open ? "hero-fade-in .6s var(--ease-out-soft) both" : undefined }}>
-              <Link ref={firstLink} href="/" aria-current={pathname === "/" ? "page" : undefined}
-                className="group flex items-center justify-between py-4 font-display text-[28px] font-semibold tracking-[-.02em] text-ink">
-                Forside
-                <Arrow size={20} className={cn("text-faint", pathname === "/" && "text-brand")} />
-              </Link>
-            </li>
-          </ul>
-          <div className="mt-auto grid gap-3 pt-10">
-            <Link href="/#kontakt" className={cn(buttonVariants({ size: "lg" }), "w-full")}>Ta kontakt <Arrow /></Link>
-            <p className="mt-3 text-center text-xs text-muted">{site.legalName} · Org.nr. {site.orgNumber}</p>
-          </div>
-        </nav>
-      </div>
-    </>
   );
 }

@@ -32,7 +32,7 @@ export function ContactForm({ compact = false }: { compact?: boolean }) {
       <Honeypot />
       <TurnstileField />
       {state.message ? <FormMessage ok={false}>{state.message}</FormMessage> : null}
-      <SubmitButton label="Send melding" className="w-full sm:w-auto" />
+      <SubmitButton label="Send melding" className="w-full sm:w-auto sm:justify-self-start" />
     </form>
   );
 }

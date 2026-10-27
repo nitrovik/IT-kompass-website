@@ -1,6 +1,6 @@
 # IT Kompass AS – nettside
 
-Nettsiden til IT Kompass AS, bygget med Next.js. Designet følger den godkjente forhåndsvisningen i `design/reference-homepage-preview.html`. Retningslinjene står i `HANDOFF.md` og `CLAUDE.md`.
+Nettsiden til IT Kompass AS, bygget med Next.js. Designet følger eierens HTML-design i `design/reference-homepage-v2.html` (originale farger), med logoen og kompasset til IT Kompass. Hva som er tilpasset og hvorfor, står i `HANDOFF.md`. Retningslinjene står i `CLAUDE.md`.
 
 ## Sider
 
@@ -8,15 +8,15 @@ Nettsiden er bevisst holdt til én side, pluss personvernsiden som loven krever.
 
 | Adresse | Innhold |
 | --- | --- |
-| `/` | Forside: hero med fiberanimasjon og kontaktskjema (ankeret `/#kontakt`) |
+| `/` | Forside: hero med kompass og fibre, kort oppsummering, «Hvorfor IT Kompass» (`/#hvorfor`), tjenester (`/#tjenester`) og kontaktskjema (`/#kontakt`) |
 | `/personvern` | Personvernerklæring (utkast, må gjennomgås) |
 
 ## Hvor endrer jeg tekst og informasjon?
 
 - **Kontaktinfo, org.nr., dekningsområde:** `config/site.ts`
 - **Tekster på forsiden:** `content/home.ts`
+- **Menyen:** `content/navigation.ts`
 - **Personvern:** `content/legal.ts`
-- **Bilder:** legg dem i `public/media/` (se README der)
 
 Felt som står tomme (telefon, e-post, adresse) blir ikke vist på nettsiden. Det står altså aldri «settes inn senere» eller lignende ute på siden.
 
@@ -41,21 +41,13 @@ npm run build
 
 ## Teknologi
 
-Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Zod, Resend og Cloudflare Turnstile. Skriftene Schibsted Grotesk (overskrifter) og Inter (brødtekst) ligger lokalt i `app/fonts/` (SIL Open Font License).
+Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Zod, Resend og Cloudflare Turnstile. Skriften Inter ligger lokalt i `app/fonts/` (SIL Open Font License). De kursive aksentordene bruker en serif fra maskinen (Iowan Old Style, Palatino eller Georgia), som i designet.
 
-Fiberscenen i heroen (`components/home/fiber/`) forteller det samme som diagrammet «Behovet avgjør»: behovet kommer inn, kompasset er knutepunktet, noen få grener går til alternativer, og én retning er den riktige. Små lysimpulser spiller av historien. De flyttes bare med transform, så skjermkortet gjør jobben alene, og keyframes lastes som en egen fil (`/motion.css`) etter at siden er ferdig. Tegningen ligger i `scene.ts`. Ved «redusert bevegelse» står alt stille. Se CLAUDE.md for detaljer.
+Tegningen i heroen (`components/home/hero-art.tsx`) er tegningen fra designet: sju fibre som møtes i kompasset, tre lyssignaler som går langs fibrene og et kompass som svever rolig. Kompasset er det samme som i logoen. Signalene og kompasset flyttes bare med transform, så skjermkortet gjør jobben alene, og banene lastes som en egen fil (`/motion.css`) etter at siden er ferdig. Ved «redusert bevegelse» står alt stille.
 
 Scrollingen er nettleserens egen. Ingenting kjører i JavaScript mens siden scroller.
 
-Lighthouse (27. oktober 2026, lokal måling): mobil ytelse 95–96, PC 100. Tilgjengelighet, beste praksis og SEO: 100.
-
-## Leverandørbanner
-
-Under heroen kan det vises en rolig stripe med logoer fra leverandører dere jobber med. Den vises bare når det finnes bekreftede samarbeid.
-
-1. Legg logoen i `public/partners/` (helst SVG).
-2. Legg den inn i `content/partners.ts` med navn, filsti, bredde og høyde.
-3. Se resultatet på `/forhandsvisning/partnere` før du publiserer.
+Lighthouse: se siste måling i pull request-en for design v2.
 
 ## Publisering
 

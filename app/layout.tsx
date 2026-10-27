@@ -9,10 +9,11 @@ import { RevealObserver } from "@/components/ui/reveal-observer";
 import { ChatWidget } from "@/components/layout/chat-widget";
 import { site } from "@/config/site";
 
-// Inter (brødtekst) og Schibsted Grotesk (overskrifter, norsk skrift). Begge SIL Open Font License, se app/fonts/.
-// Reserveskriftene er målt for normal og fet vekt og definert i globals.css (ingen tekst som hopper når skriften lastes).
+// Inter for all tekst (SIL Open Font License, se app/fonts/). Reserveskriften er målt for normal og
+// fet vekt og definert i globals.css (ingen tekst som hopper når skriften lastes).
 const inter = localFont({ src: "./fonts/inter-latin-wght.woff2", weight: "100 900", display: "swap", variable: "--font-inter", adjustFontFallback: false, fallback: ["Inter Fallback Metric"] });
-const schibsted = localFont({ src: "./fonts/schibsted-grotesk-latin-wght.woff2", weight: "400 900", display: "swap", variable: "--font-schibsted", adjustFontFallback: false, fallback: ["Schibsted Fallback Metric"] });
+// Pilen ↗ fra Inter (mangler i det vanlige utvalget). Brukes bare der tegnet står (unicode-range), 1,5 kB.
+const interArrow = localFont({ src: "./fonts/inter-arrow-wght.woff2", weight: "100 900", display: "swap", variable: "--font-inter-arrow", adjustFontFallback: false, declarations: [{ prop: "unicode-range", value: "U+2197" }] });
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f8fbff",
+  themeColor: "#f6f8fb",
   colorScheme: "light",
 };
 
@@ -48,13 +49,13 @@ export const viewport: Viewport = {
 */
 // Elementer som allerede er synlige når siden åpnes, vises med en gang (uten å vente på JavaScript-pakkene).
 // Leser alle posisjoner først og skriver etterpå (én layoutberegning, ikke én per element)
-const revealVisibleNow = `(function(){var h=innerHeight,els=document.querySelectorAll('[data-reveal],[data-split]'),show=[];els.forEach(function(el){if(el.getBoundingClientRect().top<h)show.push(el)});show.forEach(function(el){el.setAttribute('data-inview','true');el.setAttribute('data-instant','')})})();`;
+const revealVisibleNow = `(function(){var h=innerHeight,els=document.querySelectorAll('[data-reveal]'),show=[];els.forEach(function(el){if(el.getBoundingClientRect().top<h)show.push(el)});show.forEach(function(el){el.setAttribute('data-inview','true');el.setAttribute('data-instant','')})})();`;
 
 const revealBootstrap = `(function(){var d=document.documentElement;d.classList.add('js-reveal');setTimeout(function(){if(!d.hasAttribute('data-reveal-ready'))d.classList.remove('js-reveal')},3500)})();`;
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="nb" className={`${inter.variable} ${schibsted.variable}`} data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html lang="nb" className={`${inter.variable} ${interArrow.variable}`} data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: revealBootstrap }} />
       </head>

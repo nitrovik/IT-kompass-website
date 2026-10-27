@@ -1,187 +1,44 @@
-# IT Kompass AS – Design and implementation handoff
+# IT Kompass AS – Design handoff (design v2, October 2026)
 
 ## What this file is for
-This is the design handoff for continuing the project with Claude Code.
-The owner has approved the current visual direction and wants the implementation to match the supplied preview closely while keeping the site technically robust.
+The owner supplied a finished HTML design and asked for it to be implemented exactly in the existing site, with the original colors. This file records what the source of truth is, what was left out, and where the implementation deliberately differs from the HTML file and why.
 
 ## Reference files
-- `design/reference-homepage-preview.html` = latest standalone visual preview
-- `design/design-reference-user.png` = original visual reference supplied by the owner
-- `public/brand/it-kompass-logo.png` = supplied final transparent logo
-- `public/brand/it-kompass-logo-web.png` = tightly cropped web-ready logo
+- `design/reference-homepage-v2.html`: the owner's HTML design ("originale farger"). Source of truth for layout, typography, palette, spacing, buttons, navigation, icons, hero illustration, animations, hover states and responsive behavior.
+- `public/brand/it-kompass-logo-web-opt.png` and `it-kompass-logo-web-inverse-opt.png`: the real logo, used in header and footer.
+- `design/design-reference-user.png`: the owner's earlier inspiration (historical).
 
-## Visual target
-The site should be light and premium, not predominantly dark.
-Use a clear Scandinavian B2B style with:
-- white/light-blue surfaces
-- dark navy typography
-- electric blue accents
-- soft shadows
-- subtle glass surfaces only where they add depth
-- rounded but controlled corners
-- generous whitespace
+## Sections
+Implemented, in this order:
+1. Header: logo, Tjenester, Hvorfor IT Kompass, Kontakt, «La oss snakke»
+2. Hero: «Vi drifter. / Du driver.», two buttons, assurance line, compass and fiber drawing with notes and caption
+3. Proof bar: «En partner. Flere fagområder.» and three points
+4. Intro (`#hvorfor`): «Vi hjelper deg å velge riktig.»
+5. Services index (`#tjenester`): IT, WiFi, Fiber, Tale
+6. Contact (`#kontakt`): copy and a card with the contact form
+7. Footer
 
-The distinctive brand layer is fiber optics + compass:
-- the fibers tell the "Behovet avgjør" story: the need comes in, the compass is the hub, a few branches lead to alternatives (nodes), one branch is the right choice and continues onward (October 2026)
-- small, slow light impulses play that story each cycle (transform/opacity only, paused off-screen)
-- the compass as the visual anchor; on desktop, pointing at an alternative locks the needle to it and lights the branch
-- restrained compass motif
+Left out on the owner's instruction (October 2026), with no replacement sections and no links:
+- «Samarbeidspartner» (GlobalConnect section and logo, nav link `#samarbeid`)
+- «Nøytrale råd. Riktig løsning.»
+- «Slik fungerer det»
 
-The overall impression should be “high-end custom site” rather than a generic template or cyberpunk site.
+The earlier partner logo banner (`content/partners.ts`, `/forhandsvisning/partnere`) was removed for the same reason.
 
-## Hero
-Headline:
-`IT og telecom.`
-`Én partner.`
+## Deliberate differences from the HTML file
+- **Logo:** the HTML file had an SVG mark with the text «IT KOMPASS / IT OG TELECOM». The owner asked that the real logo never disappears, so header and footer use the logo files.
+- **Compass in the hero:** the owner asked that their compass stays. The centre of the drawing is the compass from the logo (ring with four marks, navy and teal needle) on the design's disc, halo and N/S/W/E letters. Everything else in the drawing is unchanged.
+- **Contact card:** the HTML file linked to itkompass.no (this site) with «Gå til IT Kompass» and «Besøk itkompass.no». The card now holds the real contact form (Resend + Turnstile), and the button beside it says «Send oss en melding» and goes to the form. «Utforsk tjenestene» is kept.
+- **Footer:** also shows org.nr., a link to personvern, and phone/email/address when they are filled in `config/site.ts`.
+- **Header background:** almost opaque white instead of `backdrop-filter: blur`, so scrolling stays smooth. Looks the same.
+- **Hero motion:** same paths, timing and look, but the compass and the three signals are separate layers moved with transform instead of `offset-path` on SVG circles (which repainted the whole drawing every frame). The signals start after the page has loaded.
+- **«Snakk med oss» under the services:** in the HTML file the decorative circles covered most of this link. It now sits above them.
+- **Chat button:** the chatbot's round button is not part of the HTML file. The footer leaves room on the right so it never covers links.
 
-Supporting message:
-`Vi finner den beste løsningen for din bedrift, uavhengig av leverandør. Du får én kontaktperson for alt innen IT, telecom, fiber og nettverk.`
-
-Primary CTA:
-`Finn riktig løsning`
-
-Secondary CTA:
-`Ta kontakt`
-
-Service quick-links:
-- WiFi
-- Fiber og telecom
-- IT support
-- Nettsider og drift
-
-Hero details:
-- light visual background with fiber-optic cables
-- moving light impulses along fiber paths
-- subtle depth and pointer response on desktop
-- no heavy sci-fi look
-- static fallback for mobile/reduced-motion/weak devices
-
-## Service cards
-Cards:
-1. WiFi
-2. Fiber og telecom
-3. IT support
-4. Nettsider og drift
-
-Each card should have:
-- icon
-- concise heading
-- concise description
-- “Les mer” link
-- subtle hover lift
-- pointer-following spotlight
-- subtle luminous edge
-- optional tiny tilt on desktop
-
-The spotlight is an important premium interaction and should feel smooth rather than gimmicky.
-
-## Supplier independence section
-Core message:
-`Riktig løsning først. Leverandør etterpå.`
-
-Explain clearly that IT Kompass starts with the customer’s needs and can evaluate solutions across IT and telecom without locking the customer to one supplier.
-
-Supporting points:
-- Objektiv rådgivning
-- Én kontakt
-- Lokal nærhet
-- Langsiktig samarbeid
-
-Use real imagery when available. Current preview contains a visual placeholder that should later be replaced by an authentic client/team/installation photo supplied by the owner.
-
-## Process section
-Four steps:
-01 Forstå behovet
-02 Finne riktig løsning
-03 Sette det opp
-04 Følge det opp
-
-Use a subtle visual connection between steps, ideally with the fiber/light language.
-
-## Websites showcase
-This site is also a product showcase for websites IT Kompass sells.
-It should visibly demonstrate quality.
-
-Use:
-- laptop frame
-- mobile frame
-- clean UI placeholders until real portfolio images are supplied
-
-Packages:
-- Start
-- Pro
-- Premium
-
-Prices were provided by the owner (October 2026) and live in `content/packages.ts`. The packages are shown on the “Nettsider og drift” service page (`/tjenester/nettsider#pakker`); the homepage and `/prosjekter` link there.
-
-## “Finn riktig løsning” CTA
-This is an important conversion element.
-Make it visually distinctive but consistent with the rest of the site.
-It should feel like a guided tool, not a generic contact button.
-
-## Contact section
-Should contain:
-- short intro copy
-- category selector
-- name
-- email
-- message
-- coverage map placeholder
-- future meeting booking integration
-
-Categories:
-- Fiber/WiFi
-- Mobil
-- IT support
-- Utstyr
-- Installasjoner
-- Nettsider
-
-## Footer
-Must include placeholders until real information is supplied:
-- IT Kompass AS
-- Org.nr. 937 441 614
-- address
-- phone
-- email
-- navigation
-- personvern / vilkår
-
-Do not invent missing business details.
-
-## Important responsive behavior
-Desktop gets the richest interactions.
-Mobile should keep the visual identity but remove expensive pointer/tilt/3D effects where appropriate.
-Navigation becomes a clean mobile menu.
-
-## Reduced motion
-When `prefers-reduced-motion: reduce` is active:
-- stop continuous fiber animation
-- remove pointer tilt
-- disable nonessential reveal choreography
-- keep the page fully understandable and visually complete
-
-## Success criteria
-The implementation should feel:
-- light
-- premium
-- modern
-- trustworthy
-- distinctly IT Kompass
-- noticeably more polished than a generic agency template
-
-It should not feel:
-- dark/cyberpunk
-- overly flashy
-- neon-heavy
-- like a stock website template
+## Text
+All text is the owner's text from the HTML file, unchanged. Some phrases break `SKRIVEREGLER.md` (for example «løsninger», «partner», a dash mid-sentence). They were kept because the owner supplied this text as the finished design. New text added for function («Send oss en melding», footer line) follows the writing rules.
 
 ## Do not change without approval
-Do not independently change:
-- brand direction
-- logo
-- light/dark balance
-- headline direction
-- key CTA hierarchy
-- four service areas
-- supplier-independent positioning
+- the design (layout, colors, typography, illustration)
+- the logo and the compass
+- the three excluded sections stay out
