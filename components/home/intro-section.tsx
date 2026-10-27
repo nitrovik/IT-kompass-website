@@ -1,7 +1,11 @@
 import { homeIntro } from "@/content/home";
 import { TitleLines } from "@/components/home/section-title";
+import { NeedsDiagram } from "@/components/home/needs-diagram";
 
-/* «Hvorfor IT Kompass» i menyen går hit (#hvorfor). */
+/*
+  «Hvorfor IT Kompass» i menyen går hit (#hvorfor). Teksten til venstre, behovsillustrasjonen
+  til høyre (under teksten på mobil): behovet ditt → IT Kompass → alternativet som passer.
+*/
 export function IntroSection() {
   return (
     <section className="intro" id="hvorfor" aria-labelledby="hvorfor-heading">
@@ -10,12 +14,15 @@ export function IntroSection() {
           <p className="eyebrow">{homeIntro.eyebrow}</p>
           <h2 id="hvorfor-heading" className="section-heading"><TitleLines lines={homeIntro.title} /></h2>
           <p className="intro-quote">{homeIntro.quote}</p>
+          <div className="intro-text">
+            {homeIntro.paragraphs.map((paragraph, i) => (
+              <p key={paragraph}>{i === 0 ? <><strong>{homeIntro.lead}</strong> </> : null}{paragraph}</p>
+            ))}
+            <a className="text-link" href={homeIntro.link.href}>{homeIntro.link.label} <span aria-hidden="true">↗</span></a>
+          </div>
         </div>
         <div className="intro-right" data-reveal style={{ ["--d" as string]: ".08s" }}>
-          {homeIntro.paragraphs.map((paragraph, i) => (
-            <p key={paragraph}>{i === 0 ? <><strong>{homeIntro.lead}</strong> </> : null}{paragraph}</p>
-          ))}
-          <a className="text-link" href={homeIntro.link.href}>{homeIntro.link.label} <span aria-hidden="true">↗</span></a>
+          <NeedsDiagram />
         </div>
       </div>
     </section>

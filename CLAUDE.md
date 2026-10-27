@@ -48,7 +48,7 @@ The logo and the compass are primary brand assets. The owner asked in October 20
 - header (above)
 - hero (`components/home/hero.tsx`); «Se hva vi gjør» goes to `/tjenester`
 - proof bar (`proof-bar.tsx`)
-- intro, `#hvorfor` (`intro-section.tsx`)
+- intro, `#hvorfor` (`intro-section.tsx`): text on the left, the needs illustration on the right (below on mobile). `components/home/needs-diagram.tsx` restores the earlier «Behovet avgjør» diagram (same geometry, texts and colours, from git history before #12): «Behovet ditt» → compass → four alternatives on a dark navy panel. One alternative is highlighted at a time, drawn from a shuffled deck (all four per round, never the same twice in a row) every 4.6 s. Each switch toggles one `is-active` class; CSS delays sequence the pulse along the route, the needle turn, the lit route, the marker, the label and the «Riktig valg» badge (transform/opacity only; lit routes are their own layers). Paused off-screen and in hidden tabs; reduced motion shows alternative C fixed.
 - contact, `#kontakt` (`contact-section.tsx`): the card holds the real contact form (`#kontaktskjema`) where the HTML file had a link to itkompass.no; «Utforsk tjenestene» goes to `/tjenester`
 - footer: logo, «IT og telecom for bedrifter.», org.nr., personvern, «Til toppen»
 The services list is no longer on the homepage (owner's request, October 2026): it lives on `/tjenester` and in the menu.

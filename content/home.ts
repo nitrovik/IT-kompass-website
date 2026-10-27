@@ -42,6 +42,17 @@ export const homeIntro = {
     "Du får hjelp til å vurdere alternativene og en kontaktperson å forholde deg til.",
   ],
   link: { label: "Ta en prat med oss", href: "#kontakt" },
+  // Behovsillustrasjonen (gjenopprettet fra «Behovet avgjør»). Leverandørene er bevisst anonyme, ikke bytt inn navn uten avtale.
+  diagram: {
+    need: "Behovet ditt",
+    hub: "IT Kompass",
+    options: ["Alternativ A", "Alternativ B", "Alternativ C", "Alternativ D"],
+    // Vises når animasjon er slått av (redusert bevegelse), og før animasjonen starter
+    chosen: 2,
+    result: "Riktig valg",
+    caption: "Behovet avgjør hvilket alternativ du får anbefalt.",
+    label: "Illustrasjon: behovet ditt går inn i IT Kompass, som vurderer fire alternativer og anbefaler det som passer",
+  },
 };
 
 export const homeContact = {
