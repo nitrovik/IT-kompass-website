@@ -6,80 +6,45 @@ You are working on the website for IT Kompass AS, a Norwegian IT and telecom com
 The site owner is not a developer. Explain important changes in simple Norwegian when asked, avoid unnecessary jargon, and never assume technical knowledge.
 
 ## Source of truth for the current design
-The current approved visual direction is documented in:
-- `HANDOFF.md`
-- `design/reference-homepage-preview.html`
-- `design/design-reference-user.png` (owner's original inspiration; its partner logos and other invented details must NOT be copied. Viken is now the confirmed area, see Content rules)
-- `public/brand/it-kompass-logo.png`
-- `public/brand/it-kompass-logo-web.png`
+The current approved design (October 2026) is the owner's HTML file:
+- `design/reference-homepage-v2.html` ("originale farger"): visual design, layout, typography, palette, spacing, buttons, navigation, icons, hero illustration, animations, hover states and breakpoints (1050 / 760 / 390 px)
+- `public/brand/it-kompass-logo-web-opt.png` / `it-kompass-logo-web-inverse-opt.png`: the real logo in header and footer
+- `HANDOFF.md`: what was adapted from the HTML file and why
 
-Do not redesign the visual direction from scratch. Improve implementation quality while preserving the approved direction unless the owner explicitly asks for a redesign.
+The owner excluded three sections of the HTML file: «Samarbeidspartner» (GlobalConnect), «Nøytrale råd. Riktig løsning.» and «Slik fungerer det». Do not add them back or replace them with similar sections under other names, and do not link to `#samarbeid`.
+`design/design-reference-user.png` is the owner's original inspiration from before v2 (historical; do not copy its partner logos or invented details).
+
+Do not redesign. Match the HTML file; where it conflicts with functionality (contact form, links to itkompass.no), keep the functionality and stay as close to the design as possible.
 
 ## Brand direction
-The approved balance is:
-- predominantly light UI: white, off-white and very light blue/grey surfaces
-- dark navy used for typography, footer, key panels and selected contrast sections
-- electric blue as an accent
-- the logo's compass + fiber/light identity is the visual signature
-- the page should feel premium, modern and exclusive, but still approachable and credible for small and medium-sized businesses
+- predominantly light UI: white and very light blue surfaces (`#f4f8fc`, hero gradient `#fbfcfe → #e9f2fc`)
+- navy `#10223d` for typography, `#0b213c` for the footer, blue `#2369cf` as the accent
+- Inter for all text; italic serif accent words (`--serif`: Iowan Old Style, Palatino, Georgia) in blue
+- square-ish buttons (3 px radius), thin lines, editorial layout
+- the compass + fiber drawing in the hero is the visual signature
 - avoid an overly dark, cyberpunk or sci-fi look
 
-## Logo
-Use the supplied logo assets. The production logo is:
-`public/brand/it-kompass-logo.png`
+## Logo and compass
+The logo and the compass are primary brand assets. The owner asked in October 2026 that they never disappear.
+- Header: `public/brand/it-kompass-logo-web-opt.png` (60 px high, 52 px on mobile). Footer: `it-kompass-logo-web-inverse-opt.png`. Keep proportions (414 × 148). Do not recreate the logo with CSS or replace it with the HTML file's SVG mark.
+- The compass in the centre of the hero drawing is the compass from the logo (ring with four marks, navy north needle `#0b2545`, teal south needle `#237286`), placed on the design's disc with halo and N/S/W/E letters.
+- The favicon (`app/icon.png`) and the 404 page also use the compass.
 
-The logo should be treated as a primary brand asset, not recreated with CSS or replaced with an icon.
-The web-cropped version is:
-`public/brand/it-kompass-logo-web.png`
+## Signature interactions (from the HTML file)
+1. Hero drawing (`components/home/hero-art.tsx`): seven fibers through a dotted orbit grid, the compass hub floating 5 units up and down (8 s), three light signals running along three of the fibers (7.5 s, delays 0 / −2.5 / −5 s), four nodes, two notes and a caption.
+2. Service index rows: white background fades in, padding widens, the round arrow turns blue and rotates −35°.
+3. Buttons lift 3 px; arrows (↗) move up-right; nav links get an underline that grows.
+4. Scroll reveals: fade + 19 px rise, 0.75 s, delays 0.08 s / 0.16 s.
+5. Reduced motion: no signals, no drift, everything visible at once.
 
-Use the real logo in header and footer. Keep proportions correct.
-
-## Required signature interactions
-These are important parts of the experience, not optional decoration:
-
-1. Hero fiber scene
-- tells the same story as the "Behovet avgjør" diagram, light and wordless: the need comes in from the left (3 fibers, one cable), IT Kompass is the hub, a few branches lead to alternatives (nodes), and one branch (the right choice) is stronger and continues onward. Desktop: 4 alternatives, mobile: 3 (see Technical stack → Hero fiber scene)
-- small, slow light impulses play the story each cycle: impulse in → ring at the compass → faint impulses check the alternatives (nodes blink) → the right branch lights up and the impulse continues out. The owner asked for this in October 2026, on the condition that it costs next to nothing: transform/opacity keyframes only, never stroke-dashoffset, SVG filters, SMIL or a JS loop
-- the compass is the visual anchor on desktop and mobile; its needle rests on the right choice. Desktop: it follows the pointer, and pointing at an alternative locks the needle to that branch and lights it up
-- never fill the hero with many parallel lines, loose particles or fibers crossing the heading or CTA
-- do not make it look like neon or a game
-
-2. Service-card pointer spotlight
-- in the main “Hva vi driver med / Våre tjenester” cards, a soft radial spotlight follows the mouse pointer
-- subtle tilt on capable desktop devices
-- slight luminous border / depth response
-- no layout shifts
-- no heavy blur animation
-
-3. Motion style
-- premium, calm, smooth
-- prefer transform and opacity
-- keep animation durations coherent
-- use reduced-motion fallbacks
-- avoid excessive continuous animations; the few that exist (hero impulses, diagram impulses, footer impulse, partner banner) animate transform/opacity only and pause off-screen
-
-4. Compass signature
-- the compass should appear as a subtle recurring motif
-- scroll-linked compass behavior is welcome, but it must remain restrained
-
-## Homepage visual hierarchy
-The homepage should communicate in seconds:
-1. IT Kompass works with IT and telecom
-2. the company is supplier-independent
-3. there are four clear service areas
-4. customers can contact the company or use “Finn riktig løsning”
-
-Approved homepage structure:
-- header/navigation
-- hero with fiber background and CTAs
-- supplier/partner logo banner (`components/home/partner-banner.tsx`), rendered only when `content/partners.ts` has confirmed partners; preview at `/forhandsvisning/partnere` (noindex, not in the sitemap)
-- services
-- supplier-independent explanation / why IT Kompass
-- process / how we work
-- website showcase (links to the packages and prices on `/tjenester/nettsider#pakker`; owner moved them there in October 2026)
-- “Finn riktig løsning” CTA
-- contact area with form and coverage-map placeholder
-- footer
+## Homepage structure
+- header: logo, Tjenester (`#tjenester`), Hvorfor IT Kompass (`#hvorfor`), Kontakt (`#kontakt`), «La oss snakke»; on ≤760 px a dropdown menu
+- hero (`components/home/hero.tsx`)
+- proof bar (`proof-bar.tsx`)
+- intro, `#hvorfor` (`intro-section.tsx`)
+- services index, `#tjenester` (`services-section.tsx`); every row goes to the contact form
+- contact, `#kontakt` (`contact-section.tsx`): the card holds the real contact form (`#kontaktskjema`) where the HTML file had a link to itkompass.no
+- footer: logo, «IT og telecom for bedrifter.», org.nr., personvern, «Til toppen»
 
 ## Content rules
 Never invent:
@@ -100,7 +65,7 @@ No lorem ipsum.
 All content should be Norwegian Bokmål and concise.
 
 ## Content architecture
-Website content belongs in `content/` data files whenever practical. Partner logos: `content/partners.ts` + files in `public/partners/` (only confirmed partners; width/height required so proportions stay correct).
+Website content belongs in `content/` data files whenever practical: `content/home.ts` (all homepage text, headings as `TitleLine` with an optional italic accent), `content/navigation.ts` (menu), `content/legal.ts` (personvern).
 Keep components reusable so future migration to a headless CMS such as Sanity is possible without rewriting the UI.
 
 ## Performance
@@ -133,31 +98,26 @@ Zod
 Resend
 Cloudflare Turnstile
 
-Fonts: Schibsted Grotesk (headings, Norwegian typeface) and Inter (body), self-hosted in `app/fonts/` via `next/font/local`.
+Fonts: Inter, self-hosted in `app/fonts/` via `next/font/local`. `inter-arrow-wght.woff2` holds only the ↗ glyph from full Inter (missing from the Latin subset), loaded with `unicode-range: U+2197`. The serif accent font is a system font stack, as in the HTML file.
 
-### Hero fiber scene
-Files in `components/home/fiber/`:
-- `scene.ts`: the drawing as data, in px around the compass centre (0, 0): `incoming` fibers, `branches` (each with a `node`; one `chosen`), and `onward` (the chosen direction continuing to the edge). `intoHub()` makes the incoming fibers run tight and parallel for the last 150 px, like one cable. `branch()` varies lead/approach per branch so no two curves are alike. Branch angles (`BRANCH_ANGLES`, `NEEDLE_REST`) are derived here and shared with the client.
-- `fiber-scene.tsx` (server component): `.fiber-anchor` is a 0×0 element where the compass stands (mobile: 40 % / 54 % of the free area above the text; desktop: 70 % of the content width, 46 % of the hero height, scaled to .82 at 1024–1279 px). Static SVG (gradient strokes, one faint wide halo and a 0.5 px white reflection on the main path, ring nodes for alternatives, filled glowing node for the right choice) is painted once. Small bounding-box SVG layers for the chosen branch's light-up (`.fiber-overlay`) and for desktop pointer focus (`.fiber-focus`, `data-focus` on the anchor).
-- `motion.ts`: the timeline (fractions of the cycle in `T`) and all keyframes, sampled along the paths at build time (`geometry.ts`: `pulseKeyframes`, `flashKeyframes`, `bounds`). Support-fiber impulses run every 2nd/3rd cycle together with the main impulse: animating things far apart at the same time made the compositor redraw almost the whole hero (≈3× the cost).
-- Keyframes are not inline in the HTML (they were parsed twice via the RSC payload and pushed mobile TBT from ~50 to ~200 ms). They are served as a static, fingerprinted file `/motion.css` (`app/motion.css/route.ts`, `components/home/motion-css.ts`, also includes the positioning diagram's keyframes from `components/home/route-motion.ts`). Without that file everything stands still, which is the intended fallback.
-- `hero-pointer.tsx` is the only client piece: after `load` + idle it adds `/motion.css` and sets `data-fiber-live` when it has loaded (never with reduced motion or Save-Data). On desktop (`pointer: fine` + ≥1024 px) the needle follows the pointer; within 22° of a branch (right of the compass) it locks to that branch and sets `data-focus`. Compass position is measured with a ResizeObserver, the needle is written at most once per frame via `onFrame`, nothing runs while scrolling.
-- `hero-compass.tsx`: opaque disc, no backdrop-filter. Needle rest angles come from CSS variables on the anchor (`--needle-rest-d` / `--needle-rest-m`).
+### Hero drawing
+- `components/home/hero-signals.ts`: the drawing as data in the HTML file's viewBox (700 × 520): `FIBERS`, `HIGHLIGHT`, `NODES`, `SIGNALS`. The HTML file moved the signals with `offset-path` on SVG circles, which repaints the SVG every frame. Here the paths are parsed (absolute M/C/S) and sampled by arc length at build time into transform/opacity keyframes (`hero-signal-1…3`), with the same timing (linear, opacity ramps at 8 % and 88 %).
+- `components/home/hero-art.tsx` (server component) draws the same picture in layers inside `.hero-figure`: a static SVG (grid, fibers, highlight, ring text), the compass as its own small SVG (`.hero-compass-core`, viewBox `250 160 200 200`, drift = `translateY(-2.5%)`), three signal layers the size of the drawing moved with percentage translates, and the nodes on top.
+- Signal keyframes are served as the static, fingerprinted file `/motion.css` (`app/motion.css/route.ts`, `components/home/motion-css.ts`), not inline (inline keyframes were parsed twice via the RSC payload and raised mobile TBT). `hero-motion.tsx` is the only client piece: after `load` + idle it adds `/motion.css` and sets `data-motion-live` (never with reduced motion or Save-Data). Without the file the signals stay hidden.
+- The hero has `data-observe="toggle"`; drift and signals pause while it is off-screen.
 - Use longhand `animation-*` properties when an animation has no name in the rule: the CSS minifier turns a nameless `animation:` shorthand into `animation: none`.
 GSAP, React Three Fiber, Motion, Lenis and WebGL are not used. Add libraries, canvas/WebGL or new continuous animation only with a concrete reason and the owner's go-ahead.
 
 ### Motion system
-- Scrolling is the browser's own (runs on the compositor, stays smooth when JavaScript is busy). Lenis was removed in October 2026 because it drove every scroll frame from the main thread. Anchor links scroll smoothly via `scroll-behavior: smooth` on `<html>` (`data-scroll-behavior="smooth"` keeps route changes instant); reduced motion turns it off.
-- Scroll reveals: add `data-reveal` (`fade`, `scale`, `clip`) or `data-split` (word-by-word headings via `SplitWords`). One shared IntersectionObserver (`components/ui/reveal-observer.tsx`) sets `data-inview`. Content is only hidden when JS runs (`js-reveal` class), and anything visible at load is shown instantly.
+- Scrolling is the browser's own. Anchor links scroll smoothly via `scroll-behavior: smooth` on `<html>` (`data-scroll-behavior="smooth"` keeps route changes instant), with `scroll-padding-top` 86 px (70 px on mobile) for the sticky header. Reduced motion turns it off.
+- In the header, section links are plain anchors on the home page (so clicking the same `#kontakt` again still scrolls) and Next links to `/#…` from other pages.
+- Scroll reveals: add `data-reveal` (optionally `--d` for delay). One shared IntersectionObserver (`components/ui/reveal-observer.tsx`) sets `data-inview`. Content is only hidden when JS runs (`js-reveal` class), and anything visible at load is shown instantly.
 - `data-observe="toggle"` pauses CSS animations inside an element while it is off-screen. Always pair infinite CSS animations with it.
-- Nothing runs per frame while the page scrolls: the header progress bar is a CSS scroll-driven animation (`animation-timeline: scroll()`, JS fallback only where unsupported), and the header's scrolled state is a passive scroll listener that writes only when the threshold is crossed.
-- `lib/frame.ts` is the shared rAF loop for the few pointer animations (`onFrame`: compass needle, magnetic CTA). `onScroll({ measure, update })` is available for scroll-linked effects but currently only used as the progress-bar fallback; `update` may only write, never read layout. Never call `getBoundingClientRect` per scroll or pointer frame.
-- Moving light (hero, positioning diagram, footer) uses transform/opacity keyframes, never `stroke-dashoffset`, SMIL or `filter`. Diagram impulses (`.route-dot`) are diagram-sized layers moved with percentage translates, so they follow the SVG's viewBox exactly. Generated keyframes go in `/motion.css`, never inline `<style>` in server components.
-- Keep simultaneously moving elements close together: the compositor redraws one rectangle around everything that changes in a frame.
-- Pointer effects animate transform and opacity on their own layers. Do not animate box-shadow, filter, blur or gradient positions per frame.
-- No `backdrop-filter` on elements that sit over moving content (header, hero compass): it must be recomputed every frame.
-- Partner banner: CSS-only marquee (`.partner-track`, transform), the logo set duplicated once for a seamless −50 % loop, paused off-screen and on hover/focus, static wrapped row with reduced motion.
-- Turnstile mounts when the contact form is within 800 px of the viewport; the chat script loads with `lazyOnload`.
+- Nothing runs in JavaScript while the page scrolls. The header is `position: sticky`.
+- Moving light uses transform/opacity keyframes, never `stroke-dashoffset`, SMIL, `offset-path` or animated `filter`. Static SVG filters (glow) are fine inside layers that only move.
+- No `backdrop-filter` on the header (it would be recomputed on every scroll frame): it uses an almost opaque white (`#fffffff5`) instead of the HTML file's blur. The small note top right in the hero keeps the design's blur (nothing moves beneath it).
+- The services row hover changes padding as in the HTML file; it is hover-only on four rows.
+- Turnstile mounts when the contact form is within 800 px of the viewport; the chat script loads with `lazyOnload`. The footer content keeps 64 px free on the right below 1440 px so the chat button never covers its links.
 
 ## Commands
 - `npm install`

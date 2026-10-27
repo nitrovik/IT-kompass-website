@@ -1,13 +1,13 @@
-import { HERO_MOTION_CSS } from "@/components/home/fiber/motion";
-import { ROUTE_MOTION_CSS } from "@/components/home/route-motion";
+import { HERO_SIGNAL_CSS } from "@/components/home/hero-signals";
 
 /*
-  All bevegelse på forsiden som keyframes, samlet i én fil (/motion.css, app/motion.css/route.ts).
-  Filen lastes av hero-pointer.tsx etter at siden er ferdig, og bare når bevegelse er ønsket
-  (ikke ved «redusert bevegelse» eller datasparing). Uten den står alt stille, slik det skal.
+  Keyframes for lyssignalene i heroen, som en egen statisk fil (/motion.css, app/motion.css/route.ts).
+  Filen lastes av hero-motion.tsx etter at siden er ferdig, og bare når bevegelse er ønsket
+  (ikke ved «redusert bevegelse» eller datasparing). Uten den står signalene stille (skjult).
+  Da slipper HTML-en og den blokkerende CSS-en å bære banene (ca. 10 kB).
   ?v= er et fingeravtrykk av innholdet, så filen kan mellomlagres lenge og likevel byttes ut.
 */
-export const MOTION_CSS = HERO_MOTION_CSS + ROUTE_MOTION_CSS;
+export const MOTION_CSS = HERO_SIGNAL_CSS;
 
 function fingerprint(text: string) {
   let hash = 0x811c9dc5;

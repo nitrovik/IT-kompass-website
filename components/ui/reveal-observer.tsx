@@ -2,11 +2,11 @@
 
 import { useEffect } from "react";
 
-const SELECTOR = "[data-reveal],[data-split],[data-observe]";
+const SELECTOR = "[data-reveal],[data-observe]";
 
 /*
   Én felles IntersectionObserver for hele nettstedet i stedet for én komponent per
-  element. Elementer merket med data-reveal / data-split / data-observe får
+  element. Elementer merket med data-reveal / data-observe får
   data-inview="true" når de kommer til syne. data-observe="toggle" settes tilbake til
   "false" når elementet forlater skjermen (brukes for å pause animasjoner).
 */
@@ -27,7 +27,7 @@ export function RevealObserver() {
           }
         }
       },
-      { rootMargin: "0px 0px -8% 0px", threshold: 0.12 },
+      { rootMargin: "0px 0px -25px 0px", threshold: 0.1 },
     );
 
     let frame = 0;

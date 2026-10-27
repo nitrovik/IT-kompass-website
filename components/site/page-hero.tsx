@@ -18,9 +18,9 @@ function HeroFibers() {
     <svg className="pointer-events-none absolute inset-0 size-full [mask-image:linear-gradient(180deg,transparent_35%,#000_85%)] md:[mask-image:none]" viewBox="0 0 1200 460" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
       <defs>
         <linearGradient id="ph-fade" x1="1" x2="0" y1="0" y2="0">
-          <stop offset="0" stopColor="#3f7fbf" stopOpacity=".42" />
-          <stop offset=".55" stopColor="#3f7fbf" stopOpacity=".16" />
-          <stop offset="1" stopColor="#3f7fbf" stopOpacity="0" />
+          <stop offset="0" stopColor="#337ed2" stopOpacity=".42" />
+          <stop offset=".55" stopColor="#337ed2" stopOpacity=".16" />
+          <stop offset="1" stopColor="#337ed2" stopOpacity="0" />
         </linearGradient>
       </defs>
       <g fill="none" stroke="url(#ph-fade)" strokeLinecap="round">
@@ -57,7 +57,7 @@ export function PageHero({ eyebrow, title, body, cta, secondaryCta, crumbs = [],
   return (
     <section className="hero-surface relative isolate overflow-hidden border-b border-line">
       <HeroFibers />
-      <div className="container-shell relative pt-[calc(var(--header-h)+2.5rem)] pb-16 sm:pb-20 lg:pt-[calc(var(--header-h)+3.5rem)] lg:pb-24">
+      <div className="container-shell relative pt-10 pb-16 sm:pb-20 lg:pt-14 lg:pb-24">
         <Breadcrumbs items={crumbs} />
         <div className={cn("mt-12 grid gap-10 lg:mt-16", aside && "lg:grid-cols-[1fr_auto] lg:items-end")}>
           <div className="max-w-3xl">
