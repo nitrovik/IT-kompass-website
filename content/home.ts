@@ -35,7 +35,7 @@ export const homeProof = {
 export const homeIntro = {
   eyebrow: "Se helheten først",
   title: [{ text: "Vi hjelper deg" }, { text: "å velge ", em: "riktig." }] satisfies TitleLine[],
-  quote: "«Behovet avgjør.»",
+  quote: "«Behovet avgjør, IT Kompasset viser vei.»",
   lead: "Behovet avgjør.",
   paragraphs: [
     "Vi hjelper deg å finne løsninger som passer for bedriften din, og som fungerer godt sammen uavhengig av hva behovet deres er.",
