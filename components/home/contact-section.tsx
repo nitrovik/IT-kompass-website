@@ -1,4 +1,6 @@
-import { homeContact } from "@/content/home";
+import Link from "next/link";
+import { homeContact, type TitleLine } from "@/content/home";
+import type { ContactCategory } from "@/content/contact";
 import { site } from "@/config/site";
 import { ContactForm } from "@/components/forms/contact-form";
 import { TitleLines } from "@/components/home/section-title";
@@ -25,27 +27,30 @@ export function ContactDetails() {
   );
 }
 
+type ContactCopy = { eyebrow: string; title: TitleLine[]; body: string; link?: { label: string; href: string } };
+
 /*
   Kontaktseksjonen fra designet. Kortet til høyre har kontaktskjemaet (sendes med Resend,
-  beskyttet av Turnstile) der designet hadde en lenke til itkompass.no.
+  beskyttet av Turnstile) der designet hadde en lenke til itkompass.no. Tjenestesidene bruker
+  samme seksjon med egen tekst og forhåndsvalgt kategori i skjemaet.
 */
-export function ContactSection() {
+export function ContactSection({ copy = homeContact, category }: { copy?: ContactCopy; category?: ContactCategory }) {
   const { card } = homeContact;
   return (
     <section className="contact" id="kontakt" aria-labelledby="kontakt-heading">
       <div className="wrap contact-grid">
         <div className="contact-copy" data-reveal>
-          <p className="eyebrow">{homeContact.eyebrow}</p>
-          <h2 id="kontakt-heading" className="section-heading"><TitleLines lines={homeContact.title} /></h2>
-          <p className="body-copy">{homeContact.body}</p>
-          <a className="text-link" href={homeContact.link.href}>{homeContact.link.label} <span aria-hidden="true">↑</span></a>
+          <p className="eyebrow">{copy.eyebrow}</p>
+          <h2 id="kontakt-heading" className="section-heading"><TitleLines lines={copy.title} /></h2>
+          <p className="body-copy">{copy.body}</p>
+          {copy.link ? <Link className="text-link" href={copy.link.href}>{copy.link.label} <span aria-hidden="true">↗</span></Link> : null}
           <ContactDetails />
         </div>
         <div className="contact-card" id="kontaktskjema" data-reveal style={{ ["--d" as string]: ".08s" }}>
           <div className="card-eyebrow">{card.eyebrow}</div>
           <h3>{card.title}</h3>
           <p>{card.body}</p>
-          <ContactForm />
+          <ContactForm defaultCategory={category} />
         </div>
       </div>
     </section>

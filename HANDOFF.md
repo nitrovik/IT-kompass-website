@@ -43,3 +43,10 @@ All text is the owner's text from the HTML file, unchanged. Some phrases break `
 - the design (layout, colors, typography, illustration)
 - the logo and the compass
 - the three excluded sections stay out
+
+## October 2026: navigation, service pages and performance
+- **Header:** logo and menu on one line to the left, «La oss snakke» to the right. «Tjenester» opens a submenu with every service page (mouse, keyboard and touch). Mobile: panel with an expandable service list.
+- **Services moved off the homepage:** the index now lives on `/tjenester`, and each service has its own page (`/tjenester/[slug]`), including the new «Nettsider». Content in `content/services.ts`, based on the earlier approved service texts. Old URLs from the previous site redirect (`next.config.ts`).
+- **Hero composition:** fibers come in from the left edge (above and below the text, one from the top) and go out over the right edge. Same number of fibers as before.
+- **Performance (measured with Chrome tracing, before → after, 1440 px):** dropped frames in the hero 0.9 % → 0 %; paint per phase change ~8 → ~3 ms; scrolling paint 40 → 5 ms and layouts 31 → 5; mobile Lighthouse TBT 160 → 20 ms. The needle's turn to a new exit now runs on the compositor (Web Animations), animations are cached, layers are stable.
+

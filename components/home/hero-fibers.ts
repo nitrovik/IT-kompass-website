@@ -6,10 +6,11 @@
   første) stykke av hver bane er en rett linje langs radien, så banen krysser kanten av
   kompass-skiven i nøyaktig den retningen kompassnålen skal peke.
 
-  Banene beregnes ut fra hvor kompasset og teksten faktisk står (målt i nettleseren), og
-  komposisjonen byttes etter skjermen: på PC kommer signalene ned fra toppen og går ut mot
-  høyre og ned, på mobil kommer de inn fra venstre under teksten. Samme kontrollpunkter gir
-  både SVG-banen (d) og punktene lyskulene følger, så kulen ligger alltid på streken.
+  Banene beregnes ut fra hvor kompasset og teksten faktisk står (målt i nettleseren). Retningen
+  er alltid fra venstre, gjennom kompasset og ut til høyre: på PC kommer to baner inn fra venstre
+  kant (over og under teksten) og én ned fra toppen, og fire går ut over høyre kant. På mobil
+  kommer de inn fra venstre under teksten. Samme kontrollpunkter gir både SVG-banen (d) og
+  punktene lyskulene følger, så kulen ligger alltid på streken.
 */
 
 export type Pt = { x: number; y: number };
@@ -47,6 +48,8 @@ type Spec = {
   k2: number;
   /** Et knutepunkt på banen, som andel av kurven */
   node?: number;
+  /** Reservekant hvis banen ikke får plass fra den vanlige kanten (smale skjermer) */
+  alt?: { edge: Edge; at: number };
 };
 
 export type Fiber = {
@@ -77,19 +80,23 @@ const lerp = (a: Pt, b: Pt, t: number): Pt => ({ x: a.x + (b.x - a.x) * t, y: a.
 const r1 = (n: number) => Math.round(n * 10) / 10;
 const fmt = (p: Pt) => `${r1(p.x)} ${r1(p.y)}`;
 
-/* Komposisjonen: PC fra taket og ut til høyre, mobil fra venstre og ut til høyre. Ingen to kurver er like. */
+/*
+  Komposisjonen. Inn fra venstre (og én fra toppen på PC), gjennom kompasset, ut til høyre.
+  Hovedbanen (main, med lys refleks) kommer inn under teksten og fortsetter ut mot høyre med en
+  liten bøy i kompasset. Ingen to kurver er like.
+*/
 function specs({ w, h, c, r, copy, mode }: Layout): Spec[] {
   if (mode === "side") {
-    const left = copy.right + 36;
-    const gap = Math.max(48, c.x - r - left);
+    const low = copy.bottom + (h - copy.bottom) * 0.55;
+    const high = Math.max(24, copy.top * 0.42);
     return [
-      { id: "in-1", kind: "in", tone: "a", bearing: 284, edge: "top", at: left + gap * 0.06, k1: 0.54, k2: 0.48, node: 0.44 },
-      { id: "in-2", kind: "in", tone: "b", main: true, bearing: 315, edge: "top", at: left + gap * 0.5, k1: 0.46, k2: 0.4 },
-      { id: "in-3", kind: "in", tone: "c", bearing: 344, edge: "top", at: c.x - r * 0.1, k1: 0.4, k2: 0.34 },
-      { id: "out-1", kind: "out", tone: "d", bearing: 48, edge: "top", at: c.x + (w - c.x) * 0.6, k1: 0.44, k2: 0.36 },
-      { id: "out-2", kind: "out", tone: "b", main: true, bearing: 83, edge: "right", at: c.y * 0.6, k1: 0.42, k2: 0.4, node: 0.56 },
-      { id: "out-3", kind: "out", tone: "c", bearing: 113, edge: "right", at: c.y + (h - c.y) * 0.44, k1: 0.4, k2: 0.38 },
-      { id: "out-4", kind: "out", tone: "a", bearing: 146, edge: "bottom", at: c.x + (w - c.x) * 0.66, k1: 0.42, k2: 0.36, node: 0.52 },
+      { id: "in-1", kind: "in", tone: "b", main: true, bearing: 240, edge: "left", at: low, k1: 0.5, k2: 0.42, alt: { edge: "bottom", at: copy.right * 0.8 } },
+      { id: "in-2", kind: "in", tone: "a", bearing: 298, edge: "left", at: high, k1: 0.52, k2: 0.44, node: 0.5, alt: { edge: "top", at: copy.right * 0.85 } },
+      { id: "in-3", kind: "in", tone: "c", bearing: 336, edge: "top", at: c.x - r * 1.2 - (c.x - copy.right) * 0.15, k1: 0.42, k2: 0.36 },
+      { id: "out-1", kind: "out", tone: "d", bearing: 50, edge: "right", at: c.y * 0.24, k1: 0.44, k2: 0.38 },
+      { id: "out-2", kind: "out", tone: "b", main: true, bearing: 84, edge: "right", at: c.y * 0.86, k1: 0.42, k2: 0.4, node: 0.56 },
+      { id: "out-3", kind: "out", tone: "c", bearing: 113, edge: "right", at: c.y + (h - c.y) * 0.5, k1: 0.4, k2: 0.38 },
+      { id: "out-4", kind: "out", tone: "a", bearing: 140, edge: "right", at: c.y + (h - c.y) * 0.9, k1: 0.42, k2: 0.36, node: 0.52, alt: { edge: "bottom", at: c.x + (w - c.x) * 0.7 } },
     ];
   }
   const above = Math.max(r * 1.6, c.y - copy.bottom);
@@ -99,7 +106,7 @@ function specs({ w, h, c, r, copy, mode }: Layout): Spec[] {
     { id: "in-2", kind: "in", tone: "a", bearing: 238, edge: "left", at: c.y + below * 0.5, k1: 0.44, k2: 0.36 },
     { id: "out-1", kind: "out", tone: "d", bearing: 58, edge: "right", at: c.y - above * 0.48, k1: 0.44, k2: 0.4 },
     { id: "out-2", kind: "out", tone: "b", main: true, bearing: 99, edge: "right", at: c.y + below * 0.3, k1: 0.4, k2: 0.38, node: 0.5 },
-    { id: "out-3", kind: "out", tone: "c", bearing: 149, edge: "bottom", at: c.x + (w - c.x) * 0.42, k1: 0.42, k2: 0.34 },
+    { id: "out-3", kind: "out", tone: "c", bearing: 140, edge: "right", at: c.y + below * 0.85, k1: 0.42, k2: 0.34, alt: { edge: "bottom", at: c.x + (w - c.x) * 0.6 } },
   ];
 }
 
@@ -148,35 +155,39 @@ function inflate(b: Box, m: number): Box {
 }
 
 /*
-  Banene bygges fra oppskriftene over. Krysser en bane teksten, prøves små tilpasninger i denne
-  rekkefølgen til den går fri: enden flyttes langs kanten bort fra kompasset (mot hjørnet), så
-  dreies retningen ut fra kompasset litt mot den samme siden, og til slutt går enden rundt
-  hjørnet til sidekanten. Går den ikke fri, blir den ikke brukt.
+  Banene bygges fra oppskriftene over. Krysser en bane teksten, prøves små tilpasninger til den
+  går fri, de minste først: enden flyttes litt langs kanten, retningen ut fra kompasset dreies
+  opptil 18°, og/eller kurven strammes (lengre rett inn fra kanten, kortere svinger inn mot
+  skiven). Hjelper ikke det, prøves reservekanten. Går den fortsatt ikke fri, brukes den ikke.
 */
+const SHIFTS = [0, 1, -1, 2, -2, 3, -3];
+const TURNS = [0, 6, -6, 12, -12, 18, -18];
+const BENDS = [
+  { k1: 1, k2: 1, cost: 0 },
+  { k1: 1.2, k2: 0.7, cost: 0.4 },
+  { k1: 1.35, k2: 0.45, cost: 0.8 },
+];
+const TRIES = BENDS.flatMap((bend) => SHIFTS.flatMap((shift) => TURNS.map((turn) => ({ shift, turn, bend, cost: Math.abs(shift) / 3 + Math.abs(turn) / 18 + bend.cost })))).sort((a, b) => a.cost - b.cost);
+
 export function buildFibers(layout: Layout): Fiber[] {
-  const { w, h, c } = layout;
+  const { w, h } = layout;
   const blocked = [inflate(layout.copy, 16), ...layout.avoid.map((b) => inflate(b, 18))];
+  const search = (spec: Spec, edge: Edge, at: number) => {
+    const length = edge === "top" || edge === "bottom" ? w : h;
+    const step = length * 0.05;
+    let fiber: Fiber | null = null;
+    for (const { shift, turn, bend } of TRIES) {
+      const pos = Math.min(length - 8, Math.max(8, at + shift * step));
+      fiber = build(layout, { ...spec, k1: spec.k1 * bend.k1, k2: spec.k2 * bend.k2 }, edge, pos, spec.bearing + turn, blocked);
+      if (fiber.valid) return fiber;
+    }
+    return fiber!;
+  };
   return specs(layout).map((spec) => {
-    const along = spec.edge === "top" || spec.edge === "bottom";
-    const corner = along ? (spec.at >= c.x ? w : 0) : spec.at >= c.y ? h : 0;
-    // Retningen mot hjørnets side: øst/vest for topp og bunn, sør/nord for sidekantene
-    const away = along ? (corner === w ? 90 : 270) : corner === h ? 180 : 0;
-    const tries: [Edge, number, number][] = [];
-    for (const turn of [0, 6, 12, 18]) {
-      const delta = ((away - spec.bearing + 540) % 360) - 180;
-      const bearing = spec.bearing + Math.sign(delta) * Math.min(Math.abs(delta), turn);
-      for (const f of [0, 0.3, 0.6, 0.9]) tries.push([spec.edge, spec.at + (corner - spec.at) * f, bearing]);
-    }
-    if (along) {
-      const side: Edge = corner === w ? "right" : "left";
-      for (const g of [0.12, 0.3]) tries.push([side, spec.edge === "bottom" ? h - (h - c.y) * g : c.y * g, spec.bearing]);
-    }
-    let fiber = build(layout, spec, ...tries[0], blocked);
-    for (const attempt of tries.slice(1)) {
-      if (fiber.valid) break;
-      fiber = build(layout, spec, ...attempt, blocked);
-    }
-    return fiber;
+    const fiber = search(spec, spec.edge, spec.at);
+    if (fiber.valid || !spec.alt) return fiber;
+    const backup = search(spec, spec.alt.edge, spec.alt.at);
+    return backup.valid ? backup : fiber;
   });
 }
 

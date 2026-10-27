@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { homeHero } from "@/content/home";
 import { HeroArt } from "@/components/home/hero-art";
 import { HeroFiberSystem } from "@/components/home/hero-fiber-system";
@@ -14,7 +15,7 @@ export function Hero() {
           <h1 id="hero-heading">{first}<br /><span className="serif">{second}</span></h1>
           <div className="hero-actions">
             <a className="btn btn-primary" href={homeHero.primary.href}>{homeHero.primary.label} <span className="btn-arrow" aria-hidden="true">↗</span></a>
-            <a className="btn btn-secondary" href={homeHero.secondary.href}>{homeHero.secondary.label} <span className="btn-arrow" aria-hidden="true">↓</span></a>
+            <Link className="btn btn-secondary" href={homeHero.secondary.href}>{homeHero.secondary.label} <span className="btn-arrow" aria-hidden="true">↗</span></Link>
           </div>
           <p className="hero-assurance"><span className="assurance-line" aria-hidden="true" /> {homeHero.assurance}</p>
         </div>
