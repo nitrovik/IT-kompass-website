@@ -22,9 +22,9 @@ Use a clear Scandinavian B2B style with:
 - generous whitespace
 
 The distinctive brand layer is fiber optics + compass:
-- animated fiber-optic cables in the hero background
-- continuous moving light impulses through the fibers
-- subtle glow/pulse
+- a few fiber-optic paths that gather into the compass and continue in the right direction (October 2026: reduced from many lines to 6 on desktop, 4 on mobile)
+- small, slow light impulses along the paths (transform only, paused off-screen)
+- the compass as the visual anchor where the fibers meet
 - restrained compass motif
 
 The overall impression should be “high-end custom site” rather than a generic template or cyberpunk site.

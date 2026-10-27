@@ -41,13 +41,21 @@ npm run build
 
 ## Teknologi
 
-Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Lenis, Zod, Resend og Cloudflare Turnstile. Skriftene Schibsted Grotesk (overskrifter) og Inter (brødtekst) ligger lokalt i `app/fonts/` (SIL Open Font License).
+Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Zod, Resend og Cloudflare Turnstile. Skriftene Schibsted Grotesk (overskrifter) og Inter (brødtekst) ligger lokalt i `app/fonts/` (SIL Open Font License).
 
-Fiberscenen i heroen (`components/home/fiber/`) er ren SVG/CSS – samme tegning og noen få glødende lyspunkter på både mobil og desktop, ingen WebGL. Ved «redusert bevegelse» vises et stillestående bilde. Se CLAUDE.md for detaljer.
+Fiberscenen i heroen (`components/home/fiber/`) er få, tegnede fibre som samles i kompasset, med små lysimpulser som glir langs dem. Impulsene flyttes bare med transform, så skjermkortet gjør jobben alene. Ved «redusert bevegelse» står alt stille. Se CLAUDE.md for detaljer.
 
-Alt som beveger seg med scroll eller mus går i én felles bildeløkke (`lib/frame.ts`), slik at nettleseren slipper å måle siden på nytt i hvert bilde.
+Scrollingen er nettleserens egen. Ingenting kjører i JavaScript mens siden scroller.
 
-Lighthouse (5. oktober 2026, lokal måling, mobil, før siden ble forenklet): forsiden ytelse 94–95, undersidene 95–99. PC: 100. Tilgjengelighet, beste praksis og SEO: 100 på alle sider. Bør måles på nytt etter forenklingen.
+Lighthouse (27. oktober 2026, lokal måling): mobil ytelse 95–96, PC 100. Tilgjengelighet, beste praksis og SEO: 100.
+
+## Leverandørbanner
+
+Under heroen kan det vises en rolig stripe med logoer fra leverandører dere jobber med. Den vises bare når det finnes bekreftede samarbeid.
+
+1. Legg logoen i `public/partners/` (helst SVG).
+2. Legg den inn i `content/partners.ts` med navn, filsti, bredde og høyde.
+3. Se resultatet på `/forhandsvisning/partnere` før du publiserer.
 
 ## Publisering
 

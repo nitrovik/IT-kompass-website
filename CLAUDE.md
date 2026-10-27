@@ -38,8 +38,10 @@ Use the real logo in header and footer. Keep proportions correct.
 These are important parts of the experience, not optional decoration:
 
 1. Hero fiber scene
-- a calm, static fiber-optic line drawing behind the hero text (no continuous motion – the owner explicitly dropped moving light impulses in November 2026 after they made the whole site feel laggy; see Technical stack → Hero fiber scene)
-- the compass (desktop) sits where the fibers converge; its needle can softly follow the pointer on capable desktop devices
+- a few hand-drawn fiber paths (6 on desktop, 4 on mobile) that gather into the compass and continue calmly to the right: needs/technology in, the right direction out (see Technical stack → Hero fiber scene)
+- small, slow light impulses travel along the paths. The owner asked for them again in October 2026 (master prompt), on the condition that they cost next to nothing: transform/opacity keyframes only, never stroke-dashoffset, SVG filters, SMIL or a JS loop
+- the compass is the visual anchor on desktop and mobile; its needle rests along the outgoing fiber and softly follows the pointer on capable desktop devices
+- never fill the hero with many parallel lines, loose particles or fibers crossing the heading or CTA
 - do not make it look like neon or a game
 
 2. Service-card pointer spotlight
@@ -54,7 +56,7 @@ These are important parts of the experience, not optional decoration:
 - prefer transform and opacity
 - keep animation durations coherent
 - use reduced-motion fallbacks
-- avoid excessive continuous animations (the hero fiber scene is static now – see Hero fiber scene above)
+- avoid excessive continuous animations; the few that exist (hero impulses, diagram impulses, footer impulse, partner banner) animate transform/opacity only and pause off-screen
 
 4. Compass signature
 - the compass should appear as a subtle recurring motif
@@ -70,6 +72,7 @@ The homepage should communicate in seconds:
 Approved homepage structure:
 - header/navigation
 - hero with fiber background and CTAs
+- supplier/partner logo banner (`components/home/partner-banner.tsx`), rendered only when `content/partners.ts` has confirmed partners; preview at `/forhandsvisning/partnere` (noindex, not in the sitemap)
 - services
 - supplier-independent explanation / why IT Kompass
 - process / how we work
@@ -97,7 +100,7 @@ No lorem ipsum.
 All content should be Norwegian Bokmål and concise.
 
 ## Content architecture
-Website content belongs in `content/` data files whenever practical.
+Website content belongs in `content/` data files whenever practical. Partner logos: `content/partners.ts` + files in `public/partners/` (only confirmed partners; width/height required so proportions stay correct).
 Keep components reusable so future migration to a headless CMS such as Sanity is possible without rewriting the UI.
 
 ## Performance
@@ -126,7 +129,6 @@ Next.js App Router
 TypeScript
 Tailwind CSS (design tokens in `app/globals.css` under `@theme`; component classes live in `@layer components` so utilities can override them)
 shadcn/ui patterns
-Lenis
 Zod
 Resend
 Cloudflare Turnstile
@@ -134,19 +136,26 @@ Cloudflare Turnstile
 Fonts: Schibsted Grotesk (headings, Norwegian typeface) and Inter (body), self-hosted in `app/fonts/` via `next/font/local`.
 
 ### Hero fiber scene
-`components/home/fiber/fiber-scene.tsx` is a server component: a fully static SVG line drawing (background + trunk paths), no WebGL, no canvas, no client JS, no animation at all. It briefly (same November 2026 change) had 7 small glow dots travelling along the lines via SVG `<animateMotion>` + a blur filter, but the owner reported this made the whole site feel laggy (continuous filter repaint is expensive) and asked to drop it – do not re-add moving light impulses to this scene without checking with the owner first. Same markup renders identically on mobile and desktop – the viewBox just stretches non-uniformly to the container, no device/tier detection of any kind.
-- `hero-pointer.tsx` is the only client piece in the hero: it rotates the compass needle (`hero-compass.tsx`) toward the pointer on desktop (`pointer: fine` + `min-width: 1024px`). It reuses the shared frame loop (`lib/frame.ts`) to measure the hero's position only when the page size changes, never per pointer event.
-- The compass (`hero-compass.tsx`) sits where the fibers converge, desktop only (`lg:block`); its needle points toward the pointer via `hero-pointer.tsx`. Keep this – it is the project's one remaining hero motion/interaction.
-GSAP, React Three Fiber, Motion and WebGL are not used (the magnetic CTAs use a small spring in `magnetic-link.tsx`). Add libraries, a canvas/WebGL scene, or continuous animation back only with a concrete reason and the owner's go-ahead.
+`components/home/fiber/fiber-scene.tsx` (server component) draws everything around one point: the compass centre. `.fiber-anchor` (globals.css) is a 0×0 element placed where the compass stands (mobile: in the free area above the text; desktop: 75 % / 70 % of the content width, 46 % of the hero height). The SVG, the impulses, the arrival ring and the compass are positioned from it, so the paths always meet the compass and keep their proportions at every screen size.
+- Paths are defined as cubic Bézier segments in `DESKTOP` / `MOBILE`. `intoHub()` makes the incoming fibers run tight and parallel for the last 150 px, like one cable entering the compass. Gradient strokes fade in from the edge; one wide faint halo stroke and one 0.5 px white reflection on the main fibers. No filters, no blur. Painted once.
+- Impulses: `geometry.ts` samples each path by arc length (eased) and builds `@keyframes` with `translate()` + `rotate()` at build time. Elements are 0×0 spans with a short gradient streak. Transform/opacity only, so the compositor animates them with no JS, layout or paint. The main impulse passes under the compass and continues out; `.fiber-ring` marks its arrival (keyframes in globals.css must stay in sync with the `from/to` fractions in fiber-scene.tsx: 0.42 desktop, 0.40 mobile).
+- Impulses start only after `load` + idle (`data-fiber-live`, set by `hero-pointer.tsx`; never with reduced motion or Save-Data) and pause while the hero is off-screen (`data-observe="toggle"`). Reduced motion hides them.
+- `hero-compass.tsx`: opaque disc, no backdrop-filter (a blurred translucent disc over an animation forced a full redraw every frame). `NEEDLE_REST` points along the outgoing fiber.
+- `hero-pointer.tsx` is the only client piece: it starts the impulses and rotates the needle toward the mouse on desktop (`pointer: fine` + ≥1024 px). Compass position is measured with a ResizeObserver, the needle is written at most once per frame via `onFrame`, nothing runs while scrolling.
+- Use longhand `animation-*` properties when an animation has no name in the rule: the CSS minifier turns a nameless `animation:` shorthand into `animation: none`.
+GSAP, React Three Fiber, Motion, Lenis and WebGL are not used. Add libraries, canvas/WebGL or new continuous animation only with a concrete reason and the owner's go-ahead.
 
 ### Motion system
+- Scrolling is the browser's own (runs on the compositor, stays smooth when JavaScript is busy). Lenis was removed in October 2026 because it drove every scroll frame from the main thread. Anchor links scroll smoothly via `scroll-behavior: smooth` on `<html>` (`data-scroll-behavior="smooth"` keeps route changes instant); reduced motion turns it off.
 - Scroll reveals: add `data-reveal` (`fade`, `scale`, `clip`) or `data-split` (word-by-word headings via `SplitWords`). One shared IntersectionObserver (`components/ui/reveal-observer.tsx`) sets `data-inview`. Content is only hidden when JS runs (`js-reveal` class), and anything visible at load is shown instantly.
 - `data-observe="toggle"` pauses CSS animations inside an element while it is off-screen. Always pair infinite CSS animations with it.
-- One shared frame loop: `lib/frame.ts`. Lenis runs first, then scroll effects (`onScroll({ measure, update })`), then animations (`onFrame(tick)`, e.g. spotlight, magnetic CTAs, fiber scene). Do not add separate scroll listeners or rAF loops.
-- `measure` may read layout and only runs when the page size changes; `update` only writes (transform, opacity, CSS variables on the element that needs them) and only when the value changed. Never call `getBoundingClientRect` per scroll or pointer frame.
-- Pointer effects animate transform and opacity on their own layers. Do not animate box-shadow, filter, blur or gradient positions per frame (spotlight light, rim and shadow are separate elements).
-- Animated SVG pulses use wide, faint strokes for glow, not `filter: drop-shadow`, and sit in their own layer (`will-change-transform` on the `<svg>`).
-- Lenis is loaded after `load` + idle and uses its own clock, so the first scroll after a pause glides instead of jumping. The loop stops when nothing moves.
+- Nothing runs per frame while the page scrolls: the header progress bar is a CSS scroll-driven animation (`animation-timeline: scroll()`, JS fallback only where unsupported), and the header's scrolled state is a passive scroll listener that writes only when the threshold is crossed.
+- `lib/frame.ts` is the shared rAF loop for the few pointer animations (`onFrame`: compass needle, magnetic CTA). `onScroll({ measure, update })` is available for scroll-linked effects but currently only used as the progress-bar fallback; `update` may only write, never read layout. Never call `getBoundingClientRect` per scroll or pointer frame.
+- Moving light (hero, positioning diagram, footer) uses transform/opacity keyframes, never `stroke-dashoffset`, SMIL or `filter`. Diagram impulses (`.route-dot`) are diagram-sized layers moved with percentage translates, so they follow the SVG's viewBox exactly.
+- Pointer effects animate transform and opacity on their own layers. Do not animate box-shadow, filter, blur or gradient positions per frame.
+- No `backdrop-filter` on elements that sit over moving content (header, hero compass): it must be recomputed every frame.
+- Partner banner: CSS-only marquee (`.partner-track`, transform), the logo set duplicated once for a seamless −50 % loop, paused off-screen and on hover/focus, static wrapped row with reduced motion.
+- Turnstile mounts when the contact form is within 800 px of the viewport; the chat script loads with `lazyOnload`.
 
 ## Commands
 - `npm install`
