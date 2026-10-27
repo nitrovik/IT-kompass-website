@@ -189,7 +189,7 @@ body {
 
 /* ---------- Kort oppsummering under heroen ---------- */
 .proof-bar { border-bottom: 1px solid var(--line); background: #fff; }
-.proof-inner { display: grid; grid-template-columns: 1.1fr 1fr 1fr 1.15fr; align-items: center; gap: 22px; padding: 24px 0; }
+.proof-inner { display: grid; grid-template-columns: 1fr 1fr 1.15fr; align-items: center; gap: 22px; padding: 24px 0; }
 .proof-intro { font-size: .66rem; text-transform: uppercase; letter-spacing: .16em; font-weight: 800; color: #8b9aac; }
 .proof-item { display: flex; align-items: center; gap: 11px; font-size: .8rem; font-weight: 650; color: #435a73; }
 .proof-item svg { width: 21px; height: 21px; color: var(--blue); flex: none; }

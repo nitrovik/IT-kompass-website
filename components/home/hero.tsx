@@ -10,7 +10,6 @@ export function Hero() {
         <div className="hero-copy">
           <p className="hero-kicker"><span className="kicker-mark" aria-hidden="true">✳</span> {homeHero.kicker}</p>
           <h1 id="hero-heading">{first}<br /><span className="serif">{second}</span></h1>
-          <p className="hero-sub">{homeHero.body}</p>
           <div className="hero-actions">
             <a className="btn btn-primary" href={homeHero.primary.href}>{homeHero.primary.label} <span className="btn-arrow" aria-hidden="true">↗</span></a>
             <a className="btn btn-secondary" href={homeHero.secondary.href}>{homeHero.secondary.label} <span className="btn-arrow" aria-hidden="true">↓</span></a>
