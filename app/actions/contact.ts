@@ -26,7 +26,15 @@ export async function submitContact(_: ContactState, formData: FormData): Promis
     category: formData.get("category"),
     message: formData.get("message"),
   });
-  if (!parsed.success) return { ok: false, message: parsed.error.issues[0]?.message ?? "Kontroller feltene og prøv igjen." };
+  if (!parsed.success) {
+    // Én melding per felt, så skjemaet kan vise feilen ved feltet den gjelder
+    const fieldErrors: NonNullable<ContactState["fieldErrors"]> = {};
+    for (const issue of parsed.error.issues) {
+      const field = issue.path[0];
+      if ((field === "category" || field === "name" || field === "email" || field === "message") && !fieldErrors[field]) fieldErrors[field] = issue.message;
+    }
+    return { ok: false, message: parsed.error.issues[0]?.message ?? "Kontroller feltene og prøv igjen.", fieldErrors };
+  }
 
   const blocked = await checkHuman(formData);
   if (blocked) return blocked;

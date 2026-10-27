@@ -1,16 +1,10 @@
-"use client";
-
-import { useFormStatus } from "react-dom";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-
-export function SubmitButton({ label, className }: { label: string; className?: string }) {
-  const { pending } = useFormStatus();
+/* Sendeknappen. Mens skjemaet sendes: deaktivert, med en liten ring som går rundt og «Sender …». */
+export function SubmitButton({ pending, label = "Send melding" }: { pending: boolean; label?: string }) {
   return (
-    <button type="submit" disabled={pending} aria-busy={pending} className={cn(buttonVariants(), className)}>
+    <button type="submit" className="btn btn-primary form-submit" disabled={pending} aria-busy={pending || undefined}>
       {pending ? (
         <>
-          <span className="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />
+          <span className="form-spinner" aria-hidden="true" />
           Sender …
         </>
       ) : (

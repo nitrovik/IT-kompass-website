@@ -31,11 +31,11 @@ The logo and the compass are primary brand assets. The owner asked in October 20
 - The favicon (`app/icon.png`) and the 404 page also use the compass.
 
 ## Signature interactions (from the HTML file)
-1. Hero drawing (`components/home/hero-art.tsx`): seven fibers through a dotted orbit grid, the compass hub floating 5 units up and down (8 s), three light signals running along three of the fibers (7.5 s, delays 0 / −2.5 / −5 s), four nodes, two notes and a caption.
+1. Hero drawing: fibers from the screen edges to the compass over a dotted orbit grid; light balls run in along a fiber, are absorbed by the compass, the needle turns to a new fiber and the ball is sent out along it (see «Hero drawing» below). The needle follows a nearby mouse when the compass is idle.
 2. Service index rows: white background fades in, padding widens, the round arrow turns blue and rotates −35°.
 3. Buttons lift 3 px; arrows (↗) move up-right; nav links get an underline that grows.
 4. Scroll reveals: fade + 19 px rise, 0.75 s, delays 0.08 s / 0.16 s.
-5. Reduced motion: no signals, no drift, everything visible at once.
+5. Reduced motion: no light balls, the needle stands still, everything visible at once.
 
 ## Homepage structure
 - header: logo, Tjenester (`#tjenester`), Hvorfor IT Kompass (`#hvorfor`), Kontakt (`#kontakt`), «La oss snakke»; on ≤760 px a dropdown menu
@@ -100,12 +100,24 @@ Cloudflare Turnstile
 
 Fonts: Inter, self-hosted in `app/fonts/` via `next/font/local`. `inter-arrow-wght.woff2` holds only the ↗ glyph from full Inter (missing from the Latin subset), loaded with `unicode-range: U+2197`. The serif accent font is a system font stack, as in the HTML file.
 
-### Hero drawing
-- `components/home/hero-signals.ts`: the drawing as data in the HTML file's viewBox (700 × 520): `FIBERS`, `HIGHLIGHT`, `NODES`, `SIGNALS`. The HTML file moved the signals with `offset-path` on SVG circles, which repaints the SVG every frame. Here the paths are parsed (absolute M/C/S) and sampled by arc length at build time into transform/opacity keyframes (`hero-signal-1…3`), with the same timing (linear, opacity ramps at 8 % and 88 %).
-- `components/home/hero-art.tsx` (server component) draws the same picture in layers inside `.hero-figure`: a static SVG (grid, fibers, highlight, ring text), the compass as its own small SVG (`.hero-compass-core`, viewBox `250 160 200 200`, drift = `translateY(-2.5%)`), three signal layers the size of the drawing moved with percentage translates, and the nodes on top.
-- Signal keyframes are served as the static, fingerprinted file `/motion.css` (`app/motion.css/route.ts`, `components/home/motion-css.ts`), not inline (inline keyframes were parsed twice via the RSC payload and raised mobile TBT). `hero-motion.tsx` is the only client piece: after `load` + idle it adds `/motion.css` and sets `data-motion-live` (never with reduced motion or Save-Data). Without the file the signals stay hidden.
-- The hero has `data-observe="toggle"`; drift and signals pause while it is off-screen.
+### Hero drawing (fibers and compass)
+- `components/home/hero-art.tsx` (server component): the static parts inside `.hero-figure`: grid circles, axes and the caption (`.hero-caption`), the compass disc with ring, marks and N/S/W/E (`.hero-compass-core`, viewBox `250 160 200 200`), the centre glow (`.hero-core-glow`) and the needle as its own SVG (`.hero-needle`, rotated with `transform`). The compass does not drift, so the fibers stay attached to it.
+- `components/home/hero-fibers.ts`: the geometry in hero pixels. Fibers run from just outside the screen edges (top/right/bottom on PC; left/right/bottom when the text sits above the compass) to the disc, as a cubic Bézier plus a straight radial segment under the disc. Each fiber's bearing is measured on the path itself at the disc rim. A fiber is valid only if its visible part stays clear of the hero text (+16 px) and the caption (+18 px). If not, small adjustments are tried in order (end moved toward the corner, heading turned up to 18°, end moved around the corner); otherwise it is left out.
+- `components/home/hero-fiber-system.tsx` (client): measures hero, compass, text and caption on resize only (ResizeObserver, `document.fonts.ready`), draws the fibers (`.hero-fibers`), ports, nodes and three reusable light balls, and starts the controller after `load` + idle, never with reduced motion or Save-Data.
+- `components/home/fiber-controller.ts`: one signal at a time, as a state machine `idle → absorbing → aiming → emitting → idle` (`data-fiber-phase` on the hero; `data-fiber-out` is the chosen exit):
+  1. A ball arrives along an incoming fiber, slows down inside the disc and shrinks and fades into the centre, which glows briefly.
+  2. The exit is drawn from a shuffled deck: every valid exit once per round in random order, and a round never starts with the last exit.
+  3. The needle (a damped spring, rAF only while it moves) turns the shortest way to the exit's measured bearing. The ball leaves only when the needle has settled (at most 1.8 s).
+  4. The ball leaves from the centre, reaches full size at the rim and runs out over the screen edge.
+  Balls move with the Web Animations API on transform/opacity (precomputed keyframes); JavaScript runs only at phase changes.
+- Hover (mouse only, `(hover: hover) and (pointer: fine)`): while idle the needle turns toward a pointer within 3.5 × the disc radius (released at 4.1 ×) and returns to the last exit when the pointer leaves. While absorbing, aiming or emitting, the signal direction wins. Pointer handling uses cached coordinates, with no layout reads per move.
+- Everything stops while the hero is off-screen (IntersectionObserver) or the tab is hidden, and resumes when visible.
 - Use longhand `animation-*` properties when an animation has no name in the rule: the CSS minifier turns a nameless `animation:` shorthand into `animation: none`.
+
+### Contact form
+- `components/forms/contact-form.tsx`: category, name, email and message (same field names as before), sent with the server action `app/actions/contact.ts` (Zod, Turnstile, honeypot, Resend). The client checks the same rules as the server before sending. Errors appear under each field (`aria-invalid`, `aria-describedby`) and focus moves to the first one; server field errors (`fieldErrors`) are shown the same way, other server errors as an alert. The receipt appears only when the server answers `ok`.
+- `components/forms/field.tsx`: `TextField`, `TextAreaField` and `SelectMenu`, a custom dropdown following the WAI-ARIA «select-only combobox» pattern (arrows, Home/End, Enter/Space, Escape, Tab, type to jump) with a hidden input carrying the value.
+
 GSAP, React Three Fiber, Motion, Lenis and WebGL are not used. Add libraries, canvas/WebGL or new continuous animation only with a concrete reason and the owner's go-ahead.
 
 ### Motion system

@@ -1,7 +1,7 @@
 import { validateTurnstile } from "@/lib/turnstile";
 import { sendContactEmail } from "@/lib/email";
 
-export type FormState = { ok: boolean; message: string };
+export type FormState = { ok: boolean; message: string; fieldErrors?: Partial<Record<"category" | "name" | "email" | "message", string>> };
 
 export function escapeHtml(value: string) {
   return value.replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[char] ?? char);

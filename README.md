@@ -43,7 +43,7 @@ npm run build
 
 Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Zod, Resend og Cloudflare Turnstile. Skriften Inter ligger lokalt i `app/fonts/` (SIL Open Font License). De kursive aksentordene bruker en serif fra maskinen (Iowan Old Style, Palatino eller Georgia), som i designet.
 
-Tegningen i heroen (`components/home/hero-art.tsx`) er tegningen fra designet: sju fibre som møtes i kompasset, tre lyssignaler som går langs fibrene og et kompass som svever rolig. Kompasset er det samme som i logoen. Signalene og kompasset flyttes bare med transform, så skjermkortet gjør jobben alene, og banene lastes som en egen fil (`/motion.css`) etter at siden er ferdig. Ved «redusert bevegelse» står alt stille.
+Tegningen i heroen er kompasset fra logoen med fiberbaner som går helt ut til kanten av skjermen. En lyskule kommer inn langs en bane og trekkes inn i kompasset. Nålen snur seg mot en ny bane, og kula sendes ut der. Med musa i nærheten peker nålen mot pekeren. Koden ligger i `components/home/`: `hero-art.tsx` (tegningen), `hero-fibers.ts` (banene), `fiber-controller.ts` (kulene og nålen) og `hero-fiber-system.tsx`. Kulene flyttes bare med transform, og alt stopper når heroen ikke vises. Ved «redusert bevegelse» står alt stille.
 
 Scrollingen er nettleserens egen. Ingenting kjører i JavaScript mens siden scroller.
 
