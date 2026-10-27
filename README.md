@@ -43,7 +43,7 @@ npm run build
 
 Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Zod, Resend og Cloudflare Turnstile. Skriftene Schibsted Grotesk (overskrifter) og Inter (brødtekst) ligger lokalt i `app/fonts/` (SIL Open Font License).
 
-Fiberscenen i heroen (`components/home/fiber/`) er få, tegnede fibre som samles i kompasset, med små lysimpulser som glir langs dem. Impulsene flyttes bare med transform, så skjermkortet gjør jobben alene. Ved «redusert bevegelse» står alt stille. Se CLAUDE.md for detaljer.
+Fiberscenen i heroen (`components/home/fiber/`) forteller det samme som diagrammet «Behovet avgjør»: behovet kommer inn, kompasset er knutepunktet, noen få grener går til alternativer, og én retning er den riktige. Små lysimpulser spiller av historien. De flyttes bare med transform, så skjermkortet gjør jobben alene, og keyframes lastes som en egen fil (`/motion.css`) etter at siden er ferdig. Tegningen ligger i `scene.ts`. Ved «redusert bevegelse» står alt stille. Se CLAUDE.md for detaljer.
 
 Scrollingen er nettleserens egen. Ingenting kjører i JavaScript mens siden scroller.
 

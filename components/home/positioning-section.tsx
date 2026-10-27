@@ -1,37 +1,13 @@
 import { homePositioning } from "@/content/home";
 import { SplitLines } from "@/components/ui/split-words";
-import { pulseKeyframes, type Segment } from "@/components/home/fiber/geometry";
+import { H, HUB, NEED, OPTION_X, W, optionY, routeTo } from "@/components/home/route-motion";
 
 /*
   Mørk kontrastseksjon. Illustrasjonen forteller prinsippet: behovet går inn i kompasset,
   alternativene vurderes ett for ett (lyspulser), og det som passer lyser opp.
-  Impulsene er små lag som flyttes med transform (keyframes regnet ut fra de samme kurvene),
-  så SVG-en tegnes bare én gang. De går bare mens seksjonen er synlig.
+  Impulsene er små lag som flyttes med transform (keyframes fra route-motion.ts, levert i
+  /motion.css), så SVG-en tegnes bare én gang. De går bare mens seksjonen er synlig.
 */
-const W = 560;
-const H = 420;
-const NEED = { x: 50, y: 210 };
-const HUB = { x: 214, y: 210 };
-const OPTION_X = 394;
-const optionY = (i: number, n: number) => 66 + (i * (H - 132)) / (n - 1);
-
-function routeTo(y: number) {
-  return `M${HUB.x + 30} ${HUB.y} C ${HUB.x + 90} ${HUB.y}, ${OPTION_X - 90} ${y}, ${OPTION_X - 10} ${y}`;
-}
-const routeSegment = (y: number): Segment => [[HUB.x + 30, HUB.y], [HUB.x + 90, HUB.y], [OPTION_X - 90, y], [OPTION_X - 10, y]];
-const needSegment: Segment = [[NEED.x + 10, NEED.y], [NEED.x + 60, NEED.y], [HUB.x - 80, HUB.y], [HUB.x - 30, HUB.y]];
-const BOX = [W, H] as const;
-
-/* Behov → kompass, så hvert alternativ etter tur (7 s), og til slutt den riktige ruten igjen og igjen */
-function routeKeyframes(n: number, chosen: number) {
-  const scan = Array.from({ length: n }, (_, i) => pulseKeyframes(`route-scan-${i}`, [{ segments: [routeSegment(optionY(i, n))], from: 0, to: 0.12 }], { unit: "%", box: BOX, steps: 16, fade: 0.2 }));
-  return [
-    pulseKeyframes("route-in", [{ segments: [needSegment], from: 0, to: 0.1 }], { unit: "%", box: BOX, steps: 8, fade: 0.2 }),
-    ...scan,
-    pulseKeyframes("route-chosen", [{ segments: [routeSegment(optionY(chosen, n))], from: 0, to: 0.7 }], { unit: "%", box: BOX, steps: 20, fade: 0.18 }),
-  ].join("");
-}
-
 function RouteDiagram() {
   const { diagram } = homePositioning;
   const n = diagram.options.length;
@@ -86,7 +62,6 @@ function RouteDiagram() {
           </g>
         </svg>
         {/* Lyspulsene: små lag over SVG-en som bare flyttes med transform (ingen ny maling av diagrammet) */}
-        <style>{routeKeyframes(n, diagram.chosen)}</style>
         <span className="route-dot" style={{ animationName: "route-in" }} aria-hidden="true"><span /></span>
         {diagram.options.map((_, i) => <span key={i} className="route-dot" style={{ animationName: `route-scan-${i}`, animationDelay: `${0.4 + i * 0.55}s` }} aria-hidden="true"><span /></span>)}
         <span className="route-dot chosen" style={{ animationName: "route-chosen", animationDuration: "3.4s", animationDelay: "3.2s" }} aria-hidden="true"><span /></span>

@@ -279,12 +279,16 @@ body {
 [data-inview="true"] .compass-ping { animation-play-state: running; }
 @keyframes compass-ping { 0% { transform: scale(.85); opacity: .55; } 70% { opacity: 0; } 100% { transform: scale(1.9); opacity: 0; } }
 .needle { transition: transform 1.2s cubic-bezier(.2, .9, .25, 1.15); transform-origin: 50% 50%; }
+/* Heronålen hviler mot det riktige valget (vinklene settes på .fiber-anchor fra scene.ts) */
+.fiber-anchor .needle { transform: rotate(var(--needle-rest-m, 0deg)); }
+@media (min-width: 1024px) { .fiber-anchor .needle { transform: rotate(var(--needle-rest-d, 0deg)); } }
 
 /* ---------- Hero: fibre og kompass (fiber-scene.tsx) ---------- */
 /* Ankeret er kompassets sentrum. Fibrene, impulsene og kompasset er plassert ut fra det. */
-.fiber-anchor { position: absolute; left: 66%; top: 54%; width: 0; height: 0; --compass: 84px; --halo: 6px; --streak: 40px; }
-@media (min-width: 1024px) { .fiber-anchor { left: 75%; top: 46%; --compass: 132px; --halo: 9px; --streak: 56px; } }
-@media (min-width: 1280px) { .fiber-anchor { left: 70%; } }
+/* Mobil: kompasset litt til venstre, så alternativene får plass til høyre. Smale PC-skjermer: hele scenen litt mindre. */
+.fiber-anchor { position: absolute; left: 40%; top: 54%; width: 0; height: 0; --compass: 84px; --halo: 6px; --streak: 40px; transform: scale(var(--scene-scale, 1)); }
+@media (min-width: 1024px) { .fiber-anchor { left: 70%; top: 46%; --compass: 132px; --halo: 9px; --streak: 56px; --scene-scale: .82; } }
+@media (min-width: 1280px) { .fiber-anchor { --scene-scale: 1; } }
 .fiber-svg { position: absolute; max-width: none; overflow: visible; }
 /* Heroens lys flyttes fra bakgrunnen til ankeret, så det alltid står bak kompasset */
 .hero-surface-home { background: radial-gradient(40% 50% at 12% 18%, rgba(255, 255, 255, .95), transparent 70%), linear-gradient(180deg, #f8fbff 0%, #eef5fd 62%, #e9f2fc 100%); }
@@ -306,7 +310,9 @@ body {
   heroen er utenfor skjermen (data-inview="false").
 */
 /* Langformer, ikke «animation:»-kortformen: uten navn i kortformen gjør CSS-minifiseringen den om til «none» */
-.fiber-pulse { position: absolute; left: 0; top: 0; width: 0; height: 0; opacity: 0; animation-duration: 12s; animation-timing-function: linear; animation-iteration-count: infinite; animation-play-state: paused; }
+.fiber-pulse { position: absolute; left: 0; top: 0; width: 0; height: 0; opacity: 0; animation-timing-function: linear; animation-iteration-count: infinite; animation-play-state: paused; }
+/* Impulsene som sjekker alternativene er mindre og svakere enn hovedimpulsen */
+.fiber-pulse.is-scan > span { transform: scale(.7); transform-origin: 100% 50%; opacity: .75; }
 /* Lyset må synes på lys bakgrunn: mettet blå kjerne med et lite hvitt punkt, myk glorie rundt (ingen blur) */
 .fiber-pulse > span {
   position: absolute; right: 0; top: -1px; width: var(--streak); height: 2px; border-radius: 2px;
@@ -320,19 +326,20 @@ body {
   content: ""; position: absolute; right: -5px; top: -4px; width: 10px; height: 10px; border-radius: 50%;
   background: radial-gradient(circle, #fff 0 22%, #2aa6ff 42%, rgba(42, 166, 255, .35) 60%, rgba(42, 166, 255, 0) 74%);
 }
-/* Ringen markerer at hovedimpulsen når kompasset */
+/* Ringen markerer at hovedimpulsen når kompasset. Nodene blinker når en impuls kommer frem. */
 .fiber-ring {
   position: absolute; left: calc(var(--compass) / -2); top: calc(var(--compass) / -2); width: var(--compass); height: var(--compass);
   border-radius: 50%; border: 1px solid rgba(42, 166, 255, .55); opacity: 0;
-  animation: fiber-ring-d 12s linear infinite paused;
 }
-@media (max-width: 1023px) {
-  .fiber-pulse { animation-duration: 10s; }
-  .fiber-ring { animation-name: fiber-ring-m; animation-duration: 10s; }
-}
-[data-fiber-live][data-inview="true"] :is(.fiber-pulse, .fiber-ring) { animation-play-state: running; }
-@keyframes fiber-ring-d { 0%, 41.6% { opacity: 0; transform: scale(.98); } 42.4% { opacity: .65; transform: scale(1); animation-timing-function: cubic-bezier(.22, 1, .36, 1); } 56%, 100% { opacity: 0; transform: scale(1.6); } }
-@keyframes fiber-ring-m { 0%, 39.6% { opacity: 0; transform: scale(.98); } 40.4% { opacity: .65; transform: scale(1); animation-timing-function: cubic-bezier(.22, 1, .36, 1); } 54%, 100% { opacity: 0; transform: scale(1.6); } }
+.fiber-node-glow { position: absolute; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; opacity: 0; background: radial-gradient(closest-side, rgba(42, 166, 255, .55), rgba(42, 166, 255, 0)); }
+.fiber-node-glow.is-chosen { width: 48px; height: 48px; margin: -24px 0 0 -24px; background: radial-gradient(closest-side, rgba(42, 166, 255, .7), rgba(42, 166, 255, 0)); }
+/* Den riktige retningen lyser opp i takt med fortellingen (eget, lite lag) */
+.fiber-overlay { position: absolute; max-width: none; opacity: 0; }
+:is(.fiber-ring, .fiber-node-glow, .fiber-overlay) { animation-timing-function: linear; animation-iteration-count: infinite; animation-play-state: paused; }
+[data-fiber-live][data-inview="true"] :is(.fiber-pulse, .fiber-ring, .fiber-node-glow, .fiber-overlay) { animation-play-state: running; }
+/* PC: grenen pekeren peker mot (data-focus, hero-pointer.tsx). Bare opacity på små, egne lag. */
+/* Uten will-change: lagene finnes bare mens de er i bruk, så de ikke tegnes med i hvert bilde ellers */
+.fiber-focus { position: absolute; max-width: none; opacity: 0; transition: opacity .45s var(--ease-out-soft); }
 
 
 
@@ -428,5 +435,5 @@ select.form-control {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
   .js-reveal [data-reveal], .js-reveal [data-reveal] > *, .js-reveal [data-split] .split-word > span { opacity: 1 !important; transform: none !important; clip-path: none !important; }
-  .fiber-pulse, .fiber-ring, .route-dot, .footer-pulse, .partner-track > [aria-hidden="true"] { display: none; }
+  .fiber-pulse, .fiber-ring, .fiber-node-glow, .fiber-overlay, .route-dot, .footer-pulse, .partner-track > [aria-hidden="true"] { display: none; }
 }
