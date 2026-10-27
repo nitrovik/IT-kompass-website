@@ -13,7 +13,7 @@ export default function NotFound() {
       <div className="grid-lines pointer-events-none absolute inset-0 [mask-image:radial-gradient(50%_50%_at_50%_45%,#000,transparent)]" aria-hidden="true" />
       <div className="relative max-w-xl text-center" data-inview="true">
         {/* Kompasset leter etter retningen og finner tilbake til nord */}
-        <div className="relative mx-auto grid size-32 place-items-center rounded-full border border-white bg-white/70 shadow-[0_30px_60px_-30px_rgba(14,39,71,.5)] backdrop-blur" aria-hidden="true">
+        <div className="relative mx-auto grid size-32 place-items-center rounded-full border border-white bg-white/90 shadow-[0_30px_60px_-30px_rgba(14,39,71,.5)]" aria-hidden="true">
           <span className="compass-ping absolute inset-0 rounded-full border border-brand-bright/40" />
           <svg viewBox="0 0 120 120" className="absolute inset-0 size-full">
             <circle cx="60" cy="60" r="47" fill="none" stroke="#0e2747" strokeWidth="2.6" />

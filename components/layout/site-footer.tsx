@@ -9,13 +9,10 @@ export function SiteFooter() {
   const address = [site.address, [site.postalCode, site.city].filter(Boolean).join(" ")].filter(Boolean).join(", ");
   return (
     <footer className="on-dark relative overflow-hidden bg-footer text-on-navy" data-observe="toggle">
-      {/* Fiberlinje med en lysimpuls langs toppkanten */}
-      <svg className="pointer-events-none absolute inset-x-0 top-0 h-6 w-full will-change-transform" viewBox="0 0 1200 24" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M0 1 H1200" stroke="#2aa6ff" strokeOpacity=".25" />
-        {/* Glød som bred, svak strek (ikke blurfilter) */}
-        <path d="M0 1 H1200" stroke="#2aa6ff" strokeOpacity=".35" strokeWidth="6" pathLength={1} className="fiber footer-pulse" />
-        <path d="M0 1 H1200" stroke="#7fd0ff" strokeWidth="2" pathLength={1} className="fiber footer-pulse" />
-      </svg>
+      {/* Fiberlinje med en lysimpuls langs toppkanten (impulsen flyttes med transform) */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[#2aa6ff]/25" aria-hidden="true">
+        <span className="footer-pulse" />
+      </div>
       <div className="grid-lines-dark pointer-events-none absolute inset-0 [mask-image:radial-gradient(60%_80%_at_85%_0%,#000,transparent)]" aria-hidden="true" />
 
       <div className="container-shell relative pt-20 pb-8">

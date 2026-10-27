@@ -1,13 +1,14 @@
 /*
-  Én felles bildeløkke (requestAnimationFrame) for alt som beveger seg med scroll eller
-  peker: myk scrolling (Lenis), scroll-koblede effekter, kortlys og fiberscenen.
+  Én felles bildeløkke (requestAnimationFrame) for det som følger pekeren (kompassnålen,
+  magnetknappen) og for scroll-koblede effekter. Selve scrollingen er nettleserens egen, og
+  i dag går ingenting her mens siden scroller (framdriftslinjen i headeren er ren CSS; onScroll
+  brukes bare som reserve i nettlesere uten animation-timeline).
 
   Rekkefølgen i hvert bilde er fast:
-  1. Lenis flytter scrollposisjonen.
-  2. Lesing: scrollposisjonen leses én gang. Plasseringen til elementene måles bare når
+  1. Lesing: scrollposisjonen leses én gang. Plasseringen til elementene måles bare når
      sidens størrelse har endret seg, aldri per bilde.
-  3. Skriving: scroll-effektene skriver transform / CSS-variabler.
-  4. Animasjoner (kortlys, magnetknapper, fiberscenen) oppdateres.
+  2. Skriving: scroll-effektene skriver transform / attributter.
+  3. Animasjoner (kompassnål, magnetknapp) oppdateres.
 
   Slik leses layout aldri etter at noe er skrevet i samme bilde (ingen tvungen omberegning),
   og alt som følger scrollen står i samme bilde som innholdet. Løkken stopper helt når
@@ -39,7 +40,6 @@ export type FrameTask = (now: number) => boolean;
 const state: ScrollState = { y: 0, vh: 0, vw: 0, max: 0, scrolling: false };
 const scrollTasks = new Set<ScrollTask>();
 const frameTasks = new Set<FrameTask>();
-let driver: ((now: number) => boolean) | null = null;
 let frame = 0;
 let lastY = Number.NaN;
 let lastMoveAt = 0;
@@ -49,10 +49,9 @@ let listening = false;
 
 function run(now: number) {
   frame = 0;
-  const driving = driver ? driver(now) : false;
 
   // Lesing – før noe skrives i dette bildet
-  if (driving || scrollPending || geometryDirty) {
+  if (scrollPending || geometryDirty) {
     scrollPending = false;
     const y = window.scrollY;
     if (geometryDirty) {
@@ -73,13 +72,13 @@ function run(now: number) {
       scrollTasks.forEach((task) => task.update(state));
     }
   }
-  state.scrolling = driving || now - lastMoveAt < 160;
+  state.scrolling = now - lastMoveAt < 160;
 
   // Animasjoner
   frameTasks.forEach((task) => { if (!task(now)) frameTasks.delete(task); });
 
   // (en oppgave kan allerede ha bedt om neste bilde – aldri to på rad)
-  if (!frame && (driving || state.scrolling || frameTasks.size)) frame = requestAnimationFrame(run);
+  if (!frame && (state.scrolling || frameTasks.size)) frame = requestAnimationFrame(run);
 }
 
 export function requestFrame() {
@@ -112,13 +111,6 @@ export function onFrame(task: FrameTask) {
   frameTasks.add(task);
   requestFrame();
   return () => { frameTasks.delete(task); };
-}
-
-/** Lenis (myk scrolling) kjøres først i hvert bilde. Returnerer true mens den animerer. */
-export function setScrollDriver(next: ((now: number) => boolean) | null) {
-  listen();
-  driver = next;
-  requestFrame();
 }
 
 /** Siste kjente scrolltilstand – kan leses fra hendelser uten å tvinge layout. */

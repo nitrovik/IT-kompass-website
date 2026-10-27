@@ -25,20 +25,31 @@ export function SiteHeader() {
     setOpen(false);
   }
 
-  // Krymp headeren og vis framdrift ved scrolling. Kjører i den felles bildeløkken og skriver
-  // bare når noe faktisk endres: attributtet ved terskelen, framdriften som transform.
+  // Krymp headeren når siden er scrollet litt. En passiv scroll-lytter som bare skriver når
+  // terskelen krysses – ingen bildeløkke, så hovedtråden har ingenting å gjøre mens siden scroller.
   useEffect(() => {
     const header = headerRef.current;
-    const bar = progressRef.current;
-    if (!header || !bar) return;
+    if (!header) return;
     let scrolled = "";
+    const update = () => {
+      const next = window.scrollY > 12 ? "true" : "false";
+      if (next !== scrolled) header.dataset.scrolled = scrolled = next;
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
+  }, []);
+
+  // Framdriftslinjen er en ren CSS-animasjon koblet til scrollingen (globals.css), som skjermkortet
+  // driver alene. Bare nettlesere uten støtte for det får den samme linjen fra JavaScript.
+  useEffect(() => {
+    const bar = progressRef.current;
+    if (!bar || CSS.supports("animation-timeline: scroll()")) return;
     let progress = "";
     return onScroll({
       update: ({ y, max }) => {
-        const nextScrolled = y > 12 ? "true" : "false";
-        if (nextScrolled !== scrolled) header.dataset.scrolled = scrolled = nextScrolled;
-        const nextProgress = max > 0 ? Math.min(y / max, 1).toFixed(3) : "0";
-        if (nextProgress !== progress) bar.style.transform = `scaleX(${(progress = nextProgress)})`;
+        const next = max > 0 ? Math.min(y / max, 1).toFixed(3) : "0";
+        if (next !== progress) bar.style.transform = `scaleX(${(progress = next)})`;
       },
     });
   }, []);
@@ -67,12 +78,12 @@ export function SiteHeader() {
           <Image src="/brand/it-kompass-logo-web-opt.png" alt={site.name} width={414} height={148} loading="eager" fetchPriority="high" unoptimized className="brand-logo h-auto" />
         </Link>
 
-        <div className="relative z-10 ml-auto flex items-center gap-3 lg:ml-2">
+        <div className="relative z-10 ml-auto flex items-center gap-3">
           <Link href="/#kontakt" className={cn(buttonVariants({ size: "sm" }), "hidden sm:inline-flex")}>
             Ta kontakt <Arrow size={14} />
           </Link>
           <button ref={menuButton} type="button" onClick={() => setOpen((value) => !value)} aria-expanded={open} aria-controls="mobilmeny" aria-label={open ? "Lukk meny" : "Åpne meny"}
-            className="relative grid size-11 place-items-center rounded-full border border-line-strong bg-white/80 text-ink backdrop-blur transition hover:border-[#9fc0e0] lg:hidden">
+            className="relative grid size-11 place-items-center rounded-full border border-line-strong bg-white/90 text-ink transition hover:border-[#9fc0e0] lg:hidden">
             <span aria-hidden="true" className={cn("absolute h-[1.5px] w-[18px] rounded-full bg-current transition-transform duration-300", open ? "rotate-45" : "-translate-y-[4px]")} />
             <span aria-hidden="true" className={cn("absolute h-[1.5px] w-[18px] rounded-full bg-current transition-transform duration-300", open ? "-rotate-45" : "translate-y-[4px]")} />
           </button>
@@ -83,8 +94,9 @@ export function SiteHeader() {
 
     </header>
       {/* Mobilmeny */}
-      <div id="mobilmeny" hidden={!open} className="fixed inset-0 z-40 overflow-y-auto bg-[#f8fbff]/[.97] backdrop-blur-xl lg:hidden" data-lenis-prevent>
-        <nav aria-label="Mobilnavigasjon" className="container-shell flex min-h-full flex-col pt-[calc(var(--header-h)+1.5rem)] pb-8">
+      <div id="mobilmeny" hidden={!open} className="fixed inset-0 z-40 overflow-y-auto overscroll-contain bg-[#f8fbff] lg:hidden">
+        {/* Lukk ved valg: lenkene går ofte til et anker på samme side, og da endres ikke adressen */}
+        <nav aria-label="Mobilnavigasjon" onClick={(event) => { if ((event.target as HTMLElement).closest("a")) setOpen(false); }} className="container-shell flex min-h-full flex-col pt-[calc(var(--header-h)+1.5rem)] pb-8">
           <ul className="grid">
             <li className="border-b border-line" style={{ animation: open ? "hero-fade-in .6s var(--ease-out-soft) both" : undefined }}>
               <Link ref={firstLink} href="/" aria-current={pathname === "/" ? "page" : undefined}
