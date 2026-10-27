@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import Script from "next/script";
 import localFont from "next/font/local";
 import "./globals.css";
-import { SmoothScroll } from "@/components/layout/smooth-scroll";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { RevealObserver } from "@/components/ui/reveal-observer";
@@ -55,13 +54,12 @@ const revealBootstrap = `(function(){var d=document.documentElement;d.classList.
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="nb" className={`${inter.variable} ${schibsted.variable}`} suppressHydrationWarning>
+    <html lang="nb" className={`${inter.variable} ${schibsted.variable}`} data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: revealBootstrap }} />
       </head>
       <body>
         <a className="skip-link" href="#main">Hopp til hovedinnhold</a>
-        <SmoothScroll />
         <RevealObserver />
         <SiteHeader />
         {children}
