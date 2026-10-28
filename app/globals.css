@@ -234,7 +234,7 @@ body {
 @keyframes partners-loop { to { transform: translate3d(-50%, 0, 0); } }
 
 /* ---------- Intro (#hvorfor) ---------- */
-.intro { padding: 130px 0 125px; background: linear-gradient(118deg, #f8fbff 0%, #eef5fc 58%, #e5effa 100%); }
+.intro { padding: 130px 0 125px; }
 .intro-grid { display: grid; grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr); gap: 7%; align-items: center; }
 .intro-left .section-heading { font-size: clamp(2.8rem, 4.8vw, 4.65rem); }
 .intro-quote { margin-top: 34px; padding: 3px 0 3px 19px; border-left: 2px solid #4c99eb; max-width: 26em; text-wrap: balance; font-family: var(--serif); font-size: 1.18rem; line-height: 1.6; color: #536b86; }
@@ -242,7 +242,6 @@ body {
 /* En svak lyseblå glød bak illustrasjonen binder den mørke flaten til den hvite seksjonen */
 .intro { position: relative; isolation: isolate; overflow-x: clip; }
 .intro-right { position: relative; }
-.intro-right::before { content: ""; position: absolute; inset: -14% -10%; z-index: -1; background: radial-gradient(closest-side, #d6e6f8 0%, #e2edf9 50%, #e5effa00 100%); pointer-events: none; }
 .intro-text p { font-size: 1.08rem; line-height: 1.8; letter-spacing: -.02em; color: #50647c; margin: 0 0 18px; max-width: 34em; }
 .intro-text strong { font-weight: 650; color: var(--ink); }
 
@@ -253,32 +252,31 @@ body {
   puls inn → nålen snur → banen lyser → markør, tekst og «Riktig valg». Alt er opacity og transform.
 */
 /*
-  Palett for illustrasjonen, hentet fra resten av nettsiden: flaten er en middels marineblå (#173866,
-  lysere kjerne #285492) med hvit ramme, så den hviler på seksjonens lyseblå flate, linjene er heroens fiberblå (#8fb9e9), og det
-  aktive signalet er lyskulenes blå (#4c99eb → #8ec2f5). Ingen egne cyantoner.
+  Illustrasjonen bruker samme lyse uttrykk som heroen: lys blå flate (heroens gradient),
+  marineblå tekst, fiberblå linjer, kompasset i logoens farger og aksentblått (#2369cf) for valget.
 */
-.nd { position: relative; isolation: isolate; overflow: hidden; margin: 0; padding: 22px 24px 18px; border-radius: 8px; background: radial-gradient(74% 64% at 37% 46%, #285492 0%, #1d4479 44%, #173866 100%); box-shadow: inset 0 1px 0 #ffffff1f, 0 0 0 1px #b9d0ea, 0 0 0 8px #ffffffb8, 0 0 0 9px #d2e1f1, 0 34px 64px -34px #173866a6; color: #c9d6e6; }
-.nd::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, #ffffff10 1px, transparent 1px), linear-gradient(#ffffff10 1px, transparent 1px); background-size: 56px 56px; mask-image: radial-gradient(78% 68% at 45% 50%, #000, transparent); }
+.nd { position: relative; isolation: isolate; overflow: hidden; margin: 0; padding: 22px 24px 18px; border: 1px solid #d9e4ef; border-radius: 6px; background: linear-gradient(112deg, #fbfcfe 0%, #f3f7fc 50%, #e9f2fc 100%); box-shadow: 0 24px 50px -32px #214b7640; color: var(--ink); }
+.nd::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, #dbe7f3 1px, transparent 1px), linear-gradient(#dbe7f3 1px, transparent 1px); background-size: 56px 56px; mask-image: radial-gradient(78% 68% at 45% 50%, #000, transparent); }
 .nd-stage { position: relative; aspect-ratio: 4 / 3; }
 .nd-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .nd-hi { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; opacity: 0; will-change: opacity; transition: opacity .5s ease; }
 .nd-hi.is-active { opacity: 1; transition: opacity .8s ease .7s; }
 .nd-needle { position: absolute; width: 7.143%; height: 9.524%; overflow: visible; will-change: transform; transition: transform .9s cubic-bezier(.3, .75, .2, 1) .4s; }
-.nd-marker { position: absolute; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: #4c99eb; box-shadow: 0 0 0 1.6px #d6e9ff, 0 0 12px 1px #4c99eb99; opacity: 0; transform: scale(.45); transition: opacity .35s ease, transform .35s ease; }
+.nd-marker { position: absolute; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: #2369cf; box-shadow: 0 0 0 3px #fff, 0 0 0 4.5px #a9c6e6, 0 0 14px 2px #4c99eb66; opacity: 0; transform: scale(.45); transition: opacity .35s ease, transform .35s ease; }
 .nd-marker.is-active { opacity: 1; transform: none; transition: opacity .45s ease 1.45s, transform .6s cubic-bezier(.3, 1.45, .4, 1) 1.45s; }
-.nd-ring { position: absolute; inset: -1px; border: 1.5px solid #8ec2f5; border-radius: 50%; opacity: 0; }
+.nd-ring { position: absolute; inset: -1px; border: 1.5px solid #4c99eb; border-radius: 50%; opacity: 0; }
 .nd[data-inview="true"] .nd-marker.is-active .nd-ring { animation: nd-ring 2.4s ease-out 2s infinite; }
 @keyframes nd-ring { 0% { transform: scale(1); opacity: .7; } 75%, 100% { transform: scale(2.4); opacity: 0; } }
 .nd-pulse { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
-.nd-pulse > span { position: absolute; left: 0; top: 0; width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 2px #8ec2f5cc, 0 0 10px 2px #4c99eb88; }
-.nd-label { position: absolute; transform: translate(-50%, 20px); font-size: 13px; font-weight: 550; white-space: nowrap; color: #c3d3e6; }
-.nd-hub { transform: translate(-50%, 42px); color: #fff; font-weight: 650; }
+.nd-pulse > span { position: absolute; left: 0; top: 0; width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 2px #4c99eb, 0 0 10px 2px #4c99eb66; }
+.nd-label { position: absolute; transform: translate(-50%, 20px); font-size: 13px; font-weight: 550; white-space: nowrap; color: #42586f; }
+.nd-hub { transform: translate(-50%, 42px); color: var(--ink); font-weight: 650; }
 .nd-option { position: absolute; transform: translateY(-10px); padding-left: 18px; line-height: 20px; }
-.nd-option-name { display: block; font-size: 13px; white-space: nowrap; color: #b3c6dc; transition: color .35s; }
-.nd-option.is-active .nd-option-name { color: #fff; font-weight: 650; transition: color .5s ease 1.45s; }
-.nd-badge { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; padding: 2px 9px; border-radius: 999px; background: #4c99eb26; box-shadow: inset 0 0 0 1px #4c99eb70; color: #cfe4fb; font-size: 11px; font-weight: 650; white-space: nowrap; opacity: 0; transform: translate3d(0, -4px, 0); transition: opacity .3s, transform .3s; }
+.nd-option-name { display: block; font-size: 13px; white-space: nowrap; color: #5a6d82; transition: color .35s; }
+.nd-option.is-active .nd-option-name { color: var(--ink); font-weight: 650; transition: color .5s ease 1.45s; }
+.nd-badge { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; padding: 2px 9px; border-radius: 999px; background: #2369cf14; box-shadow: inset 0 0 0 1px #2369cf40; color: #1d5bb6; font-size: 11px; font-weight: 650; white-space: nowrap; opacity: 0; transform: translate3d(0, -4px, 0); transition: opacity .3s, transform .3s; }
 .nd-option.is-active .nd-badge { opacity: 1; transform: none; transition: opacity .45s ease 1.6s, transform .45s ease 1.6s; }
-.nd-caption { position: relative; margin-top: 10px; padding-top: 14px; border-top: 1px solid #ffffff14; font-size: 13px; line-height: 1.5; color: #a7b8cc; }
+.nd-caption { position: relative; margin-top: 10px; padding-top: 14px; border-top: 1px solid #d9e4ef; font-size: 13px; line-height: 1.5; color: #5a6d82; }
 
 /* ---------- Tjenester (#tjenester): en redaksjonell indeks, ikke en stabel med kort ---------- */
 .services { padding: 112px 0 122px; background: #f4f8fc; position: relative; overflow: hidden; }
