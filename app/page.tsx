@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/metadata";
 import { site } from "@/config/site";
 import { Hero } from "@/components/home/hero";
-import { ProofBar } from "@/components/home/proof-bar";
+import { Partners } from "@/components/home/partners";
 import { IntroSection } from "@/components/home/intro-section";
 import { ContactSection } from "@/components/home/contact-section";
 
@@ -41,7 +41,7 @@ export default function HomePage() {
     <main id="main" tabIndex={-1} className="outline-none">
       <JsonLd />
       <Hero />
-      <ProofBar />
+      <Partners />
       <IntroSection />
       <ContactSection />
     </main>

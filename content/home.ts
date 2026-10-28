@@ -23,15 +23,6 @@ export const homeHero = {
   },
 };
 
-export const homeProof = {
-  intro: "En partner. Flere fagområder.",
-  items: [
-    { icon: "check", text: "Nøytral rådgivning" },
-    { icon: "panel", text: "IT og telekom samlet" },
-    { icon: "shield", text: "Én kontakt å forholde seg til" },
-  ],
-} as const;
-
 export const homeIntro = {
   eyebrow: "Se helheten først",
   title: [{ text: "Vi hjelper deg" }, { text: "å velge ", em: "riktig." }] satisfies TitleLine[],
