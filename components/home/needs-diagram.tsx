@@ -146,18 +146,18 @@ export function NeedsDiagram() {
             const y = optionY(i, n);
             return (
               <g key={i}>
-                <path d={routeTo(y)} fill="none" stroke="#8fb9e9" strokeOpacity=".26" strokeWidth="1.2" strokeLinecap="round" />
-                <circle cx={OPTION_X} cy={y} r="6" fill="#0f2442" stroke="#8fb9e9" strokeOpacity=".5" strokeWidth="1.6" />
+                <path d={routeTo(y)} fill="none" stroke="#a9cdf3" strokeOpacity=".32" strokeWidth="1.2" strokeLinecap="round" />
+                <circle cx={OPTION_X} cy={y} r="6" fill="#173866" stroke="#a9cdf3" strokeOpacity=".6" strokeWidth="1.6" />
               </g>
             );
           })}
 
           {/* Behovet */}
-          <circle cx={NEED.x} cy={NEED.y} r="9" fill="#0f2442" stroke="#8fb9e9" strokeWidth="1.6" />
+          <circle cx={NEED.x} cy={NEED.y} r="9" fill="#173866" stroke="#a9cdf3" strokeWidth="1.6" />
           <circle cx={NEED.x} cy={NEED.y} r="3.5" fill="#8ec2f5" />
 
           {/* Kompasset fra logoen: ring og fire merker. Nålen ligger i et eget lag over. */}
-          <circle cx={HUB.x} cy={HUB.y} r="30" fill="#10223d" stroke="#fff" strokeOpacity=".9" strokeWidth="2.2" />
+          <circle cx={HUB.x} cy={HUB.y} r="30" fill="#14325c" stroke="#fff" strokeOpacity=".9" strokeWidth="2.2" />
           {Array.from({ length: 4 }, (_, i) => {
             const a = (i * Math.PI) / 2;
             const r2 = (v: number) => Math.round(v * 100) / 100;
@@ -175,7 +175,7 @@ export function NeedsDiagram() {
         <svg className="nd-needle" viewBox="-20 -20 40 40" aria-hidden="true" style={{ left: pct(HUB.x, W), top: pct(HUB.y, H), transform: `translate(-50%, -50%) rotate(${needleAngle(chosenY).toFixed(2)}deg)` }}>
           <path d="M0 -19L5 0H-5Z" fill="#fff" />
           <path d="M-5 0H5L0 19Z" fill="#3f9bb2" />
-          <circle r="2.6" fill="#10223d" stroke="#fff" strokeWidth="1.2" />
+          <circle r="2.6" fill="#14325c" stroke="#fff" strokeWidth="1.2" />
         </svg>
 
         {/* Markørene ved alternativene: lysende punkt og en rolig puls for det valgte */}
