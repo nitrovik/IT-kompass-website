@@ -20,9 +20,9 @@ export const partnerSection = {
 };
 
 export const partners: Partner[] = [
-  { name: "Fjord & Foundry", logo: { src: "/partners/fjord-and-foundry.webp", width: 306, height: 260 } },
-  { name: "GlobalConnect", logo: { src: "/partners/globalconnect.webp", width: 1255, height: 200 } },
-  { name: "MF Graveservice AS", logo: { src: "/partners/mf-graveservice.webp", width: 672, height: 200 } },
+  { name: "Fjord & Foundry", logo: { src: "/partners/fjord-and-foundry.webp", width: 141, height: 120 } },
+  { name: "GlobalConnect", logo: { src: "/partners/globalconnect.webp", width: 565, height: 90 } },
+  { name: "MF Graveservice AS", logo: { src: "/partners/mf-graveservice.webp", width: 302, height: 90 } },
 ];
 
 // Fra så mange partnere glir stripen; med færre står den stille
