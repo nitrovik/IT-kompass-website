@@ -128,40 +128,40 @@ export function NeedsDiagram() {
         <svg viewBox={`0 0 ${W} ${H}`} className="nd-svg" role="img" aria-label={diagram.label}>
           <defs>
             <linearGradient id="nd-route-hi" x1="0" x2="1">
-              <stop offset="0" stopColor="#2f7bc8" stopOpacity=".7" />
-              <stop offset="1" stopColor="#8ec2f5" />
+              <stop offset="0" stopColor="#2369cf" stopOpacity=".55" />
+              <stop offset="1" stopColor="#2369cf" />
             </linearGradient>
             <radialGradient id="nd-hub-glow">
-              <stop offset="0" stopColor="#4c99eb" stopOpacity=".3" />
+              <stop offset="0" stopColor="#4c99eb" stopOpacity=".2" />
               <stop offset="1" stopColor="#4c99eb" stopOpacity="0" />
             </radialGradient>
           </defs>
           <circle cx={HUB.x} cy={HUB.y} r="90" fill="url(#nd-hub-glow)" />
 
           {/* Behov → kompass */}
-          <path d={`M${NEED.x + 10} ${NEED.y} L ${HUB.x - 30} ${HUB.y}`} fill="none" stroke="#8fb9e9" strokeOpacity=".6" strokeWidth="1.6" strokeLinecap="round" />
+          <path d={`M${NEED.x + 10} ${NEED.y} L ${HUB.x - 30} ${HUB.y}`} fill="none" stroke="#337ed2" strokeOpacity=".7" strokeWidth="1.6" strokeLinecap="round" />
 
           {/* Kompass → alternativer: dempede baner (de lyse ligger i egne lag under) */}
           {diagram.options.map((_, i) => {
             const y = optionY(i, n);
             return (
               <g key={i}>
-                <path d={routeTo(y)} fill="none" stroke="#a9cdf3" strokeOpacity=".32" strokeWidth="1.2" strokeLinecap="round" />
-                <circle cx={OPTION_X} cy={y} r="6" fill="#173866" stroke="#a9cdf3" strokeOpacity=".6" strokeWidth="1.6" />
+                <path d={routeTo(y)} fill="none" stroke="#8fb9e9" strokeOpacity=".7" strokeWidth="1.2" strokeLinecap="round" />
+                <circle cx={OPTION_X} cy={y} r="6" fill="#fff" stroke="#a9c6e6" strokeOpacity="1" strokeWidth="1.6" />
               </g>
             );
           })}
 
           {/* Behovet */}
-          <circle cx={NEED.x} cy={NEED.y} r="9" fill="#173866" stroke="#a9cdf3" strokeWidth="1.6" />
-          <circle cx={NEED.x} cy={NEED.y} r="3.5" fill="#8ec2f5" />
+          <circle cx={NEED.x} cy={NEED.y} r="9" fill="#fff" stroke="#337ed2" strokeWidth="1.6" />
+          <circle cx={NEED.x} cy={NEED.y} r="3.5" fill="#2369cf" />
 
           {/* Kompasset fra logoen: ring og fire merker. Nålen ligger i et eget lag over. */}
-          <circle cx={HUB.x} cy={HUB.y} r="30" fill="#14325c" stroke="#fff" strokeOpacity=".9" strokeWidth="2.2" />
+          <circle cx={HUB.x} cy={HUB.y} r="30" fill="#fff" stroke="#0b2545" strokeOpacity="1" strokeWidth="2.2" />
           {Array.from({ length: 4 }, (_, i) => {
             const a = (i * Math.PI) / 2;
             const r2 = (v: number) => Math.round(v * 100) / 100;
-            return <line key={i} x1={r2(HUB.x + Math.sin(a) * 23)} y1={r2(HUB.y - Math.cos(a) * 23)} x2={r2(HUB.x + Math.sin(a) * 30)} y2={r2(HUB.y - Math.cos(a) * 30)} stroke="#fff" strokeWidth="2.2" strokeLinecap="round" />;
+            return <line key={i} x1={r2(HUB.x + Math.sin(a) * 23)} y1={r2(HUB.y - Math.cos(a) * 23)} x2={r2(HUB.x + Math.sin(a) * 30)} y2={r2(HUB.y - Math.cos(a) * 30)} stroke="#0b2545" strokeWidth="2.2" strokeLinecap="round" />;
           })}
         </svg>
 
@@ -173,9 +173,9 @@ export function NeedsDiagram() {
         ))}
 
         <svg className="nd-needle" viewBox="-20 -20 40 40" aria-hidden="true" style={{ left: pct(HUB.x, W), top: pct(HUB.y, H), transform: `translate(-50%, -50%) rotate(${needleAngle(chosenY).toFixed(2)}deg)` }}>
-          <path d="M0 -19L5 0H-5Z" fill="#fff" />
-          <path d="M-5 0H5L0 19Z" fill="#3f9bb2" />
-          <circle r="2.6" fill="#14325c" stroke="#fff" strokeWidth="1.2" />
+          <path d="M0 -19L5 0H-5Z" fill="#0b2545" />
+          <path d="M-5 0H5L0 19Z" fill="#237286" />
+          <circle r="2.6" fill="#fff" stroke="#0b2545" strokeWidth="1.2" />
         </svg>
 
         {/* Markørene ved alternativene: lysende punkt og en rolig puls for det valgte */}
