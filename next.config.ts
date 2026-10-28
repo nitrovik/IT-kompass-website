@@ -10,6 +10,15 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
   },
+  // Logoer i public/ har ikke hash i filnavnet, så de caches i et døgn og fornyes i bakgrunnen
+  // i en uke etter det. Byttes en logo, ser alle den nye innen et døgn.
+  async headers() {
+    const cache = [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }];
+    return [
+      { source: "/brand/:path*", headers: cache },
+      { source: "/partners/:path*", headers: cache },
+    ];
+  },
   async redirects() {
     return [
       // Adresser fra den forrige versjonen av nettsiden (fjernet oktober 2026), så gamle lenker ikke gir 404

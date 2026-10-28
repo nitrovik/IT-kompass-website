@@ -7,7 +7,7 @@ import type { ServicesNav } from "@/content/navigation";
   Teksten bygger på det nettsiden har sagt om tjenestene tidligere, skrevet etter SKRIVEREGLER.md.
   Ikke legg inn priser, leveransetider, garantier, plattformer eller kunder som ikke er bekreftet.
 
-  layout: hvordan «Dette gjør vi» settes opp på siden ("index": nummerert liste, "split": to kolonner),
+  layout: hvordan «Dette gjør vi» settes opp på siden ("index": kolonner under en fiberlinje, "split": to kolonner),
   så sidene ikke blir like kopier. art: tegningen øverst på siden (components/service/service-art.tsx).
 */
 export type Service = {
