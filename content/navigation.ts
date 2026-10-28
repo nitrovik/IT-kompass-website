@@ -2,7 +2,6 @@
   Hovedmenyen ved siden av logoen. «Tjenester» åpner en undermeny med alle tjenestesidene
   (servicesNav i content/services.ts, sendt inn fra app/layout.tsx), de andre lenkene går til
   seksjoner på forsiden. Samme innhold på PC og mobil.
-  (Designets «Samarbeidspartner» er tatt bort sammen med seksjonen, etter eierens ønske.)
 */
 export type NavLink = { label: string; href: string };
 export type NavService = NavLink & { tag: string; summary: string };
