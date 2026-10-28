@@ -19,7 +19,7 @@ function SectionLink({ href, local, className, onClick, children }: { href: stri
 }
 
 /*
-  Headeren: logo og meny på én linje til venstre, «La oss snakke» til høyre. Står fast øverst
+  Headeren: logo og meny på én linje. «La oss snakke» står bare nederst i mobilmenyen. Står fast øverst
   når siden scrolles (sticky, ren CSS).
 
   «Tjenester» åpner en undermeny (mønsteret «disclosure navigation» fra WAI-ARIA):
@@ -198,9 +198,6 @@ export function SiteHeader({ servicesNav }: { servicesNav: ServicesNav }) {
           </SectionLink>
         </div>
 
-        <SectionLink className="btn btn-primary nav-action" href={navCta.href} local={localHref(navCta.href)}>
-          {navCta.label} <span className="btn-arrow" aria-hidden="true">↗</span>
-        </SectionLink>
         <button ref={menuButton} className="menu-toggle" type="button" onClick={() => setMenuOpen((value) => !value)} aria-controls="hovedmeny" aria-expanded={menuOpen} aria-label={menuOpen ? "Lukk meny" : "Åpne meny"}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">{menuOpen ? <path d="M6 6l12 12M18 6 6 18" /> : <path d="M3 7h18M3 12h18M3 17h18" />}</svg>
         </button>

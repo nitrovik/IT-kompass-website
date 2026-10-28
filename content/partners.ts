@@ -16,7 +16,7 @@
 export type Partner = { name: string; logo?: { src: string; width: number; height: number; scale?: number } };
 
 export const partnerSection = {
-  label: "Våre samarbeidspartnere",
+  label: "Partnere",
 };
 
 export const partners: Partner[] = [
