@@ -44,20 +44,19 @@ function Includes({ service }: { service: Service }) {
     </>
   );
   if (service.layout === "index") {
-    // Nummerert rekke langs en fiberlinje, som en bane med knutepunkter
+    // Rekke langs en fiberlinje
     return (
       <section className="svc-section svc-includes-index" aria-labelledby="svc-includes">
         <div className="wrap">
           <div className="svc-head" data-reveal>{heading}</div>
-          <ol className="svc-steps">
+          <ul className="svc-steps">
             {service.includes.map((item, i) => (
               <li key={item.title} data-reveal style={{ ["--d" as string]: `${i * 0.06}s` }}>
-                <span className="svc-step-num" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
                 <h3>{item.title}</h3>
                 <p>{item.body}</p>
               </li>
             ))}
-          </ol>
+          </ul>
         </div>
       </section>
     );
@@ -70,7 +69,7 @@ function Includes({ service }: { service: Service }) {
         <dl className="svc-list">
           {service.includes.map((item, i) => (
             <div key={item.title} data-reveal style={{ ["--d" as string]: `${i * 0.05}s` }}>
-              <dt><span className="svc-list-num" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>{item.title}</dt>
+              <dt>{item.title}</dt>
               <dd>{item.body}</dd>
             </div>
           ))}

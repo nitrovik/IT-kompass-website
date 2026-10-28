@@ -326,8 +326,8 @@ body {
 
 /* «Dette gjør vi» som rekke langs en fiberlinje (layout: index) */
 .svc-steps { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 40px; margin: 0; padding: 0; list-style: none; }
-.svc-steps::before { content: ""; position: absolute; left: 0; right: 0; top: 22px; height: 1px; background: linear-gradient(90deg, #b2d5fa, #2369cf 45%, #8fb9e9); }
-.svc-step-num { position: relative; display: grid; place-items: center; width: 44px; height: 44px; margin-bottom: 26px; border: 1px solid #a9c6e6; border-radius: 50%; background: #fff; color: var(--blue); font-family: var(--serif); font-size: 1.05rem; box-shadow: 0 0 0 6px #fff; }
+.svc-steps::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: linear-gradient(90deg, #b2d5fa, #2369cf 45%, #8fb9e9); }
+.svc-steps li { padding-top: 32px; }
 .svc-steps h3, .svc-outcome-list h3 { margin: 0 0 10px; font-size: 1.22rem; font-weight: 650; letter-spacing: -.035em; }
 .svc-steps p, .svc-outcome-list p { margin: 0; font-size: .92rem; line-height: 1.75; color: var(--muted); }
 
@@ -336,8 +336,7 @@ body {
 .svc-split-head { position: sticky; top: calc(var(--header-h) + 40px); }
 .svc-list { margin: 0; border-top: 1px solid #d5e1ee; }
 .svc-list > div { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 28px; padding: 28px 0; border-bottom: 1px solid #d5e1ee; }
-.svc-list dt { display: flex; align-items: baseline; gap: 14px; font-size: 1.2rem; font-weight: 650; letter-spacing: -.035em; }
-.svc-list-num { color: #4f7099; font-family: var(--serif); font-size: 1rem; font-weight: 400; }
+.svc-list dt { font-size: 1.2rem; font-weight: 650; letter-spacing: -.035em; }
 .svc-list dd { margin: 0; font-size: .95rem; line-height: 1.75; color: var(--muted); }
 
 .svc-outcomes { background: #f4f8fc; border-block: 1px solid #e3eaf2; }
@@ -503,6 +502,7 @@ textarea.form-input { min-height: 150px; resize: vertical; }
   .svc-hero-grid { grid-template-columns: 1fr .8fr; gap: 28px; }
   .svc-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 52px; }
   .svc-steps::before { display: none; }
+  .svc-steps li { padding-top: 24px; border-top: 1px solid #cddbeb; }
   .svc-outcome-list { gap: 28px; }
 }
 
