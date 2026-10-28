@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { PARTNER_MARQUEE_MIN, partnerSection, partners, type Partner } from "@/content/partners";
-import { MarqueePause } from "@/components/home/marquee-pause";
 
 /*
   Samarbeidspartnere, rett under heroen.
@@ -8,7 +7,7 @@ import { MarqueePause } from "@/components/home/marquee-pause";
   en sømløs sløyfe. Settet med logoer gjentas til raden er bredere enn skjermen, og raden står to
   ganger etter hverandre og flyttes −50 % med en CSS-animasjon (transform), så den går rundt uten
   hopp og uten tomrom. Bare første sett leses opp av skjermlesere. Sløyfen står stille utenfor
-  skjermen, når pekeren er over den, ved redusert bevegelse og når pauseknappen er trykket.
+  skjermen og ved redusert bevegelse.
 */
 const GAP = 72;
 const AREA = 5400; // omtrent samme flate for alle logoer, så ingen dominerer
@@ -61,7 +60,6 @@ export function Partners() {
             {row(true)}
           </div>
         </div>
-        <MarqueePause />
       </div>
     </section>
   );
