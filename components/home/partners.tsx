@@ -3,7 +3,7 @@ import { PARTNER_MARQUEE_MIN, partnerSection, partners, type Partner } from "@/c
 
 /*
   Samarbeidspartnere, rett under heroen.
-  Én eller to partnere: en rolig, statisk rad. Fra tre: logoene glir sakte fra høyre mot venstre i
+  Én partner: en rolig, statisk rad. Fra to: logoene glir sakte fra høyre mot venstre i
   en sømløs sløyfe. Settet med logoer gjentas til raden er bredere enn skjermen, og raden står to
   ganger etter hverandre og flyttes −50 % med en CSS-animasjon (transform), så den går rundt uten
   hopp og uten tomrom. Bare første sett leses opp av skjermlesere. Sløyfen står stille utenfor
