@@ -11,7 +11,9 @@
 
   Logofilene er renset for bakgrunn (oktober 2026): Fjord & Foundry kom som kremhvit logo på et
   innbakt rutemønster, så teksten og ankeret er satt i nettsidens mørkeblå (flagget er uendret).
-  GlobalConnect kom på hvit bakgrunn.
+  GlobalConnect kom på hvit bakgrunn. GlobalConnect er tatt ut av stripen inntil videre (eieren,
+  oktober 2026). Logofilen ligger fortsatt i public/partners/globalconnect.webp, så den kan legges
+  inn igjen med linjen { name: "GlobalConnect", logo: { src: "/partners/globalconnect.webp", width: 565, height: 90 } }.
 */
 export type Partner = { name: string; logo?: { src: string; width: number; height: number; scale?: number } };
 
@@ -21,9 +23,8 @@ export const partnerSection = {
 
 export const partners: Partner[] = [
   { name: "Fjord & Foundry", logo: { src: "/partners/fjord-and-foundry.webp", width: 141, height: 120 } },
-  { name: "GlobalConnect", logo: { src: "/partners/globalconnect.webp", width: 565, height: 90 } },
   { name: "MF Graveservice AS", logo: { src: "/partners/mf-graveservice.webp", width: 302, height: 90 } },
 ];
 
 // Fra så mange partnere glir stripen; med færre står den stille
-export const PARTNER_MARQUEE_MIN = 3;
+export const PARTNER_MARQUEE_MIN = 2;
