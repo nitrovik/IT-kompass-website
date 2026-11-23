@@ -4,6 +4,7 @@ import type { ContactCategory } from "@/content/contact";
 import { site } from "@/config/site";
 import { ContactForm } from "@/components/forms/contact-form";
 import { TitleLines } from "@/components/home/section-title";
+import { SERVICES_ENABLED } from "@/content/services";
 
 /* Telefon, e-post og adresse når de er lagt inn i config/site.ts (ellers ingenting). */
 export function ContactDetails() {
@@ -43,7 +44,7 @@ export function ContactSection({ copy = homeContact, category }: { copy?: Contac
           <p className="eyebrow">{copy.eyebrow}</p>
           <h2 id="kontakt-heading" className="section-heading"><TitleLines lines={copy.title} /></h2>
           <p className="body-copy">{copy.body}</p>
-          {copy.link ? <Link className="text-link" href={copy.link.href}>{copy.link.label} <span aria-hidden="true">↗</span></Link> : null}
+          {copy.link && SERVICES_ENABLED ? <Link className="text-link" href={copy.link.href}>{copy.link.label} <span aria-hidden="true">↗</span></Link> : null}
           <ContactDetails />
         </div>
         <div className="contact-card" id="kontaktskjema" data-reveal style={{ ["--d" as string]: ".08s" }}>

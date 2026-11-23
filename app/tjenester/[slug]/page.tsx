@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { pageMetadata } from "@/lib/metadata";
-import { getService, serviceHref, services } from "@/content/services";
+import { SERVICES_ENABLED, getService, serviceHref, services } from "@/content/services";
 import { ServicePage } from "@/components/service/service-page";
 
 // Bare tjenestene som finnes, bygges som faste sider. Andre adresser gir 404.
@@ -14,12 +14,12 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const service = getService(slug);
-  return service ? pageMetadata({ title: service.metaTitle, description: service.metaDescription, path: serviceHref(service.slug) }) : {};
+  return service && SERVICES_ENABLED ? pageMetadata({ title: service.metaTitle, description: service.metaDescription, path: serviceHref(service.slug) }) : {};
 }
 
 export default async function ServiceRoute({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const service = getService(slug);
-  if (!service) notFound();
+  if (!service || !SERVICES_ENABLED) notFound();
   return <ServicePage service={service} />;
 }
