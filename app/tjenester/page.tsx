@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { pageMetadata } from "@/lib/metadata";
-import { servicesOverview } from "@/content/services";
+import { SERVICES_ENABLED, servicesOverview } from "@/content/services";
 import { homeContact } from "@/content/home";
 import { TitleLines } from "@/components/home/section-title";
 import { ContactSection } from "@/components/home/contact-section";
@@ -11,6 +12,7 @@ export const metadata: Metadata = pageMetadata({ title: servicesOverview.metaTit
 
 /* Oversikten over tjenestene: indeksen fra forsidens design, med en lenke til hver tjenesteside. */
 export default function ServicesOverviewPage() {
+  if (!SERVICES_ENABLED) notFound();
   const { foot } = servicesOverview;
   return (
     <main id="main" tabIndex={-1} className="outline-none">

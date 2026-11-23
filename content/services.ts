@@ -32,6 +32,14 @@ export type Service = {
   contact: { title: TitleLine[]; body: string };
 };
 
+/*
+  Av/på for hele tjenestedelen. Eieren ba om at den tas ned inntil videre (november 2026).
+  Når false: «Tjenester» er borte fra menyen, /tjenester og alle tjenestesidene gir «finnes ikke»,
+  de er ute av sitemap, og knappene «Se hva vi gjør» og «Utforsk tjenestene» vises ikke.
+  Sett til true for å få alt tilbake slik det var.
+*/
+export const SERVICES_ENABLED = false;
+
 export const services: Service[] = [
   {
     slug: "it-support",

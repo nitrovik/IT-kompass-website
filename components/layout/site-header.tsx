@@ -29,7 +29,7 @@ function SectionLink({ href, local, className, onClick, children }: { href: stri
     lenkene, Escape lukker og setter fokus tilbake på knappen. Den lukkes når fokus går videre.
   - Mobil (≤ 760 px): menyen er et panel under headeren, og tjenestene foldes ut ved trykk.
 */
-export function SiteHeader({ servicesNav }: { servicesNav: ServicesNav }) {
+export function SiteHeader({ servicesNav }: { servicesNav: ServicesNav | null }) {
   const pathname = usePathname();
   const headerRef = useRef<HTMLElement>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
@@ -160,33 +160,35 @@ export function SiteHeader({ servicesNav }: { servicesNav: ServicesNav }) {
 
         <div className={menuOpen ? "nav-menu open" : "nav-menu"} id="hovedmeny">
           <ul className="nav-list">
-            <li ref={servicesItem} className={servicesOpen ? "nav-item is-open" : "nav-item"} onPointerEnter={hover(true)} onPointerLeave={hover(false)} onBlur={onItemBlur}>
-              <button ref={servicesButton} type="button" className={inServices ? "nav-link is-active" : "nav-link"} aria-expanded={servicesOpen} aria-controls="tjenestemeny" onClick={toggleServices} onKeyDown={onButtonKey}>
-                {servicesNav.label}
-                <svg className="nav-caret" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-              </button>
-              <div className="nav-panel" id="tjenestemeny" onKeyDown={onPanelKey}>
-                <ul className="nav-services">
-                  {servicesNav.items.map((item) => (
-                    <li key={item.href}>
-                      <Link className="nav-service" href={item.href} aria-current={pathname === item.href ? "page" : undefined} onClick={closeAll}>
-                        <span className="nav-service-tag" aria-hidden="true">{item.tag}</span>
-                        <span className="nav-service-text">
-                          <span className="nav-service-name">{item.label}</span>
-                          <span className="nav-service-sum">{item.summary}</span>
-                        </span>
-                        <span className="nav-service-go" aria-hidden="true">↗</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-                <div className="nav-panel-foot">
-                  <Link className="nav-panel-all" href={servicesNav.overview.href} aria-current={pathname === servicesNav.overview.href ? "page" : undefined} onClick={closeAll}>
-                    {servicesNav.overview.label} <span aria-hidden="true">↗</span>
-                  </Link>
+            {servicesNav ? (
+              <li ref={servicesItem} className={servicesOpen ? "nav-item is-open" : "nav-item"} onPointerEnter={hover(true)} onPointerLeave={hover(false)} onBlur={onItemBlur}>
+                <button ref={servicesButton} type="button" className={inServices ? "nav-link is-active" : "nav-link"} aria-expanded={servicesOpen} aria-controls="tjenestemeny" onClick={toggleServices} onKeyDown={onButtonKey}>
+                  {servicesNav.label}
+                  <svg className="nav-caret" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </button>
+                <div className="nav-panel" id="tjenestemeny" onKeyDown={onPanelKey}>
+                  <ul className="nav-services">
+                    {servicesNav.items.map((item) => (
+                      <li key={item.href}>
+                        <Link className="nav-service" href={item.href} aria-current={pathname === item.href ? "page" : undefined} onClick={closeAll}>
+                          <span className="nav-service-tag" aria-hidden="true">{item.tag}</span>
+                          <span className="nav-service-text">
+                            <span className="nav-service-name">{item.label}</span>
+                            <span className="nav-service-sum">{item.summary}</span>
+                          </span>
+                          <span className="nav-service-go" aria-hidden="true">↗</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="nav-panel-foot">
+                    <Link className="nav-panel-all" href={servicesNav.overview.href} aria-current={pathname === servicesNav.overview.href ? "page" : undefined} onClick={closeAll}>
+                      {servicesNav.overview.label} <span aria-hidden="true">↗</span>
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            </li>
+              </li>
+            ) : null}
             {mainNav.map((item) => (
               <li key={item.href} className="nav-item">
                 <SectionLink className="nav-link" href={item.href} local={localHref(item.href)} onClick={closeAll}>{item.label}</SectionLink>
