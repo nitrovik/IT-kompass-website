@@ -17,6 +17,10 @@
 */
 export type Partner = { name: string; logo?: { src: string; width: number; height: number; scale?: number } };
 
+// Av/på for partnerstripen. Eieren ba om at den tas bort inntil videre (november 2026).
+// Partnerne og logofilene er beholdt; sett til true for å vise stripen igjen.
+export const PARTNERS_ENABLED = false;
+
 export const partnerSection = {
   label: "Partnere",
 };

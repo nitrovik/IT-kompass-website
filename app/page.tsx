@@ -3,6 +3,7 @@ import { pageMetadata } from "@/lib/metadata";
 import { site } from "@/config/site";
 import { Hero } from "@/components/home/hero";
 import { Partners } from "@/components/home/partners";
+import { PARTNERS_ENABLED } from "@/content/partners";
 import { IntroSection } from "@/components/home/intro-section";
 import { ContactSection } from "@/components/home/contact-section";
 
@@ -41,7 +42,7 @@ export default function HomePage() {
     <main id="main" tabIndex={-1} className="outline-none">
       <JsonLd />
       <Hero />
-      <Partners />
+      {PARTNERS_ENABLED ? <Partners /> : null}
       <IntroSection />
       <ContactSection />
     </main>
